@@ -1,16 +1,16 @@
 dist: xenial
 matrix:
   include:
-    - name: "report - arara"
+  - name: report - arara
       sudo: required
       language: generic
       addons:
         apt:
+        sources:
+        - ppa:jonathonf/texlive
           packages:
             - icc-profiles
             - texlive-full
-          sources:
-            - "ppa:jonathonf/texlive"
       install:
         - cd ./report
         - arara --log --verbose report.tex
