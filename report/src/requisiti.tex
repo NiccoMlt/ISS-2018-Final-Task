@@ -1,0 +1,57 @@
+%% Direttive TeXworks:
+% !TeX root = ../report.tex
+% !TEX encoding = UTF-8 Unicode
+% !TEX program = arara
+% !TEX TS-program = arara
+% !TeX spellcheck = it-IT
+
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+
+Di seguito è riportato il documento dei requisiti fornito dal committente:
+
+\begin{foreigndisplayquote}{english}
+  A \texttt{ddr} robot (\requirement{discovery}) must be used to check for the existence of a bomb in the hall of a airport.
+
+  The hall has been evacuated, but on its (flat) floor remains the luggage left by the travellers.
+  The robot \requirementref{discovery} can be remotely controlled via smart device by an human operator working in a protected area.
+  The robot must start its work under the following conditions:
+
+  \begin{itemize}
+    \item the \texttt{operator} has sent a \texttt{EXPLORE} command (\requirement{R-startExplore}) by using a \texttt{GUI} interface (\requirement{console}) running on the smart device;
+    \item the value of the temperature in the hall is not higher than a prefixed value (\requirement{R-TempOk}): (e.g. 25 degrees Celsius).
+  \end{itemize}
+
+  The software system running on the robot and on the operator device must provide the following functionalities:
+
+  \begin{enumerate}
+    \item
+      the robot must explore (in `autonomous way') the hall (\requirement{R-explore}) with the goal to reach each bag on the hall-floor;
+    \item
+      during the exploration phase the operator can stop (\requirement{R-stopExplore}) the robot and send to it a command to return to its initial position (\requirement{R-backHome}) or to continue the exploration phase (\requirement{R-continueExplore});
+    \item
+      while exploring, \requirementref{discovery} must blink a \texttt{Led} put on it (\requirement{R-blinkLed}) and update the operator console with information on the robot/discovery state (\requirement{R-consoleUpdate});
+    \item
+      when \requirementref{discovery} is in proximity of a bag, it must:
+      \begin{itemize}
+        \item stop (\requirement{R-stopAtBag});
+        \item take a picture (\requirement{R-takePhoto}) of the bag;
+        \item send the photo to the operator device (\requirement{R-sendPhoto});
+      \end{itemize}
+    \item
+        when the operator device receives a photo, it executes a tool able to understand if the bag could be a bomb.
+        In case of `bomb-detected', the operator device:
+        \begin{itemize}
+          \item alerts the operator (\requirement{R-alert});
+          \item stores the photo (\requirement{R-storePhoto}) on some permanent storage device, together with contextual information (e.g.\ time, robot-position, etc.);
+          \item sends to the robot the command to return to its initial position (\requirement{R-backHomeSinceBomb});
+        \end{itemize}
+        Otherwise, the operator device sends to the robot the command to continue the exploration (\requirement{R-continueExploreAfterPhoto});
+    \item
+      the operator alerted for a possible bomb:
+      \begin{itemize}
+        \item waits until the robot is returned to its initial position (\requirement{R-waitForHome});
+        \item when \requirementref{discovery} is at home, tells to \hypertarget{ref:retriever}{another robot} (equipped with proper tools) to reach the discovered bag (\requirement{R-reachBag}) in order to put the bag in safe container and transport it to the initial position (\requirement{R-bagAtHome}).
+      \end{itemize}
+  \end{enumerate}
+\end{foreigndisplayquote}

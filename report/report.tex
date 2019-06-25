@@ -5,8 +5,8 @@
 % !TEX TS-program = arara
 % !TeX spellcheck = it-IT
 
-% arara: pdflatex: { synctex: yes, shell: yes }
-% arara: pdflatex: { synctex: yes, shell: yes }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
 
 %% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
 \begin{filecontents*}{\jobname.xmpdata}
@@ -39,9 +39,12 @@
 ]{csquotes}                     % serve a impostare lo stile delle virgolette
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{indentfirst}      % serve per avere l'indentazione nel primo paragrafo
+\usepackage{relsize, etoolbox}  % permette di riferirsi ad ambienti specifici
+\AtBeginEnvironment{foreigndisplayquote}{\smaller}
+
+\usepackage{indentfirst}        % serve per avere l'indentazione nel primo paragrafo
 \usepackage{url}
-\usepackage{setspace}         % serve a fornire comandi di interlinea standard
+\usepackage{setspace}           % serve a fornire comandi di interlinea standard
 \usepackage{xspace}
 
 \makeatletter
@@ -87,6 +90,9 @@
 \newcommand{\action}[1]{\texttt{#1}\xspace}
 \newcommand{\code}[1]{{\small{\texttt{#1}}}\xspace}
 \newcommand{\codescript}[1]{{\scriptsize{\texttt{#1}}}\xspace}
+
+\newcommand{\requirement}[1]{\hypertarget{req:#1}{\textcolor{blue}{#1}}}
+\newcommand{\requirementref}[1]{\hyperlink{req:#1}{\textcolor{blue}{#1}}}
 
 % Cross-referencing
 \newcommand{\labelsec}[1]{\label{sec:#1}}
@@ -165,85 +171,84 @@
 \maketitle
 
 %===========================================================================
-\section{Introduction}
-\labelsec{intro}
+% \section{Introduzione}\labelsec{intro}
+% TODO: sezione probabilmente non necessaria
 %===========================================================================
 
 %===========================================================================
-\section{Vision}
-\labelsec{Vision}
+% \section{Visione}\labelsec{vision}
+% TODO: sezione probabilmente non necessaria
 %===========================================================================
 
 %===========================================================================
-\section{Goals}
-\labelsec{Goals}
+% \section{Obiettivi}\labelsec{goals}
+% TODO: sezione probabilmente non necessaria
 %===========================================================================
 
 %===========================================================================
-\section{Requirements}
-\labelsec{Requirements}
-%===========================================================================
-
- 
-%===========================================================================
-\section{Requirement analysis}
-\labelsec{ReqAnalysis}
-%===========================================================================
-\subsection{Use cases}
-\labelssec{UseCases}
-
-\subsection{Scenarios}
-\labelssec{Scenarios}
-
-\subsection{(Domain) model}
-
-\subsection{Test plan}
-
-%===========================================================================
-\section{Problem analysis}
-\labelsec{ProblemAnalysis}
-%===========================================================================
-\subsection{Logic architecture}
-\subsection{Abstraction gap}
-\subsection{Risk analysis}
-
-%===========================================================================
-\section{Work plan}
-\labelsec{wplan}
+\section{Requisiti}\labelsec{requirements}
+\input{src/requisiti.tex}
 %===========================================================================
 
 %===========================================================================
-\section{Project}
-\labelsec{Project}
-%===========================================================================
-
-\subsection{Structure}
-\subsection{Interaction}
-\subsection{Behavior}
+\section{Analisi dei requisiti}\labelsec{req_analysis}
+\input{src/analisi-dei-requisiti.tex}
 
 %===========================================================================
-\section{Implementation}
-\labelsec{Implementation}
+% \subsection{Casi d'uso}\labelssec{use_cases}
+
+% \subsection{Scenario}\labelssec{scenarios}
+
+% \subsection{Modello di dominio}\labelssec{modello}
+
+% \subsection{Test plan}\labelssec{test_plan}
+
+%===========================================================================
+% \section{Analisi del problema}\labelsec{problem_analysis}
+
+%===========================================================================
+% \subsection{Architettura logica}\labelssec{logic_arch}
+
+% \subsection{Abstraction gap}\labelssec{abstraction-gap}
+
+% \subsection{Analisi del rischio}\labelssec{risk_analysis}
+
+%===========================================================================
+% \section{Piano di lavoro}\labelsec{work_plan}
+
 %===========================================================================
 
 %===========================================================================
-\section{Testing}
-\labelsec{testing}
+% \section{Progetto}\labelsec{project}
+
+%===========================================================================
+
+% \subsection{Struttura}\labelssec{structure}
+% \subsection{Interazione}\labelssec{interaction}
+% \subsection{Comportamento}\labelssec{behavior}
+
+%===========================================================================
+% \section{Implementazione}\labelsec{implementation}
+
 %===========================================================================
 
 %===========================================================================
-\section{Deployment}
-\labelsec{Deployment}
+% \section{Testing}\labelsec{testing}
+
 %===========================================================================
 
 %===========================================================================
-\section{Maintenance}
-\labelsec{Maintenance}
+% \section{Deployment}\labelsec{deployment}
 %===========================================================================
 
-\appendix
+%===========================================================================
+% \section{Manutenzione}\labelsec{maintenance}
 
-\bibliographystyle{abbrv}
-\bibliography{biblio}
+%===========================================================================
+
+% \appendix
+
+% \bibliographystyle{abbrv}
+% \bibliography{biblio}
 
 \end{document}

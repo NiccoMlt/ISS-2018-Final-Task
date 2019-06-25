@@ -1,0 +1,65 @@
+%% Direttive TeXworks:
+% !TeX root = ../report.tex
+% !TEX encoding = UTF-8 Unicode
+% !TEX program = arara
+% !TEX TS-program = arara
+% !TeX spellcheck = it-IT
+
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+Dall'analisi dei requisiti forniti dal committente è possibile definire i seguenti requisiti:
+
+\begin{enumerate}
+  \item
+    il sistema è distribuito e composto da tre componenti principali:
+    \begin{description}
+      \item[\textbf{Robot \requirementref{discovery}}] Si intende un componente che esplori (\requirementref{R-explore}) autonomamente l'ambiente seguendo specifici comandi dell'operatore;
+      \item[\textbf{Robot \requirementref{retriever}}] Si intende un componente che raggiunga la bomba scoperta e la porti a casa;
+      \item[\textbf{Componente \requirementref{console}}] Il componente utilizzato da remoto dall'operatore attraverso un PC od uno smartphone;
+    \end{description}
+
+  \item
+    gli \textbf{ostacoli} sono \textit{statici} e, dato che viene assunto che la hall sia stata evacuata, possono essere divisi in:
+    \begin{itemize}
+      \item \textit{muri},
+      \item \textit{borse}.
+    \end{itemize}
+
+  \item
+    il \textbf{robot \requirementref{discovery}} deve iniziare l'esplorazione (\requirementref{R-explore}) solo nel caso in cui la temperatura sia sotto la soglia di 25°C (\requirementref{R-TempOk}) e riceva il comando di esplorazione dalla \textbf{\requirementref{console}} (\requirementref{R-startExplore});
+
+  \item
+    il comando \textit{Esplora} (\requirementref{R-startExplore}) viene inviato dalla \textbf{\requirementref{console}} unicamente al \textbf{robot \requirementref{discovery}};
+
+  \item
+    le informazioni dello stato del \textbf{robot \requirementref{discovery}} vengono inviate dallo stesso alla \textbf{\requirementref{console}} (\requirementref{R-consoleUpdate});
+    \begin{description}
+      \item[\textbf{Stato del robot}] Si intendono almeno le sue coordinate e l'azione corrente;
+    \end{description}
+
+  \item
+    il \textbf{robot \requirementref{discovery}} è equipaggiato con un \textbf{sonar} nella sua parte anteriore per permettergli di individuare eventuali ostacoli (\requirementref{R-stopAtBag}) e di un \textbf{led} che dovrà saper far lampeggiare (\requirementref{R-blinkLed});
+
+  \item
+    qualora il \textbf{robot \requirementref{discovery}} incontri un ostacolo, deve:
+    \begin{itemize}
+      \item fermarsi (\requirementref{R-stopAtBag});
+      \item scattare una foto (\requirementref{R-takePhoto});
+      \item mandare la foto (\requirementref{R-sendPhoto}) alla \textbf{\requirementref{console}}.
+    \end{itemize}
+    A sua volta, la \textbf{\requirementref{console}} dovrà:
+    \begin{itemize}
+      \item allertare l'operatore (\requirementref{R-alert});
+      \item salvare la foto (\requirementref{R-storePhoto}) ricevuta con dati di contesto;
+      \item mandare il robot a casa (\requirementref{R-backHomeSinceBomb}) o farlo continuare (\requirementref{R-continueExploreAfterPhoto}).
+    \end{itemize}
+
+  \item
+    il \textbf{robot \requirementref{retriever}} deve conoscere il percorso per raggiungere la bomba (\requirementref{R-reachBag}) una volta che il \textbf{robot \requirementref{discovery}} sarà tornato (\requirementref{R-waitForHome}) e il percorso per tornare con la bomba (\requirementref{R-bagAtHome});
+
+  \item
+    il cuore del sistema è la definizione della \textit{business logic} del robot che concerne l'esplorazione autonoma della hall;
+
+  \item
+    in qualsiasi momento, anche mentre in esplorazione, il \textbf{robot \requirementref{discovery}} deve essere reattivo ad un comando di halt (\requirementref{R-stopExplore}) inviatogli dalla \textbf{\requirementref{console}}.
+\end{enumerate}
