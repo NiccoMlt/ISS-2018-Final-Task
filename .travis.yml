@@ -6,11 +6,11 @@ matrix:
       language: generic
       addons:
         apt:
-          sources:
-            - ppa:jonathonf/texlive
           packages:
             - icc-profiles
             - texlive-full
+          sources:
+            - sourceline: "ppa:jonathonf/texlive"
       install:
         - cd ./report
         - arara --log --verbose report.tex
