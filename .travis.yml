@@ -11,11 +11,11 @@ matrix:
             - texlive-full
           sources:
             - sourceline: "ppa:jonathonf/texlive"
-      install:
+      before_install:
         - cd ./report
+      install:
         - arara --log --verbose report.tex
       script:
-        - cd ./report
         - chktex report.tex
       deploy:
         provider: releases
