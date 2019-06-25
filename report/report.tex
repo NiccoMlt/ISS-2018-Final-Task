@@ -1,41 +1,80 @@
-\documentclass{llncs}
+%% Direttive TeXworks:
+% !TeX root = ./report.tex
+% !TEX encoding = UTF-8 Unicode
+% !TEX program = arara
+% !TEX TS-program = arara
+% !TeX spellcheck = it-IT
+
+% arara: pdflatex: { synctex: yes, shell: yes }
+% arara: pdflatex: { synctex: yes, shell: yes }
+
+%% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
+\begin{filecontents*}{\jobname.xmpdata}
+  \Title{Laboratorio~di~Sistemi~Software~--~Tema~finale}
+  \Author{Niccolò Maltoni}
+  \Copyright{Questo documento è fornito sotto licenza Creative Commons Attribution-ShareAlike 4.0 International}
+  \CopyrightURL{http://creativecommons.org/licenses/by-sa/4.0}
+\end{filecontents*}
+
+\documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% package sillabazione italiana e uso lettere accentate
-\usepackage[latin1]{inputenc}
-\usepackage[english]{babel}
-\usepackage[T1]{fontenc}
+\usepackage[T1]{fontenc}        % serve per impostare la codifica di output del font
+\usepackage{textcomp}           % serve per fornire supporto ai Text Companion fonts
+\usepackage[utf8]{inputenc}     % serve per impostare la codifica di input del font
+\usepackage[
+  english,            % utilizza l'inglese come lingua secondaria
+  italian             % utilizza l'italiano come lingua primaria
+]{%
+  babel,                      % serve per scrivere Indice, Capitolo, etc in Italiano
+  varioref                    % introduce il comando \vref da usarsi nello stesso modo del comune \ref per i riferimenti
+}
+\usepackage{lmodern}            % carica una variante Latin Modern prodotto dal GUST
+\usepackage[%
+    strict,             % rende tutti gli warning degli errori
+    autostyle,          % imposta lo stile in base al linguaggio specificato in babel
+    english=american,   % imposta lo stile per l'inglese
+    italian=guillemets  % imposta lo stile per l'italiano
+]{csquotes}                     % serve a impostare lo stile delle virgolette
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+\usepackage{indentfirst}      % serve per avere l'indentazione nel primo paragrafo
 \usepackage{url}
+\usepackage{setspace}         % serve a fornire comandi di interlinea standard
 \usepackage{xspace}
 
 \makeatletter
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%% User specified LaTeX commands.
 \usepackage{manifest}
 
 \makeatother
 
+%%%%%%%
+\newif\ifpdf{}
+\ifx\pdfoutput\undefined{}
+  \pdffalse{}         % we are not running PDFLaTeX
+\else
+  \pdfoutput=1        % we are running PDFLaTeX
+  \pdftrue{}
+\fi
+%%%%%%%
 
-%%%%%%%
- \newif\ifpdf
- \ifx\pdfoutput\undefined
- \pdffalse % we are not running PDFLaTeX
- \else
- \pdfoutput=1 % we are running PDFLaTeX
- \pdftrue
- \fi
-%%%%%%%
- \ifpdf
- \usepackage[pdftex]{graphicx}
- \else
- \usepackage{graphicx}
- \fi
+\usepackage{xcolor}             % serve per la gestione dei colori nel testo
+
 %%%%%%%%%%%%%%%
- \ifpdf
- \DeclareGraphicsExtensions{.pdf, .jpg, .tif}
- \else
- \DeclareGraphicsExtensions{.eps, .jpg}
- \fi
+\ifpdf{}
+  \usepackage[pdftex]{graphicx} % serve per includere immagini e grafici
+\else
+  \usepackage{graphicx}         % serve per includere immagini e grafici
+\fi
+%%%%%%%%%%%%%%%
+\ifpdf{}
+  \DeclareGraphicsExtensions{.pdf, .jpg, .tif, .png} % chktex 26
+\else
+  \DeclareGraphicsExtensions{.eps, .jpg, .png} % chktex 26
+\fi
 %%%%%%%%%%%%%%%
 
 \newcommand{\java}{\textsf{Java}}
@@ -85,44 +124,54 @@
 \newcommand{\ssecsname}{\subsectionsname}
 \newcommand{\onpagename}{on page}
 
-\newcommand{\xauthA}{NameA StudentA }
-\newcommand{\xauthB}{NameB StudentB}
-\newcommand{\xauthC}{NameC StudentC}
-\newcommand{\xfaculty}{II Faculty of Engineering}
-\newcommand{\xunibo}{Alma Mater Studiorum -- University of Bologna}
-\newcommand{\xaddrBO}{viale Risorgimento 2}
-\newcommand{\xaddrCE}{via Venezia 52}
-\newcommand{\xcityBO}{40136 Bologna, Italy}
-\newcommand{\xcityCE}{47023 Cesena, Italy}
+\newcommand{\xauthA}{Niccolò~Maltoni}
+\newcommand{\xfaculty}{II~Faculty~of~Engineering}
+\newcommand{\xunibo}{Alma~Mater~Studiorum~--~University~of~Bologna}
 
-%
-% Comments
-%
-%%% \newcommand{\todo}[1]{\bf{TODO:}\emph{#1}}
+\setcounter{secnumdepth}{3}   % Numera fino alla sottosezione nel corpo del testo
+\setcounter{tocdepth}{3}      % Numera fino alla sotto-sottosezione nell'indice
 
+\usepackage[%
+  depth=3,              % equivale a bookmarksdepth di hyperref
+  open=false,           % equivale a bookmarksopen di hyperref
+  numbered=true         % equivale a bookmarksnumbered di hyperref
+]{bookmark}                     % Gestisce i segnalibri meglio di hyperref
+\usepackage{hyperref}           % Gestisce tutte le cose ipertestuali del pdf
+\hypersetup{%
+  pdfpagemode={UseNone},
+  hidelinks,            % nasconde i collegamenti (non vengono quadrettati)
+  hypertexnames=false,
+  linktoc=all,          % inserisce i link nell'indice
+  unicode=true,         % only Latin characters in Acrobat’s bookmarks
+  pdftoolbar=false,     % show Acrobat’s toolbar?
+  pdfmenubar=false,     % show Acrobat’s menu?
+  plainpages=false,
+  breaklinks,
+  pdfstartview={Fit},
+  pdfauthor={Niccolò Maltoni},
+  pdfcreator={Niccolò Maltoni},
+  pdftitle={Laboratorio di Sistemi Software - Tema finale}, % chktex 8
+  pdflang={it}
+}
+
+\usepackage[a-1b]{pdfx}
+\usepackage[%
+  italian,            % definizione delle lingue da usare
+  nameinlink          % inserisce i link nei riferimenti
+]{cleveref}                     % permette di usare riferimenti migliori dei \ref e dei varioref
 
 \begin{document}
 
 \title{Software Engineering\\
  process report template}
 
-%%% \author{\xauthA \and \xauthB}
 \author{\xauthA}
 
 \institute{%
-%%%  \xunibo\\\xaddrCE, \xcityCE\\\email{\{nameA.studentA, nameB.studentB\}@studio.unibo.it}
-  \xunibo\\\xaddrCE, \xcityCE\\\email\ nameA.studentA@studio.unibo.it
+  \xunibo{}\\\email{}\ niccolo.maltoni@studio.unibo.it
 }
 
 \maketitle
-
-%% \begin{abstract}
-%% \footnotesize
-%%This a Latex template to be used for the reports of Software Engineering.
-%%\keywords{Software engineering, managed software development, reports, ....}
-%%\end{abstract}
-
-%%% \sloppy
 
 %===========================================================================
 \section{Introduction}
@@ -200,57 +249,10 @@
 \section{Maintenance}
 \labelsec{Maintenance}
 %===========================================================================
-\newpage
-See \cite{natMol09} until page 11 (\texttt{CMM}) and pages 96-105.
 
-%===========================================================================
-\section{Information about the author}
-\labelsec{Author}
-%===========================================================================
-
-\vskip.5cm
-%%% \begin{figure}
-\begin{tabular}{ | c |  }
-\hline
-  % after \\: \hline or \cline{col1-col2} \cline{col3-col4} ...
-  Photo of the author 
-  \\
-\hline
-   \includegraphics[scale = 0.7]{img/foto_autore.jpg}
-  \\
-\hline
-\end{tabular}
-
-
-%%% \begin{itemize}
-%%% \item Titolo di studio:\\ \\
-%%% \item Interessi particolari:\\ \\
-%%% \item Ha sostenuto fino ad oggi il seguente numero di esami:\\ \\
-%%% \item Deve ancora sostenere i seguenti esami del I anno:\\ \\
-%%% \item Prevede di svolgere un tirocinio presso:\\ \\
-%%% \item Prevede di laurearsi nella sessione:\\ \\
-%%% \item Intende proseguire gli studi per conseguire: \\  \\  \\
-%%%   	presso la sede universitaria di: \\ \\
-%%% \item Intende entrare subito nel mondo del lavoro presso : \\ \\
-%%% \end{itemize}
-
- 
 \appendix
-
 
 \bibliographystyle{abbrv}
 \bibliography{biblio}
 
 \end{document}
-
-
-
-
-
-
-
-
-
-
-
-

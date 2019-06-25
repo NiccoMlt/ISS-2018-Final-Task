@@ -1,84 +1,85 @@
 {
-    "latex-workshop.view.pdf.viewer": "tab",
-    "latex-workshop.view.pdf.tab.useNewGroup": true,
-    "latex-workshop.synctex.afterBuild.enabled": true,
-    "latex-workshop.latex.recipes": [
-      {
-        "name": "arara",
-        "tools": [
-          "arara"
-        ]
-      },
-      {
-        "name": "latexmk 🔃",
-        "tools": [
-          "latexmk"
-        ]
-      },
-      {
-        "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
-        "tools": [
-          "pdflatex",
-          "bibtex",
-          "pdflatex",
-          "pdflatex"
-        ]
-      }
-    ],
-    "latex-workshop.latex.tools": [
-      {
-        "name": "arara",
-        "command": "arara",
-        "args": [
-          "--language=it",
-          "--log",
-          "--verbose",
-          "%DOCFILE%"
-        ],
-        "env": {}
-      },
-      {
-        "name": "latexmk",
-        "command": "latexmk",
-        "args": [
-          "-synctex=1",
-          "-interaction=nonstopmode",
-          "-file-line-error",
-          "-pdf",
-          "-outdir=%OUTDIR%",
-          "%DOC%"
-        ],
-        "env": {}
-      },
-      {
-        "name": "pdflatex",
-        "command": "pdflatex",
-        "args": [
-          "-synctex=1",
-          "-interaction=nonstopmode",
-          "-file-line-error",
-          "%DOC%"
-        ],
-        "env": {}
-      },
-      {
-        "name": "bibtex",
-        "command": "bibtex",
-        "args": [
-          "%DOCFILE%"
-        ],
-        "env": {}
-      }
-    ],
-    "latex-workshop.chktex.enabled": true,
-    "latex-workshop.chktex.delay": 1000,
-    "latex-workshop.chktex.run": "onType",
-    "latex-workshop.hover.ref.enabled": true,
-    "latex-workshop.hover.preview.enabled": true,
-    "latex-workshop.hover.preview.ref.enabled": true,
-    "latex-workshop.hover.command.enabled": true,
-    "latex-workshop.latex.recipe.default": "lastUsed",
-    "latex-workshop.intellisense.citation.label": "title",
-    "latex-workshop.intellisense.package.enabled": true,
-    "latex-workshop.texdoc.path": "texdoc"
+  "latex-workshop.chktex.delay": 1000,
+  "latex-workshop.chktex.enabled": true,
+  "latex-workshop.chktex.run": "onType",
+  "latex-workshop.hover.command.enabled": true,
+  "latex-workshop.hover.preview.enabled": true,
+  "latex-workshop.hover.preview.ref.enabled": true,
+  "latex-workshop.hover.ref.enabled": true,
+  "latex-workshop.intellisense.citation.label": "title",
+  "latex-workshop.intellisense.package.enabled": true,
+  "latex-workshop.latex.autoBuild.run": "onFileChange",
+  "latex-workshop.latex.recipe.default": "lastUsed",
+  "latex-workshop.latex.recipes": [
+    {
+      "name": "arara",
+      "tools": [
+        "arara"
+      ]
+    },
+    {
+      "name": "latexmk 🔃",
+      "tools": [
+        "latexmk"
+      ]
+    },
+    {
+      "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
+      "tools": [
+        "pdflatex",
+        "bibtex",
+        "pdflatex",
+        "pdflatex"
+      ]
+    }
+  ],
+  "latex-workshop.latex.tools": [
+    {
+      "name": "arara",
+      "command": "arara",
+      "args": [
+        "--language=it",
+        "--log",
+        "--verbose",
+        "%DOCFILE%"
+      ],
+      "env": {}
+    },
+    {
+      "name": "latexmk",
+      "command": "latexmk",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "-pdf",
+        "-outdir=%OUTDIR%",
+        "%DOC%"
+      ],
+      "env": {}
+    },
+    {
+      "name": "pdflatex",
+      "command": "pdflatex",
+      "args": [
+        "-synctex=1",
+        "-interaction=nonstopmode",
+        "-file-line-error",
+        "%DOC%"
+      ],
+      "env": {}
+    },
+    {
+      "name": "bibtex",
+      "command": "bibtex",
+      "args": [
+        "%DOCFILE%"
+      ],
+      "env": {}
+    }
+  ],
+  "latex-workshop.synctex.afterBuild.enabled": true,
+  "latex-workshop.texdoc.path": "texdoc",
+  "latex-workshop.view.pdf.tab.useNewGroup": true,
+  "latex-workshop.view.pdf.viewer": "tab"
 }
