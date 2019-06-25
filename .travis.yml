@@ -6,14 +6,8 @@ matrix:
       language: generic
       addons:
         apt:
-          sources:
-            - key_url: "D6BC243565B2087BC3F897C9277A7293F59E4889"
-              sourceline: "deb http://miktex.org/download/ubuntu xenial universe"
           packages:
-            - miktex
-      before_install:
-        - sudo miktexsetup --shared=yes finish
-        - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
+            - texlive-full
       install:
         - cd ./report
         - arara --log --verbose report.tex
