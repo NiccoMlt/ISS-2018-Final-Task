@@ -51,16 +51,7 @@
 
 \makeatother
 
-%%%%%%%
-\newif\ifpdf{}
-\ifx\pdfoutput\undefined{}
-  \pdffalse{}         % we are not running PDFLaTeX
-\else
-  \pdfoutput=1        % we are running PDFLaTeX
-  \pdftrue{}
-\fi
-%%%%%%%
-
+\usepackage{ifpdf}
 \usepackage{xcolor}             % serve per la gestione dei colori nel testo
 
 %%%%%%%%%%%%%%%
