@@ -21,7 +21,7 @@ matrix:
         provider: releases
         api_key:
           secure: u8V40HdVQh0UcWjjfjbMGbhlMr/6n1kUaoEliFs8BvUsDOLzZ49bSey5afNm2VvK4/T4DeRO1CfZ3u1xcZPP8V+CpjQgbcOsn9O1TMcdfY1gvC9b/NMbhST9bTO3HMo89SNBpdjAcDFHHkKpWbRiIweDYzoKkqzHPkdLaP83QrtlUjrdJgBIJMlwxF/QWltKGMKebP44LqucoWnpVv8HQ2OJ1XACfZXVtyk43kjcIgrRSee9cQIiD6fImSMsMd0Ya+BdSCtmAdCqU9UZx1d+jwxZ9ab33CDQji6mwK/0yvtPVgNTg4yEORvJRGXMo6KH7ZVKm3nOWEkwOmZJuszp4oa1bZ8gVEwnArg0CVCSV+T2ZR/YPzwvo4MYC7OUIiC1WFvK0YyWIqSwl5PCDN8DZPBJyA1a8E8urUA+GBR9yjlLophCq0gfNGOQJFCVwJoTXmXjnKAEhF7Ktn9IB2Bsok+2WzFN6xL2Xl0pY5wXvpb+qWYE4a9PtdgM+r8MOOiN/xXilgn75ZH9Ko8tom83IzgcOHvEfRZTCB23YJYCci3MNK3RCaAzBC02DkSgwd2p3Ijde5rsTFTbR/MTBcPY096ABW3I/7RwwuY9U6VCgzXEDMLv7vQXbi8tNvOo50GOSGIT3j/0NBclTqPM3g/CBKGKgBwuuvtJ40W7McoQBrA=
-        file: report/report.pdf
+        file: "report.pdf"
         skip_cleanup: true
         draft: true
         on:
