@@ -1,11 +1,18 @@
+dist: xenial
 matrix:
   include:
     - name: "report - arara"
       sudo: required
       language: generic
+      addons:
+        apt:
+          sources:
+            - sourceline: "deb http://miktex.org/download/ubuntu xenial universe"
+          packages:
+            - miktex
       before_install:
-        - sudo apt-get -qq update
-        - sudo apt-get install -y --no-install-recommends texlive-full
+        - sudo miktexsetup --shared=yes finish
+        - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
       install:
         - cd ./report
         - arara --log --verbose report.tex
