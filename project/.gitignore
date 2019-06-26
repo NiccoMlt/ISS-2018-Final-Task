@@ -1,5 +1,7 @@
-# SOFTWARE FACTORY
+### SOFTWARE FACTORY ###
+# TODO: should be removed from gitignore when start to edit them
 sites/
+src/**/*.java
 src-gen/
 srcMore/
 bin/

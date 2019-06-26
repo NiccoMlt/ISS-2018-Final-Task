@@ -1,3 +1,236 @@
 System robot
 
-Context ctxRobot ip [ host="localhost" port=8028 ]
+Dispatch cmdStop: cmdStop                                   // R-stopAtBag
+Dispatch cmdGoHome: cmdGoHome                               // R-backHome
+Dispatch cmdExplore: cmdExplore                             // R-explore
+Dispatch cmdReachBomb: cmdReachBomb                         // R-reachBag
+
+Dispatch robotCmd: cmd(X)
+Dispatch robotCmdHalt: halt
+
+Dispatch alert: alert                                       // R-alert
+
+Dispatch robotState: state(X)                               // R-consoleUpdate
+Dispatch robotHome: robotHome
+Dispatch proximityBag: proximityBag
+
+Dispatch handleBag: handleBag(X)                            // R-stopAtBag & R-takePhoto
+Dispatch bagStatus: isBomb(X)
+
+Dispatch photoSend: photoSend(X)                            // R-sendPhoto
+Dispatch photoStore: photoStore(X)                          // R-storePhoto
+
+/** Contesto locale del robot. */
+Context ctxRobot ip [ host="localhost" port=8079 ]
+
+/** Attore robot. */
+QActor robot context ctxRobot {
+
+    /**
+     * Lo stato home è lo stato iniziale del robot.
+     *
+     * Attende per 60s di ricevere un comando:
+     * - per iniziare l'esplorazione (discovery)
+     * - per raggiungere la bomba (retriever)
+     */
+    State home initial [
+        onMsg robotHome: robotHome ->
+            forward console -m robotHome: robotHome
+    ] transition
+        stopAfter 60000
+        whenMsg cmdExplore -> goToExploration,              // R-explore
+        whenMsg cmdReachBomb -> goToReachBomb               // R-reachBag
+
+    /**
+     * Lo stato goToExploration è lo stato che precede l'inizio dell'esplorazione.
+     *
+     * Il robot abilita il lampeggio del LED e,
+     * a meno di comandi ricevuti, inizia ad esplorare.
+     */
+    State goToExploration [
+        selfMsg robotCmd: cmd(blinkStart)                   // R-blinkLed (start)
+    ] transition
+        whenTime 1000 -> exploration
+        whenMsg robotCmd -> executeCommand
+
+    /**
+     * Lo stato exploration è lo stato più importante per la fase di discovery.
+     *
+     * Il robot invia alla console il proprio stato,
+     * gestisce eventuali comandi o borse vicine
+     * e continua ad esplorare.
+     */
+    State exploration [
+        forward console -m robotState: state(X)             // R-consoleUpdate
+    ] transition
+        whenTime 3000 -> exploration
+        whenMsg cmdStop -> goToIdle,                        // R-stopExplore
+        whenMsg proximityBag -> goToHandleBag
+
+    /**
+     * Lo stato goToHandleBag è lo stato che precede la fase di gestione della borsa.
+     *
+     * Il robot si ferma e scatta una foto, poi procede con la gestione della borsa.
+     */
+    State goToHandleBag [
+        selfMsg handleBag: handleBag(halt);                 // R-stopAtBag
+        selfMsg handleBag: handleBag(takePhoto)             // R-takePhoto
+    ] transition
+        whenTime 10 -> handleBag
+
+    /**
+     * Lo stato handleBag è lo stato che permette di gestire concretamente una borsa.
+     *
+     * gestisce i messaggi di halt e di scatto della foto, dopodiché attende istruzioni.
+     */
+    State handleBag [
+        onMsg handleBag: handleBag(halt) -> {               // R-stopAtBag
+            selfMsg robotCmd: cmd(h);
+            selfMsg robotCmd: cmd(blinkStop)
+        };
+        onMsg handleBag: handleBag(takePhoto) -> {
+            printCurrentMessage;                            // R-takePhoto
+            forward console -m photoSend: photoSend(X)      // R-sendPhoto
+        }
+    ] transition
+        whenTime 1000 -> handleBag
+        whenMsg robotCmd -> executeCommand,
+        whenMsg handleBag -> handleBag,
+        whenMsg cmdGoHome -> returnHome,
+        whenMsg cmdExplore -> goToExploration
+
+    /**
+     * Lo stato goToIdle è lo stato che precede lo stato di idle.
+     *
+     * In questo stato, il robot si ferma e spegne il LED.
+     */
+    State goToIdle [
+        selfMsg robotCmdHalt: halt;
+        selfMsg robotCmd: cmd(blinkStop)                    // R-blinkLed (stop)
+    ] transition
+        whenTime 1000 -> idle
+        whenMsg robotCmd -> executeCommand
+
+    /**
+     * Lo stato idle attende istruzioni per tornare ad esplorare o tornare a casa.
+     */
+    State idle [
+
+    ] transition
+        whenTime 3000 -> idle
+        whenMsg cmdExplore -> exploration,                  // R-continueExplore
+        whenMsg cmdGoHome -> returnHome                     // R-backHome
+
+    /**
+     * Lo stato returnHome è lo stato in cui il robot torna a casa.
+     *
+     * Lo stato si ripete finché non è a casa, poi passa ad home.
+     */
+    State returnHome [
+        printCurrentMessage
+    ] transition
+        whenTime 3000 -> returnHome
+        whenMsg robotHome -> home
+
+    /**
+     * Lo stato goToReachBomb è lo stato che precede lo stato di viaggio verso la bomba.
+     */
+    State goToReachBomb [
+
+    ] transition
+        whenTime 1000 -> reachBomb
+
+    /**
+     * Lo stato reachBomb è lo stato in cui il robot viaggia verso la bomba.
+     *
+     * Lo stato si ripete finché non raggiunge la bomba e torna indietro, poi passa ad home.
+     */
+    State reachBomb [
+
+    ] transition
+        whenTime 3000 -> reachBomb
+        whenMsg robotHome -> home
+
+    /**
+     * Lo stato modella la gestione di un comando.
+     *
+     * Lo gestisce, poi torna allo stato precedente.
+     */
+    State executeCommand resumeLastPlan [
+        onMsg robotCmd: cmd(X) -> printCurrentMessage
+    ]
+}
+
+/** Attore console. */
+QActor console context ctxRobot {
+
+    /** Stato iniziale della console. */
+    State init initial [
+
+    ] transition
+        whenTime 3000 -> doWork
+
+    /**
+     * Stato principale della console.
+     *
+     * Per 60s, attende messaggi dal robot e li gestisce.
+     */
+    State doWork [
+
+    ] transition
+        stopAfter 60000
+        whenMsg robotState -> updateView,                   // R-consoleUpdate
+        whenMsg photoSend -> handlePhoto
+        finally repeatPlan
+
+    /**
+     * Lo stato handlePhoto gestisce la ricezione di una foto dal robot.
+     *
+     * Attende un messaggio di bagStatus per gestirlo.
+     */
+    State handlePhoto [
+        onMsg photoSend: photoSend(X) -> printCurrentMessage
+    ] transition
+        whenTime 3000 -> handlePhoto
+        whenMsg bagStatus -> handleBagStatus
+
+    /**
+     * Lo stato handleBagStatus permette di gestire se la borsa è una bomba o no.
+     *
+     * Se lo è, memorizza la foto, ordina al robot di tornare e segnala un alert.
+     * Se non lo è, ordina al robot di continuare l'esplorazione.
+     */
+    State handleBagStatus [
+        onMsg bagStatus: isBomb(true) -> {
+            selfMsg photoStore: photoStore(X);              // R-storePhoto
+            forward robot -m cmdGoHome: cmdGoHome;          // R-backHomeSinceBomb
+            selfMsg alert: alert                            // R-alert
+        };
+        onMsg bagStatus: isBomb(false) ->
+            forward robot -m cmdExplore: cmdExplore         // R-continueExploreAfterPhoto
+    ] transition
+        whenTime 3000 -> doWork
+        whenMsg photoStore: photoStore(x) do printCurrentMessage,
+        whenMsg alert -> handleAlert
+
+    /**
+     * Lo stato handleAlert permette di gestire uno stato di allerta.
+     *
+     * Aspetta che il robot sia tornato poi lo manda a raccogliere la bomba.
+     */
+    State handleAlert [
+
+    ] transition
+        whenTime 3000 -> handleAlert
+        whenMsg robotHome: robotHome
+            do forward robot -m cmdReachBomb: cmdReachBomb  // R-whaitForHome & R-reachBag
+
+    /**
+     * Lo stato updateView permette di gestire gli aggiornamenti di stato della vista.
+     *
+     * Una volta fatto, riprende lo stato precedente.
+     */
+    State updateView resumeLastPlan [
+        onMsg robotState: state(X) -> printCurrentMessage
+    ]
+}
