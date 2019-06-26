@@ -63,3 +63,110 @@ Dall'analisi dei requisiti forniti dal committente è possibile definire i segue
   \item
     in qualsiasi momento, anche mentre in esplorazione, il \textbf{robot \requirementref{discovery}} deve essere reattivo ad un comando di halt (\requirementref{R-stopExplore}) inviatogli dalla \textbf{\requirementref{console}}.
 \end{enumerate}
+
+Nelle sezioni successive ciascun requisito ed entità verrà analizzato con maggior dettaglio.
+
+\subsection{Componenti identificati}\labelssec{components}
+
+\subsubsection{Console}\labelsssec{console}
+
+La console consiste in un'interfaccia grafica attraverso la quale l'operatore può interagire con il sistema.
+
+Essa permette di interagire con il robot esploratore inviandogli un comando per far partire l'esplorazione.
+Attraverso la console l'utente può stoppare l'esplorazione per poi scegliere di continuarla oppure di farlo tornare alla base.
+In caso di rilevamento di un ordigno la console deve segnalarlo all'utente, salvare la foto ed inviare al robot il comando per tornare alla posizione iniziale.
+Infine, deve consentire l'invio di un comando per far sì che un altro robot possa recuperare l'ordigno.
+
+\subsubsection{Robot Discovery}\labelsssec{discovery}
+
+Robot Discovery è un ddr robot che si occupa dell'esplorazione dell'ambiente per rilevare la presenza di eventuali ordigni.
+Il robot per il committente è un dispositivo fisico in grado di muoversi nell'ambiente grazie a delle ruote motrici, fornito di un LED
+e dotato di un sonar posto frontalmente per individuare ostacoli.
+
+Esso permette di essere avviato e/o stoppato remotamente.
+Deve far lampeggiare un LED ed inviare informazione sullo stato suo e dell'esplorazione.
+In prossimità di una valigia deve fermarsi, scattare una foto ed inviarla all'operatore.
+
+\subsubsection{Robot Retriever}\labelsssec{retriever}
+
+Robot Discovery è un drr robot che ha il compito di raggiungere la borsa individuata (contenente la bomba) e trasportarla alla posizione iniziale.
+
+\subsection{Dettaglio sui requisiti della fase di esplorazione}\labelssec{explore}
+
+\subsubsection[R-explore]{\requirementref{R-explore}}\labelsssec{R-explore}
+
+Durante la fase di esplorazione il robot deve muoversi nella stanza, raccogliendo informazioni per creare una rappresentazione del territorio comprendente ostacoli e posizioni degli ordigni.
+L'output di questa fase consiste in una rappresentazione che deve riportare le informazioni riguardanti la stanza e deve essere condivisa con gli altri componenti del sistema.
+In questa rappresentazione dovranno essere segnalate le posizioni di eventuali ostacoli, in modo che il robot Retriever possa ottimizzare il proprio percorso verso l'ordigno da rimuovere.
+
+\subsubsection[R-startExplore]{\requirementref{R-startExplore}}\labelsssec{R-startExplore}
+
+L'esplorazione deve partire in seguito all'invio di un comando da parte dell'operatore.
+
+\subsubsection[R-TempOk]{\requirementref{R-TempOk}}\labelsssec{R-TempOk}
+
+L'esplorazione deve partire solo se la temperatura rispetta le condizioni prestabilite.
+
+\subsubsection[R-stopExplore]{\requirementref{R-stopExplore}}\labelsssec{R-stopExplore}
+
+L'esplorazione deve stopparsi in caso l'utente lo richieda.
+Emerge quindi la necessità da parte del robot di essere reattivo ai comandi ricevuti.
+
+\subsubsection[R-backHome]{\requirementref{R-backHome}}\labelsssec{R-backHome}
+
+Il robot deve tornare alla posizione iniziale se richiesto dall'utente al seguito dello stop dell'esplorazione.
+
+\subsubsection[R-continueExplore]{\requirementref{R-continueExplore}}\labelsssec{R-continueExplore}
+
+Il robot deve continuare l'esplorazione se richiesto dall'utente.
+
+\subsubsection[R-blinkLed]{\requirementref{R-blinkLed}}\labelsssec{R-blinkLed}
+
+Il LED del robot deve lampeggiare se esso è in fase di esplorazione.
+
+\subsubsection[R-consoleUpdate]{\requirementref{R-consoleUpdate}}\labelsssec{R-consoleUpdate}
+
+La console deve contenere le informazioni aggiornate riguardo allo stato di esplorazione del robot.
+
+\subsubsection[R-stopAtBag]{\requirementref{R-stopAtBag}}\labelsssec{R-stopAtBag}
+
+Il robot deve fermarsi in prossimità di una valigia.
+
+\subsubsection[R-takePhoto]{\requirementref{R-takePhoto}}\labelsssec{R-takePhoto}
+
+Il robot deve scattare una fotografia all'ostacolo appena individuato.
+
+\subsubsection[R-sendPhoto]{\requirementref{R-sendPhoto}}\labelsssec{R-sendPhoto}
+
+Il robot deve inviare la fotografia appena scattata alla console.
+
+\subsubsection[R-alert]{\requirementref{R-alert}}\labelsssec{R-alert}
+
+Il device dell'operatore, una volta ricevuta la foto, deve essere in grado di riconoscere se la valigia contiene una bomba, ed, in questo caso, inviare una notica all'operatore.
+
+\subsubsection[R-storePhoto]{\requirementref{R-storePhoto}}\labelsssec{R-storePhoto}
+
+La fotografia deve essere salvata in modo permanente contestualmente alle informazioni relative.
+
+\subsubsection[R-backHomeSinceBomb]{\requirementref{R-backHomeSinceBomb}}\labelsssec{R-backHomeSinceBomb}
+
+In caso la valigia contenga un ordigno, il robot Discovery deve tornare immediatamente alla posizione iniziale.
+
+\subsubsection[R-continueExploreAfterPhoto]{\requirementref{R-continueExploreAfterPhoto}}\labelsssec{R-continueExploreAfterPhoto}
+
+Se la valigia non contiene una bomba allora al robot viene comandato di continuare l'esplorazione, aggiornando contestualmente la mappa del territorio.
+
+\subsection{Dettaglio sui requisiti della fase di recupero}\labelssec{retrieve}
+
+\subsubsection[R-waitForHome]{\requirementref{R-waitForHome}}\labelsssec{R-waitForHome}
+
+Il sistema è in attesa che il robot discovery torni alla base.
+
+\subsubsection[R-reachBag]{\requirementref{R-reachBag}}\labelsssec{R-reachBag}
+
+Il robot Retriever deve raggiungere la posizione dell'ordigno.
+L'assunzione fatta è che il territorio sia rimasto invariato rispetto alla fase di esplorazione precedente.
+
+\subsubsection[R-bagAtHome]{\requirementref{R-bagAtHome}}\labelsssec{R-bagAtHome}
+
+Il robot Retriever dopo aver raccolto l'ordigno in un contenitore sicuro deve tornare alla base evitando gli ostacoli come in precedenza.
