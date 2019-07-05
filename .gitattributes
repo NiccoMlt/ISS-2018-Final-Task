@@ -288,3 +288,4 @@ sites/ linguist-generated=true linguist-documentation
 docker/ linguist-generated=true
 build_*.gradle linguist-generated=true linguist-detectable=true
 it.unibo.libs2018/ linguist-vendored
+report/ linguist-documentation
