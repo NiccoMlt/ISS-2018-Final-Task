@@ -282,10 +282,10 @@ Procfile    text
 *.qak linguist-language=Xtext
 
 ## Linguist: folders configurations ##
-src-gen/ linguist-generated=true linguist-detectable=true
-srcMore/ linguist-generated=true linguist-detectable=true
-sites/ linguist-generated=true linguist-documentation
-docker/ linguist-generated=true
+src-gen/* linguist-generated=true linguist-detectable=true
+srcMore/* linguist-generated=true linguist-detectable=true
+sites/* linguist-generated=true linguist-documentation
+docker/* linguist-generated=true
 build_*.gradle linguist-generated=true linguist-detectable=true
-it.unibo.libs2018/ linguist-vendored
-report/ linguist-documentation
+it.unibo.libs2018/* linguist-vendored
+report/* linguist-documentation
