@@ -14,6 +14,8 @@ Dispatch robotState: state(X)                               // R-consoleUpdate
 Dispatch robotHome: robotHome
 Dispatch proximityBag: proximityBag
 
+Event temperature: temperature(X)
+
 Dispatch handleBag: handleBag(X)                            // R-stopAtBag & R-takePhoto
 Dispatch bagStatus: isBomb(X)
 
@@ -25,21 +27,55 @@ Context ctxRobot ip [ host="localhost" port=8079 ]
 
 /** Attore robot. */
 QActor robot context ctxRobot {
+    
+    Rules {
+        /** Temperature is considered too hot if above 25°C */
+        tooHot :- retract(temperature(X)), eval(lt, X, 25).
+    }
+    
+    /**
+     * Lo stato tooHot è lo stato iniziale del robot.
+     * 
+     * Attende per 60s un evento relativo alla temperatura per valutare se partire.
+     */
+    State tooHot initial [
+
+    ] transition
+        stopAfter 60000
+        whenEvent temperature -> evaluateTemp               // R-TempOk
+    
+    /** 
+     * Lo stato evaluateTemp è lo stato nel quale viene verificata la temperatura.
+     * 
+     * In particolare:
+     * - la temperatura viene aggiunta alle regole dell'attore
+     * - se la temperatura è adeguata, si invia un messaggio cmdGoHome
+     * 
+     * Dopo 100ms torna allo stato tooHot a meno che la temperatura non sia OK.
+     */
+    State evaluateTemp [                                    // R-TempOk
+        onEvent temperature: temperature(X) -> addRule temperature(X);
+        [ not !? tooHot ] selfMsg cmdGoHome: cmdGoHome
+    ] transition
+        whenTime 100 -> tooHot
+        whenMsg cmdGoHome -> home
 
     /**
-     * Lo stato home è lo stato iniziale del robot.
+     * Lo stato home è lo stato del robot nel quale esso può iniziare ad operare.
      *
-     * Attende per 60s di ricevere un comando:
+     * Attende per 60s di ricevere un comando o un evento:
      * - per iniziare l'esplorazione (discovery)
      * - per raggiungere la bomba (retriever)
+     * - per verificare che la temperatura sia ancora OK
      */
-    State home initial [
+    State home [
         onMsg robotHome: robotHome ->
             forward console -m robotHome: robotHome
     ] transition
         stopAfter 60000
         whenMsg cmdExplore -> goToExploration,              // R-explore
-        whenMsg cmdReachBomb -> goToReachBomb               // R-reachBag
+        whenMsg cmdReachBomb -> goToReachBomb,              // R-reachBag
+        whenEvent temperature -> evaluateTemp               // R-TempOk
 
     /**
      * Lo stato goToExploration è lo stato che precede l'inizio dell'esplorazione.
