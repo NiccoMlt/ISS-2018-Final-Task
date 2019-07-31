@@ -13,6 +13,7 @@ matrix:
             - sourceline: "ppa:jonathonf/texlive"
       before_install:
         - cd ./report
+        - arara --version
       install:
         - arara --log --verbose report.tex
       script:
