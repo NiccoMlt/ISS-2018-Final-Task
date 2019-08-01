@@ -45,7 +45,7 @@ Dispatch photoStore: photoStore(X)                                  // R-storePh
 Context ctxRobot ip [ host="localhost" port=8079 ]
 
 /** Attore che osserva l'ambiente e valuta la temperatura. */
-QActor worldObserver context ctxRobot {
+QActor worldobserver context ctxRobot {
 
     Rules {
         evaluateTemp :- retract(temperature(X)), eval(lt, X, 25).   // R-TempOk
