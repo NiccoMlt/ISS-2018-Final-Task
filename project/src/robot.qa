@@ -1,93 +1,174 @@
 System robot
 
-Dispatch cmdStop: cmdStop                                   // R-stopAtBag
-Dispatch cmdGoHome: cmdGoHome                               // R-backHome
-Dispatch cmdExplore: cmdExplore                             // R-explore
-Dispatch cmdReachBomb: cmdReachBomb                         // R-reachBag
+/*
+ * *********************************************************
+ * Messaggi & Eventi Ambiente
+ * *********************************************************
+ */
+Dispatch environmentValid: environmentValid                         // X=valid|invalid
+Event environmentOK: environmentOK
+Event environmentNOTOK: environmentNOTOK
 
-Dispatch robotCmd: cmd(X)
-Dispatch robotCmdHalt: halt
+/*
+ * *********************************************************
+ * Messaggi & Eventi Robot Adapter
+ * *********************************************************
+ */
+Event robotCmd: cmd(X)
+Dispatch robotCmdPriority: cmd(X)
 
-Dispatch alert: alert                                       // R-alert
+/*
+ * *********************************************************
+ * Messaggi & Eventi Mind
+ * *********************************************************
+ */
+Dispatch cmdStop: cmdStop                                           // R-stopAtBag
+Dispatch cmdGoHome: cmdGoHome                                       // R-backHome
+Dispatch cmdExplore: cmdExplore                                     // R-explore
+Dispatch cmdReachBomb: cmdReachBomb                                 // R-reachBag
 
-Dispatch robotState: state(X)                               // R-consoleUpdate
+Dispatch alert: alert                                               // R-alert
+
+Dispatch robotState: state(X)                                       // R-consoleUpdate
 Dispatch robotHome: robotHome
 Dispatch proximityBag: proximityBag
 
 Event temperature: temperature(X)
 
-Dispatch handleBag: handleBag(X)                            // R-stopAtBag & R-takePhoto
+Dispatch handleBag: handleBag(X)                                    // R-stopAtBag & R-takePhoto
 Dispatch bagStatus: isBomb(X)
 
-Dispatch photoSend: photoSend(X)                            // R-sendPhoto
-Dispatch photoStore: photoStore(X)                          // R-storePhoto
+Dispatch photoSend: photoSend(X)                                    // R-sendPhoto
+Dispatch photoStore: photoStore(X)                                  // R-storePhoto
 
 /** Contesto locale del robot. */
 Context ctxRobot ip [ host="localhost" port=8079 ]
 
-/** Attore robot. */
-QActor robot context ctxRobot {
-    
+/** Attore che osserva l'ambiente e valuta la temperatura. */
+QActor worldObserver context ctxRobot {
+
     Rules {
-        /** Temperature is considered too hot if above 25°C */
-        tooHot :- retract(temperature(X)), eval(lt, X, 25).
+        evaluateTemp :- retract(temperature(X)), eval(lt, X, 25).   // R-TempOk
     }
-    
+
     /**
-     * Lo stato tooHot è lo stato iniziale del robot.
-     * 
-     * Attende per 60s un evento relativo alla temperatura per valutare se partire.
+     * Lo stato invalidEnvironment è lo stato nel quale l'attore si trova se la temperatura NON è OK.
+     *
+     * È anche lo stato iniziale dell'attore.
+     *
+     * Emette un evento che definisce l'ambiente come non OK.
+     *
+     * Attende per 60s un evento relativo alla temperatura per valutare se è OK.
      */
-    State tooHot initial [
+    State invalidEnvironment initial [
+        emit environmentNOTOK: environmentNOTOK
+    ] transition
+        stopAfter 60000
+        whenEvent temperature -> evaluateTemp                       // R-TempOk
+
+    /**
+     * Lo stato validEnvironment è lo stato nel quale l'attore si trova se la temperatura è OK.
+     *
+     * Emette un evento che definisce l'ambiente come OK.
+     *
+     * Attende per 60s un evento relativo alla temperatura per valutare se è OK.
+     */
+    State validEnvironment [
+        emit environmentOK: environmentOK
+    ] transition
+        stopAfter 60000
+        whenEvent temperature -> evaluateTemp                       // R-TempOk
+
+    /**
+     * Lo stato evaluateTemp è lo stato nel quale viene verificata la temperatura.
+     *
+     * In particolare:
+     * - la temperatura viene aggiunta alle regole dell'attore
+     * - se la temperatura è adeguata, si auto-invia un messaggio environmentValid
+     *
+     * Dopo 100ms passa allo stato invalid a meno che la temperatura non sia valid.
+     */
+    State evaluateTemp [                                            // R-TempOk
+        onEvent temperature: temperature(X) -> addRule temperature(X);
+        [ not !? evaluateTemp ] selfMsg environmentValid: environmentValid
+    ] transition
+        whenTime 100 -> invalidEnvironment
+        whenMsg environmentValid -> validEnvironment
+}
+
+/** Attore che modella un robot. */
+QActor robotadapter context ctxRobot {
+
+    /** Stato iniziale TODO. */
+    State init initial [
+
+    ]
+
+    /** Stato di lavoro TODO. */
+    State doWork [
 
     ] transition
         stopAfter 60000
-        whenEvent temperature -> evaluateTemp               // R-TempOk
-    
-    /** 
-     * Lo stato evaluateTemp è lo stato nel quale viene verificata la temperatura.
-     * 
-     * In particolare:
-     * - la temperatura viene aggiunta alle regole dell'attore
-     * - se la temperatura è adeguata, si invia un messaggio cmdGoHome
-     * 
-     * Dopo 100ms torna allo stato tooHot a meno che la temperatura non sia OK.
+        whenMsg robotCmdPriority -> executeCommand,
+        whenEvent robotCmd -> executeCommand
+
+    /** Stato di interpretazione comandi TODO. */
+    State executeCommand resumeLastPlan [
+        onMsg robotCmdPriority: cmd(X) -> printCurrentMessage;
+        onEvent robotCmd: cmd(X) -> printCurrentMessage
+    ]
+}
+
+/** Attore che modella la mente, separata dal robot fisico. */
+QActor mind context ctxRobot {
+
+    /**
+     * Stato iniziale del robot, nel quale l'ambiente viene valutato.
+     *
+     * Qualora non diventi valido entro 60s, il sistema si ferma.
+     *
+     * All'evento environmentOK passa allo stato home.
      */
-    State evaluateTemp [                                    // R-TempOk
-        onEvent temperature: temperature(X) -> addRule temperature(X);
-        [ not !? tooHot ] selfMsg cmdGoHome: cmdGoHome
+    State invalidEnvironment initial [
+
     ] transition
-        whenTime 100 -> tooHot
-        whenMsg cmdGoHome -> home
+        stopAfter 60000
+        whenEvent environmentOK -> home
 
     /**
      * Lo stato home è lo stato del robot nel quale esso può iniziare ad operare.
      *
+     * Una volta entrato in questo stato, invia un messaggio alla console.
+     *
      * Attende per 60s di ricevere un comando o un evento:
+     * - riguardante l'ambiente (non più OK)
      * - per iniziare l'esplorazione (discovery)
      * - per raggiungere la bomba (retriever)
-     * - per verificare che la temperatura sia ancora OK
      */
     State home [
         onMsg robotHome: robotHome ->
             forward console -m robotHome: robotHome
     ] transition
         stopAfter 60000
-        whenMsg cmdExplore -> goToExploration,              // R-explore
-        whenMsg cmdReachBomb -> goToReachBomb,              // R-reachBag
-        whenEvent temperature -> evaluateTemp               // R-TempOk
+        whenEvent environmentNOTOK -> invalidEnvironment,
+        whenMsg cmdExplore -> goToExploration,                      // R-explore
+        whenMsg cmdReachBomb -> goToReachBomb                       // R-reachBag
+
+    /*
+     * ********************************************************* *
+     * Exploration business logic                                *
+     * ********************************************************* *
+     */
 
     /**
      * Lo stato goToExploration è lo stato che precede l'inizio dell'esplorazione.
      *
-     * Il robot abilita il lampeggio del LED e,
-     * a meno di comandi ricevuti, inizia ad esplorare.
+     * La mind abilita il lampeggio del LED sul robot e inizia ad esplorare.
      */
     State goToExploration [
-        selfMsg robotCmd: cmd(blinkStart)                   // R-blinkLed (start)
+        emit robotCmd: cmd(blinkStart)                              // R-blinkLed (start)
     ] transition
         whenTime 1000 -> exploration
-        whenMsg robotCmd -> executeCommand
 
     /**
      * Lo stato exploration è lo stato più importante per la fase di discovery.
@@ -97,10 +178,10 @@ QActor robot context ctxRobot {
      * e continua ad esplorare.
      */
     State exploration [
-        forward console -m robotState: state(X)             // R-consoleUpdate
+        forward console -m robotState: state(X)                     // R-consoleUpdate
     ] transition
         whenTime 3000 -> exploration
-        whenMsg cmdStop -> goToIdle,                        // R-stopExplore
+        whenMsg cmdStop -> goToIdle,                                // R-stopExplore
         whenMsg proximityBag -> goToHandleBag
 
     /**
@@ -109,28 +190,27 @@ QActor robot context ctxRobot {
      * Il robot si ferma e scatta una foto, poi procede con la gestione della borsa.
      */
     State goToHandleBag [
-        selfMsg handleBag: handleBag(halt);                 // R-stopAtBag
-        selfMsg handleBag: handleBag(takePhoto)             // R-takePhoto
+        selfMsg handleBag: handleBag(halt);                         // R-stopAtBag
+        selfMsg handleBag: handleBag(takePhoto)                     // R-takePhoto
     ] transition
         whenTime 10 -> handleBag
 
     /**
      * Lo stato handleBag è lo stato che permette di gestire concretamente una borsa.
      *
-     * gestisce i messaggi di halt e di scatto della foto, dopodiché attende istruzioni.
+     * Gestisce i messaggi di halt e di scatto della foto, dopodiché attende istruzioni.
      */
     State handleBag [
-        onMsg handleBag: handleBag(halt) -> {               // R-stopAtBag
-            selfMsg robotCmd: cmd(h);
-            selfMsg robotCmd: cmd(blinkStop)
+        onMsg handleBag: handleBag(halt) -> {                       // R-stopAtBag
+            emit robotCmd: cmd(h);
+            emit robotCmd: cmd(blinkStop)
         };
         onMsg handleBag: handleBag(takePhoto) -> {
-            printCurrentMessage;                            // R-takePhoto
-            forward console -m photoSend: photoSend(X)      // R-sendPhoto
+            printCurrentMessage;                                    // R-takePhoto
+            forward console -m photoSend: photoSend(X)              // R-sendPhoto
         }
     ] transition
         whenTime 1000 -> handleBag
-        whenMsg robotCmd -> executeCommand,
         whenMsg handleBag -> handleBag,
         whenMsg cmdGoHome -> returnHome,
         whenMsg cmdExplore -> goToExploration
@@ -141,11 +221,10 @@ QActor robot context ctxRobot {
      * In questo stato, il robot si ferma e spegne il LED.
      */
     State goToIdle [
-        selfMsg robotCmdHalt: halt;
-        selfMsg robotCmd: cmd(blinkStop)                    // R-blinkLed (stop)
+        forward robotadapter -m robotCmdPriority: cmd(h);
+        emit robotCmd: cmd(blinkStop)                               // R-blinkLed (stop)
     ] transition
         whenTime 1000 -> idle
-        whenMsg robotCmd -> executeCommand
 
     /**
      * Lo stato idle attende istruzioni per tornare ad esplorare o tornare a casa.
@@ -154,8 +233,8 @@ QActor robot context ctxRobot {
 
     ] transition
         whenTime 3000 -> idle
-        whenMsg cmdExplore -> exploration,                  // R-continueExplore
-        whenMsg cmdGoHome -> returnHome                     // R-backHome
+        whenMsg cmdExplore -> exploration,                          // R-continueExplore
+        whenMsg cmdGoHome -> returnHome                             // R-backHome
 
     /**
      * Lo stato returnHome è lo stato in cui il robot torna a casa.
@@ -163,10 +242,16 @@ QActor robot context ctxRobot {
      * Lo stato si ripete finché non è a casa, poi passa ad home.
      */
     State returnHome [
-        printCurrentMessage
+        printCurrentMessage // TODO
     ] transition
         whenTime 3000 -> returnHome
         whenMsg robotHome -> home
+
+    /*
+     * ********************************************************* *
+     * Defuse business logic                                     *
+     * ********************************************************* *
+     */
 
     /**
      * Lo stato goToReachBomb è lo stato che precede lo stato di viaggio verso la bomba.
@@ -186,15 +271,6 @@ QActor robot context ctxRobot {
     ] transition
         whenTime 3000 -> reachBomb
         whenMsg robotHome -> home
-
-    /**
-     * Lo stato modella la gestione di un comando.
-     *
-     * Lo gestisce, poi torna allo stato precedente.
-     */
-    State executeCommand resumeLastPlan [
-        onMsg robotCmd: cmd(X) -> printCurrentMessage
-    ]
 }
 
 /** Attore console. */
@@ -209,13 +285,14 @@ QActor console context ctxRobot {
     /**
      * Stato principale della console.
      *
-     * Per 60s, attende messaggi dal robot e li gestisce.
+     * Per un attesa massima di 60s,
+     * attende messaggi dal robot e li gestisce.
      */
     State doWork [
 
     ] transition
         stopAfter 60000
-        whenMsg robotState -> updateView,                   // R-consoleUpdate
+        whenMsg robotState -> updateView,                           // R-consoleUpdate
         whenMsg photoSend -> handlePhoto
         finally repeatPlan
 
@@ -238,12 +315,12 @@ QActor console context ctxRobot {
      */
     State handleBagStatus [
         onMsg bagStatus: isBomb(true) -> {
-            selfMsg photoStore: photoStore(X);              // R-storePhoto
-            forward robot -m cmdGoHome: cmdGoHome;          // R-backHomeSinceBomb
-            selfMsg alert: alert                            // R-alert
+            selfMsg photoStore: photoStore(X);                      // R-storePhoto
+            forward mind -m cmdGoHome: cmdGoHome;                   // R-backHomeSinceBomb
+            selfMsg alert: alert                                    // R-alert
         };
         onMsg bagStatus: isBomb(false) ->
-            forward robot -m cmdExplore: cmdExplore         // R-continueExploreAfterPhoto
+            forward mind -m cmdExplore: cmdExplore                  // R-continueExploreAfterPhoto
     ] transition
         whenTime 3000 -> doWork
         whenMsg photoStore: photoStore(x) do printCurrentMessage,
@@ -259,7 +336,7 @@ QActor console context ctxRobot {
     ] transition
         whenTime 3000 -> handleAlert
         whenMsg robotHome: robotHome
-            do forward robot -m cmdReachBomb: cmdReachBomb  // R-whaitForHome & R-reachBag
+            do forward mind -m cmdReachBomb: cmdReachBomb           // R-whaitForHome & R-reachBag
 
     /**
      * Lo stato updateView permette di gestire gli aggiornamenti di stato della vista.
