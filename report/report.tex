@@ -185,20 +185,21 @@
 
 \begin{document}
 
-\title{Software Engineering\\
- process report template}
+\title{\textbf{LSS --- Laboratorio di Sistemi Software}\\tema finale\\\textit{\small \url{https://github.com/NiccoMlt/ISS-2018-Final-Task}}}
 
 \author{\xauthA}
 
 \institute{%
-  \xunibo{}\\\email{}\ niccolo.maltoni@studio.unibo.it
+  \xunibo{}\\\email{}\ \href{mailto:niccolo.maltoni@studio.unibo.it}{niccolo.maltoni@studio.unibo.it}
 }
 
-\maketitle
+{\def\addcontentsline#1#2#3{}\maketitle}
+
+\tableofcontents
 
 %===========================================================================
-% \section{Introduzione}\labelsec{intro}
-% TODO: sezione probabilmente non necessaria
+\section{Introduzione}\labelsec{intro}
+\input{src/intro.tex}
 %===========================================================================
 
 %===========================================================================
@@ -217,7 +218,7 @@
 %===========================================================================
 
 %===========================================================================
-\section{Analisi dei requisiti}\labelsec{req_analysis}
+\section{Analisi dei requisiti generale}\labelsec{req_analysis}
 \input{src/analisi-dei-requisiti.tex}
 
 \section{Sprint 1}\labelsec{sprint1}
