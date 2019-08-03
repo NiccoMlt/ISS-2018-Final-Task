@@ -71,6 +71,32 @@
 \fi
 %%%%%%%%%%%%%%%
 
+\usepackage{listings}
+
+\lstdefinelanguage{qa}{
+    basicstyle=\ttfamily\scriptsize,
+    numbers=left,
+    numberstyle=\scriptsize,
+    stepnumber=1,
+    numbersep=8pt,
+    tabsize=2,
+    showstringspaces=false,
+    breaklines=true,
+    breakatwhitespace=true,
+    postbreak=\mbox{\textcolor{red}{\hookrightarrow}\space},
+    keywordstyle=\color{mauve}\bfseries,
+    commentstyle=\color{dkgreen},
+    stringstyle=\color{blue},
+    morekeywords={System,Event,Dispatch,Context,QActor,Rules,State,%
+        demo,whenMsg,whenEvent,onMsg,onEvent,transition,stopAfter,%
+        whenTime,resumeLastPlan,initial,finally,javaRun,println,%
+        emit,forward,do},
+    otherkeywords={:,->,-m,;,.,\,,[,],:-},
+    morestring=*[d]{"},
+    morecomment=[l]{//},
+    morecomment=[s]{\/*}{*\/},
+}
+
 \newcommand{\java}{\textsf{Java}}
 \newcommand{\contact}{\emph{Contact}}
 \newcommand{\corecl}{\texttt{corecl}}
@@ -194,8 +220,8 @@
 \section{Analisi dei requisiti}\labelsec{req_analysis}
 \input{src/analisi-dei-requisiti.tex}
 
-% TODO \section{Sprint 1}\labelsec{sprint1}
-% TODO \input{src/sprint-01.tex}
+\section{Sprint 1}\labelsec{sprint1}
+\input{src/sprint-01.tex}
 
 %===========================================================================
 % \subsection{Casi d'uso}\labelssec{use_cases}
