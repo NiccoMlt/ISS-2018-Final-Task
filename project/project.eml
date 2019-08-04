@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<component inheritJdk="true">
+	<exclude-output/>
+	<contentEntry url="file://$MODULE_DIR$"/>
+	<lib name="akka-remote_2.11-2.5.1.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.typesafe.akka/akka-remote_2.11/2.5.1/f9abdee1d5a54df0dc3941ccec08ded5749aa398/akka-remote_2.11-2.5.1-sources.jar!/"/>
+	</lib>
+	<lib name="akka-stream_2.11-2.5.1.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.typesafe.akka/akka-stream_2.11/2.5.1/ab23d9bbb3f6f3e8309f113129225edc7d6a818c/akka-stream_2.11-2.5.1-sources.jar!/"/>
+	</lib>
+	<lib name="akka-actor_2.11-2.5.2.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.typesafe.akka/akka-actor_2.11/2.5.2/51e75c292f6ac1f6a12d6c68f9df3b1e0ef468ba/akka-actor_2.11-2.5.2-sources.jar!/"/>
+	</lib>
+	<lib name="californium-core-2.0.0-M5.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.californium/californium-core/2.0.0-M5/56bf16a4dec83793cb6678f480ca97eb992348e1/californium-core-2.0.0-M5-sources.jar!/"/>
+	</lib>
+	<lib name="json-20160810.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.json/json/20160810/92f4b89bc0bb4c7c3f7b52724568a901b7e0195b/json-20160810-sources.jar!/"/>
+	</lib>
+	<lib name="org.eclipse.paho.client.mqttv3-1.1.0.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.paho/org.eclipse.paho.client.mqttv3/1.1.0/c4e2860ca315d2f24287112093c7e58305b30a30/org.eclipse.paho.client.mqttv3-1.1.0-sources.jar!/"/>
+	</lib>
+	<lib name="scala-java8-compat_2.11-0.7.0.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.scala-lang.modules/scala-java8-compat_2.11/0.7.0/fffca5653859d428c99e7b09ff2d503fae8c9477/scala-java8-compat_2.11-0.7.0-sources.jar!/"/>
+	</lib>
+	<lib name="akka-protobuf_2.11-2.5.1.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.typesafe.akka/akka-protobuf_2.11/2.5.1/500f8d6a4aef3fdf518343d9ad2a774d364bcf59/akka-protobuf_2.11-2.5.1-sources.jar!/"/>
+	</lib>
+	<lib name="ssl-config-core_2.11-0.2.1.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.typesafe/ssl-config-core_2.11/0.2.1/c5a33d3df03bc43c46282b75328e7578df6fdf17/ssl-config-core_2.11-0.2.1-sources.jar!/"/>
+	</lib>
+	<lib name="scala-parser-combinators_2.11-1.0.4.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.scala-lang.modules/scala-parser-combinators_2.11/1.0.4/2c66955d5543265eb450de4e9ec7ac467d94be54/scala-parser-combinators_2.11-1.0.4-sources.jar!/"/>
+	</lib>
+	<lib name="scala-library-2.11.11.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.scala-lang/scala-library/2.11.11/55fcd4c282604a1a57f7310f116b159b7bcdbbde/scala-library-2.11.11-sources.jar!/"/>
+	</lib>
+	<lib name="config-1.3.1.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.typesafe/config/1.3.1/a27878630ff503b63ed25ff2a25fa8ef888740b3/config-1.3.1-sources.jar!/"/>
+	</lib>
+	<lib name="netty-3.10.6.Final.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty/3.10.6.Final/10104e11e8c0e4871440a5b999311b2a2f1c858/netty-3.10.6.Final-sources.jar!/"/>
+	</lib>
+	<lib name="aeron-driver-1.2.5.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.aeron/aeron-driver/1.2.5/a47780416ab97e4bc5eab2b6b7e72f7bff4fee5a/aeron-driver-1.2.5-sources.jar!/"/>
+	</lib>
+	<lib name="aeron-client-1.2.5.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.aeron/aeron-client/1.2.5/6bee95acc4744b976ea3fe783343ad8a4cca3050/aeron-client-1.2.5-sources.jar!/"/>
+	</lib>
+	<lib name="element-connector-2.0.0-M5.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.californium/element-connector/2.0.0-M5/3a17994cd6c755a09145ffeae5c29822c34a86e0/element-connector-2.0.0-M5-sources.jar!/"/>
+	</lib>
+	<lib name="reactive-streams-1.0.0.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.reactivestreams/reactive-streams/1.0.0/5be7bd3f38e43c8fc83699bbb5328c62adb95bbf/reactive-streams-1.0.0-sources.jar!/"/>
+	</lib>
+	<lib name="agrona-0.9.5.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.agrona/agrona/0.9.5/13375881c0b8767327d8b43cf8e58971bc8e9184/agrona-0.9.5-sources.jar!/"/>
+	</lib>
+	<lib name="netty-all-4.1.1.Final.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/io.netty/netty-all/4.1.1.Final/e12f711ea0b55fad85b6f68f65e32d8f4fa5f987/netty-all-4.1.1.Final-sources.jar!/"/>
+	</lib>
+	<lib name="junit-4.12.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/junit/junit/4.12/a6c32b40bf3d76eca54e3c601e5d1470c86fcdfa/junit-4.12-sources.jar!/"/>
+	</lib>
+	<lib name="hamcrest-core-1.3.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/1dc37250fbc78e23a65a67fbbaf71d2e9cbc3c0b/hamcrest-core-1.3-sources.jar!/"/>
+	</lib>
+	<levels>
+		<level name="labbaseRobotSam" value="project"/>
+	</levels>
+</component>

@@ -5,15 +5,23 @@ System robot
  * Messaggi & Eventi Ambiente
  * *********************************************************
  */
-Dispatch environmentValid: environmentValid                         // X=valid|invalid
+ 
+/** X = valid|invalid */
+Dispatch environmentValid: environmentValid
 Event environmentOK: environmentOK
 Event environmentNOTOK: environmentNOTOK
+
+/** X = temperature (°C) */
+Event temperature: temperature(X)
 
 /*
  * *********************************************************
  * Messaggi & Eventi Robot Adapter
  * *********************************************************
  */
+ 
+/** T = Type ; A = args */
+Dispatch robotAdapterAdd: robot(T, A)
 Event robotCmd: cmd(X)
 Dispatch robotCmdPriority: cmd(X)
 
@@ -27,20 +35,31 @@ Dispatch cmdGoHome: cmdGoHome                                       // R-backHom
 Dispatch cmdExplore: cmdExplore                                     // R-explore
 Dispatch cmdReachBomb: cmdReachBomb                                 // R-reachBag
 
-Dispatch alert: alert                                               // R-alert
-
-Dispatch robotState: state(X)                                       // R-consoleUpdate
-Dispatch robotHome: robotHome
-Dispatch robotNearBag: robotNearBag
-
-Event temperature: temperature(X)
-
+/** X = action */
 Dispatch handleBag: handleBag(X)                                    // R-stopAtBag & R-takePhoto
+/** X = photo */
+Dispatch bag: bag(picture(X))                                       // R-sendPhoto & R-storePhoto
 
+/*
+ * *********************************************************
+ * Messaggi & Eventi Console
+ * *********************************************************
+ */
+Dispatch alert: alert                                               // R-alert
 /** X = true|false ; Y = bag arguments */
 Dispatch bagStatus: isBomb(X, bag(Y))
 
-Dispatch bag: bag(picture(X))                                       // R-sendPhoto & R-storePhoto
+
+/** X = distance */
+Event robotSonar: robotSonar(distance(X))
+/** X = name ; virtual sonar */
+Event robotSonarObstacle : obstacle(X)
+// Event robotSonarWall: sonar(SONAR, TARGET, DISTANCE)
+
+
+Event robotState: state(X)                                          // R-consoleUpdate
+Dispatch robotHome: robotHome
+Dispatch robotNearBag: robotNearBag
 
 /** Contesto locale del robot. */
 Context ctxRobot ip [ host="localhost" port=8079 ]
@@ -51,6 +70,11 @@ QActor worldobserver context ctxRobot {
     Rules {
         evaluateTemp :- retract(temperature(X)), eval(lt, X, 25).   // R-TempOk
     }
+    
+    State init initial [
+        println("World observer init")
+    ] transition
+        whenTime 100 -> invalidEnvironment
 
     /**
      * Lo stato invalidEnvironment è lo stato nel quale l'attore si trova se la temperatura NON è OK.
@@ -61,7 +85,7 @@ QActor worldobserver context ctxRobot {
      *
      * Attende per 60s un evento relativo alla temperatura per valutare se è OK.
      */
-    State invalidEnvironment initial [
+    State invalidEnvironment [
         emit environmentNOTOK: environmentNOTOK
     ] transition
         stopAfter 60000
@@ -91,7 +115,7 @@ QActor worldobserver context ctxRobot {
      */
     State evaluateTemp [                                            // R-TempOk
         onEvent temperature: temperature(X) -> addRule temperature(X);
-        [ not !? evaluateTemp ] selfMsg environmentValid: environmentValid
+        [ !? evaluateTemp ] selfMsg environmentValid: environmentValid
     ] transition
         whenTime 100 -> invalidEnvironment
         whenMsg environmentValid -> validEnvironment
@@ -99,11 +123,27 @@ QActor worldobserver context ctxRobot {
 
 /** Attore che modella un robot. */
 QActor robotadapter context ctxRobot {
+    
+    Rules {
+//      robotType("robotSerial", setuparg("/dev/ttyACM0")).
+//      robotType("robotSerial", setuparg("/dev/rfcomm0")).
+//      robotType("robotVirtual", setuparg("localhost,true")).
+        robotType("robotVirtual", setuparg("localhost,false")).
+//      robotType("robotDemo", setuparg("")).
+    }
 
     /** Stato iniziale TODO. */
     State init initial [
-
-    ]
+        println("Robot adapter init")
+    ] transition
+        whenTime 100 -> initRobots
+    
+    State initRobots [
+        [ ?? robotType(T, setuparg(A))] selfMsg robotAdapterAdd: robot(T,A)
+    ] transition
+        whenTime 2000 -> doWork
+        whenMsg robotAdapterAdd: robot(T,A) do javaRun it.unibo.robotadapter.allRobots.setUp(T,A) // TODO: why Robots does not work ?
+        finally repeatPlan
 
     /** Stato di lavoro TODO. */
     State doWork [
@@ -112,16 +152,43 @@ QActor robotadapter context ctxRobot {
         stopAfter 60000
         whenMsg robotCmdPriority -> executeCommand,
         whenEvent robotCmd -> executeCommand
+        finally repeatPlan
 
     /** Stato di interpretazione comandi TODO. */
     State executeCommand resumeLastPlan [
-        onMsg robotCmdPriority: cmd(X) -> printCurrentMessage;
-        onEvent robotCmd: cmd(X) -> printCurrentMessage
+        onEvent robotSonar: robotSonar(distance(X)) -> emit robotState: state(sonarDistance(X));
+        onEvent robotSonarObstacle: obstacle(N) -> emit robotState: state(sonarObstacle(N))
+    ]
+}
+
+QActor robotposition context ctxRobot {
+    
+    State init initial [
+        println("Robot position init")
+    ] transition
+        whenTime 100 -> doWork
+    
+    State doWork [
+        
+    ] transition
+        stopAfter 60000
+        whenEvent robotSonar -> update,
+        whenEvent robotSonarObstacle -> update
+        finally repeatPlan
+    
+    State update resumeLastPlan [ // TODO bag recognition logic
+        onEvent robotSonar: robotSonar(distance(X)) -> emit robotState: state(sonarDistance(X));
+        onEvent robotSonarObstacle: obstacle(N) -> emit robotState: state(sonarObstacle(N))
     ]
 }
 
 /** Attore che modella la mente, separata dal robot fisico. */
 QActor mind context ctxRobot {
+    
+    State init initial [
+        println("Mind init")
+    ] transition
+        whenTime 100 -> invalidEnvironment
 
     /**
      * Stato iniziale del robot, nel quale l'ambiente viene valutato.
@@ -130,7 +197,7 @@ QActor mind context ctxRobot {
      *
      * All'evento environmentOK passa allo stato home.
      */
-    State invalidEnvironment initial [
+    State invalidEnvironment [
 
     ] transition
         stopAfter 60000
@@ -179,7 +246,8 @@ QActor mind context ctxRobot {
      * e continua ad esplorare.
      */
     State exploration [
-        println("EXPLORING...") // TODO implement logic             // R-consoleUpdate
+        println("EXPLORING ...")//;   // TODO implement logic       // R-consoleUpdate
+        // emit robotCmd: cmd(w)      // TODO debug
     ] transition
         stopAfter 60000
         whenMsg cmdStop -> goToIdle,                                // R-stopExplore
@@ -191,6 +259,7 @@ QActor mind context ctxRobot {
      * Il robot si ferma e scatta una foto, poi procede con la gestione della borsa.
      */
     State goToHandleBag [
+        println("HANDLING BAG ...");
         selfMsg handleBag: handleBag(halt);                         // R-stopAtBag
         selfMsg handleBag: handleBag(takePhoto)                     // R-takePhoto
     ] transition
@@ -207,7 +276,7 @@ QActor mind context ctxRobot {
             emit robotCmd: cmd(blinkStop)
         };
         onMsg handleBag: handleBag(takePhoto) -> {
-            println("TAKE PHOTO..."); // TODO implement             // R-takePhoto
+            println("TAKE PHOTO ..."); // TODO implement            // R-takePhoto
             forward console -m bag: bag(picture(X))                 // R-sendPhoto
         }
     ] transition
@@ -279,9 +348,9 @@ QActor console context ctxRobot {
 
     /** Stato iniziale della console. */
     State init initial [
-
+        println("Console init")
     ] transition
-        whenTime 3000 -> doWork
+        whenTime 100 -> doWork
 
     /**
      * Stato principale della console.
@@ -290,10 +359,13 @@ QActor console context ctxRobot {
      * attende messaggi dal robot e li gestisce.
      */
     State doWork [
-
+        delay 1000;
+        emit temperature: temperature(18);
+        delay 3000;
+        forward mind -m cmdExplore: cmdExplore  // TODO demo
     ] transition
         stopAfter 60000
-        whenMsg robotState -> updateView,                           // R-consoleUpdate
+        whenEvent robotState -> updateView,                         // R-consoleUpdate
         whenMsg bag -> handlePhoto
         finally repeatPlan
 
@@ -344,6 +416,6 @@ QActor console context ctxRobot {
      * Una volta fatto, riprende lo stato precedente.
      */
     State updateView resumeLastPlan [
-        onMsg robotState: state(X) -> printCurrentMessage
+        onEvent robotState: state(X) -> printCurrentEvent
     ]
 }
