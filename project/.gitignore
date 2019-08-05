@@ -5,7 +5,6 @@ src-gen/
 srcMore/
 bin/
 
-
 # Created by https://www.gitignore.io/api/java,xtext,gradle,eclipse,intellij
 # Edit at https://www.gitignore.io/?templates=java,xtext,gradle,eclipse,intellij
 
