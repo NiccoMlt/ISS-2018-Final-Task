@@ -14,6 +14,9 @@
 	<lib name="californium-core-2.0.0-M5.jar" scope="COMPILE">
 		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.californium/californium-core/2.0.0-M5/56bf16a4dec83793cb6678f480ca97eb992348e1/californium-core-2.0.0-M5-sources.jar!/"/>
 	</lib>
+	<lib name="jssc-2.8.0.jar" scope="COMPILE">
+		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.scream3r/jssc/2.8.0/d3e51b3dec3f4b4b76895c236a1ab1cdf6176bd9/jssc-2.8.0-sources.jar!/"/>
+	</lib>
 	<lib name="json-20160810.jar" scope="COMPILE">
 		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.json/json/20160810/92f4b89bc0bb4c7c3f7b52724568a901b7e0195b/json-20160810-sources.jar!/"/>
 	</lib>
@@ -65,7 +68,4 @@
 	<lib name="hamcrest-core-1.3.jar" scope="COMPILE">
 		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.hamcrest/hamcrest-core/1.3/1dc37250fbc78e23a65a67fbbaf71d2e9cbc3c0b/hamcrest-core-1.3-sources.jar!/"/>
 	</lib>
-	<levels>
-		<level name="labbaseRobotSam" value="project"/>
-	</levels>
 </component>

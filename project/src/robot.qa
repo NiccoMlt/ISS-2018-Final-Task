@@ -128,8 +128,8 @@ QActor robotadapter context ctxRobot {
 //      robotType("robotSerial", setuparg("/dev/ttyACM0")).
 //      robotType("robotSerial", setuparg("/dev/rfcomm0")).
 //      robotType("robotVirtual", setuparg("localhost,true")).
-        robotType("robotVirtual", setuparg("localhost,false")).
-//      robotType("robotDemo", setuparg("")).
+//      robotType("robotVirtual", setuparg("localhost,false")).
+        robotType("robotDemo", setuparg("")).
     }
 
     /** Stato iniziale TODO. */
@@ -142,7 +142,7 @@ QActor robotadapter context ctxRobot {
         [ ?? robotType(T, setuparg(A))] selfMsg robotAdapterAdd: robot(T,A)
     ] transition
         whenTime 2000 -> doWork
-        whenMsg robotAdapterAdd: robot(T,A) do javaRun it.unibo.robotadapter.allRobots.setUp(T,A) // TODO: why Robots does not work ?
+        whenMsg robotAdapterAdd: robot(T,A) do javaRun it.unibo.robotadapter.robots.setUp(T,A)
         finally repeatPlan
 
     /** Stato di lavoro TODO. */
@@ -176,7 +176,7 @@ QActor robotposition context ctxRobot {
         whenEvent robotSonarObstacle -> update
         finally repeatPlan
     
-    State update resumeLastPlan [ // TODO bag recognition logic
+    State update resumeLastPlan [       // TODO bag recognition logic
         onEvent robotSonar: robotSonar(distance(X)) -> emit robotState: state(sonarDistance(X));
         onEvent robotSonarObstacle: obstacle(N) -> emit robotState: state(sonarObstacle(N))
     ]
@@ -246,8 +246,8 @@ QActor mind context ctxRobot {
      * e continua ad esplorare.
      */
     State exploration [
-        println("EXPLORING ...")//;   // TODO implement logic       // R-consoleUpdate
-        // emit robotCmd: cmd(w)      // TODO debug
+        println("EXPLORING ...");       // TODO implement logic     // R-consoleUpdate
+        emit robotCmd: cmd(w)           // TODO debug
     ] transition
         stopAfter 60000
         whenMsg cmdStop -> goToIdle,                                // R-stopExplore
@@ -276,7 +276,7 @@ QActor mind context ctxRobot {
             emit robotCmd: cmd(blinkStop)
         };
         onMsg handleBag: handleBag(takePhoto) -> {
-            println("TAKE PHOTO ..."); // TODO implement            // R-takePhoto
+            println("TAKE PHOTO ...");  // TODO implement           // R-takePhoto
             forward console -m bag: bag(picture(X))                 // R-sendPhoto
         }
     ] transition
@@ -312,7 +312,7 @@ QActor mind context ctxRobot {
      * Lo stato si ripete finché non è a casa, poi passa ad home.
      */
     State returnHome [
-        println("GOING HOME...")    // TODO implement logic
+        println("GOING HOME...")        // TODO implement logic
     ] transition
         stopAfter 60000
         whenMsg robotHome -> home
@@ -362,7 +362,9 @@ QActor console context ctxRobot {
         delay 1000;
         emit temperature: temperature(18);
         delay 3000;
-        forward mind -m cmdExplore: cmdExplore  // TODO demo
+        forward mind -m cmdExplore: cmdExplore; // TODO demo
+        delay 2000;
+        forward mind -m cmdStop: cmdStop        // TODO demo
     ] transition
         stopAfter 60000
         whenEvent robotState -> updateView,                         // R-consoleUpdate

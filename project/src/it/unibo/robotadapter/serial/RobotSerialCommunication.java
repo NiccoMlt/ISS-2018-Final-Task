@@ -1,22 +1,21 @@
 package it.unibo.robotadapter.serial;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import it.unibo.robotadapter.IRobotSerialObserver;
 import it.unibo.supports.serial.JSSCSerialComm;
 import it.unibo.supports.serial.SerialPortConnSupport;
+import java.util.ArrayList;
+import java.util.List;
 
 /** TODO: documentation */
 public class RobotSerialCommunication {
 
+    private final List<IRobotSerialObserver> observers = new ArrayList<>();
+    private final Logger logger;
+    private final String port;
     private SerialPortConnSupport conn = null;
     private JSSCSerialComm serialConn;
     private double dataSonar = 0;
     private String curDataFromArduino;
-    private final List<IRobotSerialObserver> observers = new ArrayList<>();
-    private final Logger logger;
-    private final String port;
     // private Thread observerThread = null; // TODO
 
     /**

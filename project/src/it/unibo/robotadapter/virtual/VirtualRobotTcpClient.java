@@ -1,24 +1,23 @@
 package it.unibo.robotadapter.virtual;
 
+import it.unibo.qactors.akka.QActor;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.net.Socket;
 import org.json.JSONObject;
-import it.unibo.qactors.akka.QActor;
 
 /** TODO */
 public class VirtualRobotTcpClient {
     private static final String DEFAULT_HOST_NAME = "localhost";
     private static final int DEFAULT_PORT = 8999;
-
-    private static String hostName = DEFAULT_HOST_NAME;
-    private static int port = DEFAULT_PORT;
     private static final String SEP = ";";
     protected static Socket clientSocket;
     protected static PrintWriter outToServer;
     protected static BufferedReader inFromServer;
+    private static String hostName = DEFAULT_HOST_NAME;
+    private static int port = DEFAULT_PORT;
 
     /**
      * Initialize Client connection.
@@ -36,7 +35,7 @@ public class VirtualRobotTcpClient {
 
     /**
      * Initialize Client connection.
-     * 
+     *
      * @param qa          the actor
      * @param hostNameStr the host name
      * @param portStr     the port
@@ -69,7 +68,7 @@ public class VirtualRobotTcpClient {
     /**
      * Send a message through TCP connection.
      *
-     * @param qa the actor
+     * @param qa         the actor
      * @param jsonString the JSON string message
      */
     public static void sendMsg(final QActor qa, final String jsonString) {
@@ -85,50 +84,47 @@ public class VirtualRobotTcpClient {
 
     /**
      * Start Reader.
-     * 
+     *
      * @param qa the actor
      */
     protected static void startTheReader(final QActor qa) {
-        new Thread() {
-            public void run() {
-                while (true) {
-                    try {
-                        final String inpuStr = inFromServer.readLine();
-                        // System.out.println( "reads: " + inpuStr);
-                        final String jsonMsgStr = inpuStr.split(";")[1];
-                        // System.out.println( "reads: " + jsonMsgStr + " qa=" + qa.getName() );
-                        final JSONObject jsonObject = new JSONObject(jsonMsgStr);
-                        // System.out.println( "type: " + jsonObject.getString("type"));
-                        switch (jsonObject.getString("type")) {
-                            case "webpage-ready":
-                                System.out.println("wenv ready ");
-                                break;
-                            case "sonar-activated": {
-                                // wSystem.out.println( "sonar-activated " );
-                                final JSONObject jsonArg = jsonObject.getJSONObject("arg");
-                                final String sonarName = jsonArg.getString("sonarName");
-                                final int distance = jsonArg.getInt("distance");
-    //							System.out.println( "sonarName=" +  sonarName + " distance=" + distance);
-                                qa.emit("robotSonarWall", "sonar(NAME, player, DISTANCE)"
-                                            .replace("NAME", sonarName.replace("-", ""))
-                                            .replace("DISTANCE", ("" + distance)));
-                                break;
-                            }
-                            case "collision": {
-                                // System.out.println( "collision" );
-                                final JSONObject jsonArg = jsonObject.getJSONObject("arg");
-                                final String objectName = jsonArg.getString("objectName");
-                                System.out.println("collision objectName=" + objectName);
-                                qa.emit("robotSonarObstacle", "obstacle(TARGET)".replace("TARGET", objectName)); // objectName.replace("-", "")
-                                break;
-                            }
+        new Thread(() -> {
+            while (true) {
+                try {
+                    final String inpuStr = inFromServer.readLine();
+                    // System.out.println( "reads: " + inpuStr);
+                    final String jsonMsgStr = inpuStr.split(";")[1];
+                    // System.out.println( "reads: " + jsonMsgStr + " qa=" + qa.getName() );
+                    final JSONObject jsonObject = new JSONObject(jsonMsgStr);
+                    // System.out.println( "type: " + jsonObject.getString("type"));
+                    switch (jsonObject.getString("type")) {
+                        case "webpage-ready":
+                            System.out.println("wenv ready ");
+                            break;
+                        case "sonar-activated": {
+                            // wSystem.out.println( "sonar-activated " );
+                            final JSONObject jsonArg = jsonObject.getJSONObject("arg");
+                            final String sonarName = jsonArg.getString("sonarName");
+                            final int distance = jsonArg.getInt("distance");
+//							System.out.println( "sonarName=" +  sonarName + " distance=" + distance);
+                            qa.emit("robotSonarWall", "sonar(NAME, player, DISTANCE)"
+                                .replace("NAME", sonarName.replace("-", ""))
+                                .replace("DISTANCE", ("" + distance)));
+                            break;
                         }
-                    } catch (final IOException e) {
-                        e.printStackTrace();
+                        case "collision": {
+                            // System.out.println( "collision" );
+                            final JSONObject jsonArg = jsonObject.getJSONObject("arg");
+                            final String objectName = jsonArg.getString("objectName");
+                            System.out.println("collision objectName=" + objectName);
+                            qa.emit("robotSonarObstacle", "obstacle(TARGET)".replace("TARGET", objectName)); // objectName.replace("-", "")
+                            break;
+                        }
                     }
+                } catch (final IOException e) {
+                    e.printStackTrace();
                 }
             }
-        }.start();
+        }).start();
     }
-
 }
