@@ -1,0 +1,50 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	reachBomb [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	goToExploration [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	returnHome [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handleBag [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	exploration [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	goToIdle [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	idle [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	goToHandleBag [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	goToReachBomb [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	invalidEnvironment [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	home [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	
+	reachBomb -> home [ label = "robotHome" ][ color = black ][ fontcolor = black ]
+	home -> invalidEnvironment [ label = "environmentNOTOK" ][ color = black ][ fontcolor = black ]
+	idle -> exploration [ label = "cmdExplore" ][ color = black ][ fontcolor = black ]
+	handleBag -> handleBag [ label = "handleBag" ][ color = black ][ fontcolor = black ]
+	idle -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	init -> invalidEnvironment [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
+	goToReachBomb -> reachBomb [ label = "timeout(1000)" ][ color = green ][ fontcolor = green ]
+	handleBag -> handleBag [ label = "timeout(1000)" ][ color = green ][ fontcolor = green ]
+	invalidEnvironment -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	home -> goToExploration [ label = "cmdExplore" ][ color = black ][ fontcolor = black ]
+	home -> goToReachBomb [ label = "cmdReachBomb" ][ color = black ][ fontcolor = black ]
+	exploration -> goToHandleBag [ label = "robotNearBag" ][ color = black ][ fontcolor = black ]
+	goToHandleBag -> handleBag [ label = "timeout(10)" ][ color = green ][ fontcolor = green ]
+	exploration -> goToIdle [ label = "cmdStop" ][ color = black ][ fontcolor = black ]
+	returnHome -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	handleBag -> returnHome [ label = "cmdGoHome" ][ color = black ][ fontcolor = black ]
+	returnHome -> home [ label = "robotHome" ][ color = black ][ fontcolor = black ]
+	goToExploration -> exploration [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
+	home -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	handleBag -> goToExploration [ label = "cmdExplore" ][ color = black ][ fontcolor = black ]
+	goToIdle -> idle [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
+	idle -> returnHome [ label = "cmdGoHome" ][ color = black ][ fontcolor = black ]
+	exploration -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	reachBomb -> reachBomb [ label = "timeout(3000)" ][ color = green ][ fontcolor = green ]
+	invalidEnvironment -> home [ label = "environmentOK" ][ color = black ][ fontcolor = black ]
+}

@@ -1,8 +1,6 @@
 ### SOFTWARE FACTORY ###
 # TODO: should be removed from gitignore when start to edit them
 sites/
-src-gen/
-srcMore/
 bin/
 
 # Created by https://www.gitignore.io/api/java,xtext,gradle,eclipse,intellij

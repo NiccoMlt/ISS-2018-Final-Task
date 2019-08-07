@@ -1,0 +1,5 @@
+plan(1,init, sentence(true,move(print("World observer init")),'','' ))
+plan(1,invalidEnvironment, sentence(true,raise( environmentNOTOK , environmentNOTOK )'),'','' ))
+plan(1,validEnvironment, sentence(true,raise( environmentOK , environmentOK )'),'','' ))
+plan(1,evaluateTemp, sentence(true,eventswitch(temperature, Â»temperature( X), addRule( temperature( X) ) ),'','' ))
+plan(2,evaluateTemp, sentence( evaluateTemp,notHere SendDispatch,'','' ))
