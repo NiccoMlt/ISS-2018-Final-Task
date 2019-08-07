@@ -92,9 +92,9 @@
         whenTime,resumeLastPlan,initial,finally,javaRun,println,%
         emit,forward,do},
     otherkeywords={:,->,-m,;,.,\,,[,],:-},
-    morestring=*[d]{"},
+    morestring=*[d]{``}, % chk segnala errore con "
     morecomment=[l]{//},
-    morecomment=[s]{\/*}{*\/},
+    morecomment=[s]{/*}{*/} % chk segnala errore con \/* e con *\/
 }
 
 \newcommand{\java}{\textsf{Java}}
