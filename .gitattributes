@@ -279,10 +279,11 @@ Procfile    text
 '*.apk' filter=lfs diff=lfs merge=lfs -text
 
 ## Linguist: custom DSL specification ##
-*.qa linguist-language=Xtext
+*.qa  linguist-language=Xtext
 *.qak linguist-language=Xtext
 
-## Linguist: folders configurations ##
+## Linguist configurations ##
+*.fz  text linguist-language=xml
 src-gen/* linguist-generated=true linguist-detectable=true
 srcMore/* linguist-generated=true linguist-detectable=true
 sites/* linguist-generated=true linguist-documentation
