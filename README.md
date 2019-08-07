@@ -1,5 +1,4 @@
 # Laboratorio di Sistemi Software 2018 - Final task
 
 [![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
-[![Travis master branch](https://img.shields.io/travis/com/NiccoMlt/ISS-2018-Final-Task/master.svg?label=master%20build)](https://travis-ci.com/NiccoMlt/ISS-2018-Final-Task)
-[![Travis develop branch](https://img.shields.io/travis/com/NiccoMlt/ISS-2018-Final-Task/develop.svg?label=develop%20build)](https://travis-ci.com/NiccoMlt/ISS-2018-Final-Task)
+[![Build Status](https://travis-ci.com/NiccoMlt/ISS-2018-Final-Task.svg?branch=master)](https://travis-ci.com/NiccoMlt/ISS-2018-Final-Task)
