@@ -29,9 +29,7 @@ matrix:
           repo: NiccoMlt/ISS-2018-Final-Task
     - name: JVM project build
       language: java
-      jdk:
-        - oraclejdk8
-        - openjdk8
+      jdk: openjdk8
       before_install:
         - cd ./project
         - gradle -b build_ctxRobot.gradle qawrapper
