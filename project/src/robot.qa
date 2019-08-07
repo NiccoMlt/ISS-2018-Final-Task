@@ -127,25 +127,29 @@ QActor robotadapter context ctxRobot {
     Rules {
 //      robotType("robotSerial", setuparg("/dev/ttyACM0")).
 //      robotType("robotSerial", setuparg("/dev/rfcomm0")).
-//      robotType("robotVirtual", setuparg("localhost,true")).
-//      robotType("robotVirtual", setuparg("localhost,false")).
-        robotType("robotDemo", setuparg("")).
+        robotType("robotVirtual", setuparg("localhost")).
+//      robotType("robotDemo", setuparg("")).
     }
 
-    /** Stato iniziale TODO. */
+    /** Stato iniziale del Robot Adapter, logga l'avvio. */
     State init initial [
         println("Robot adapter init")
     ] transition
         whenTime 100 -> initRobots
     
+    /** Stato di inizializzazione degli Executor del Robot Adapter. */
     State initRobots [
-        [ ?? robotType(T, setuparg(A))] selfMsg robotAdapterAdd: robot(T,A)
+        [ ?? robotType(T, setuparg(A)) ] selfMsg robotAdapterAdd: robot(T, A)
     ] transition
         whenTime 2000 -> doWork
-        whenMsg robotAdapterAdd: robot(T,A) do javaRun it.unibo.robotadapter.robots.setUp(T,A)
+        whenMsg robotAdapterAdd: robot(T,A) do javaRun it.unibo.robotadapter.robots.setUp(T, A)
         finally repeatPlan
 
-    /** Stato di lavoro TODO. */
+    /** 
+     * Stato effettivo di lavoro. 
+     * 
+     * Esegue i comandi provenienti da messaggi ed eventi.
+     */
     State doWork [
 
     ] transition
@@ -156,8 +160,8 @@ QActor robotadapter context ctxRobot {
 
     /** Stato di interpretazione comandi TODO. */
     State executeCommand resumeLastPlan [
-        onEvent robotSonar: robotSonar(distance(X)) -> emit robotState: state(sonarDistance(X));
-        onEvent robotSonarObstacle: obstacle(N) -> emit robotState: state(sonarObstacle(N))
+        onMsg robotCmdPriority: cmd(X) -> javaRun it.unibo.robotadapter.robots.doMove(X);
+        onEvent robotCmd: cmd(X) -> javaRun it.unibo.robotadapter.robots.doMove(X)
     ]
 }
 
@@ -185,13 +189,14 @@ QActor robotposition context ctxRobot {
 /** Attore che modella la mente, separata dal robot fisico. */
 QActor mind context ctxRobot {
     
+    /** Stato iniziale della mente del robot, logga l'avvio. */
     State init initial [
         println("Mind init")
     ] transition
         whenTime 100 -> invalidEnvironment
 
     /**
-     * Stato iniziale del robot, nel quale l'ambiente viene valutato.
+     * Stato nel quale l'ambiente viene valutato.
      *
      * Qualora non diventi valido entro 60s, il sistema si ferma.
      *
@@ -214,8 +219,7 @@ QActor mind context ctxRobot {
      * - per raggiungere la bomba (retriever)
      */
     State home [
-        onMsg robotHome: robotHome ->
-            forward console -m robotHome: robotHome
+        onMsg robotHome: robotHome -> forward console -m robotHome: robotHome
     ] transition
         stopAfter 60000
         whenEvent environmentNOTOK -> invalidEnvironment,
@@ -360,7 +364,7 @@ QActor console context ctxRobot {
      */
     State doWork [
         delay 1000;
-        emit temperature: temperature(18);
+        emit temperature: temperature(18);      // TODO demo
         delay 3000;
         forward mind -m cmdExplore: cmdExplore; // TODO demo
         delay 2000;
