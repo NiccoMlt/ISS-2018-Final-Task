@@ -1,5 +1,5 @@
 #include "DistanceTask.h"
-#include "StabilizedProximitySensor.h"
+#include "../../sensors/StabilizedProximitySensor.h"
 
 DistanceTask::DistanceTask(int trigPin, int echoPin, float* gloDistanceValue){
   this->trigPin = trigPin;

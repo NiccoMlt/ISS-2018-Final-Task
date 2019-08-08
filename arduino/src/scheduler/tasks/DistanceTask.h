@@ -1,8 +1,8 @@
 #ifndef __DISTANCETASK__
 #define __DISTANCETASK__
 
-#include "Task.h"
-#include "ProximitySensor.h"
+#include "../Task.h"
+#include "../../sensors/ProximitySensor.h"
 
 class DistanceTask: public Task {
 

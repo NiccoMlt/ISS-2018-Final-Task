@@ -1,8 +1,8 @@
 #ifndef __BLINKTASK__
 #define __BLINKTASK__
 
-#include "Task.h"
-#include "Led.h"
+#include "../Task.h"
+#include "../../actuators/Led.h"
 
 class BlinkTask: public Task {
 

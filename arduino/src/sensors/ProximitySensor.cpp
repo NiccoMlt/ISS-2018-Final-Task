@@ -1,6 +1,7 @@
+#include <Arduino.h>
+#include <Ultrasonic.h>
+
 #include "ProximitySensor.h"
-#include "Arduino.h"
-#include "Ultrasonic.h"
 
 Ultrasonic* ultrasonic;
 

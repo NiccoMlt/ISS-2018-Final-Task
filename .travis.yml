@@ -44,7 +44,7 @@ matrix:
         - "2.7"
       sudo: false
       before_install:
-        - cd NanoBotArduino
+        - cd arduino
       install:
         - pip install -U platformio
         - platformio update

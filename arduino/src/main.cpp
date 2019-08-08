@@ -1,33 +1,30 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include "L298N.h"       // Motor H-bridge (L298N)
+#include <Drive.h>
 
-#include "Scheduler.h"
-#include "DistanceTask.h"
-#include "BlinkTask.h"
-#include "SerialTask.h"
+#include "scheduler/Scheduler.h"
+#include "scheduler/tasks/DistanceTask.h"
+#include "scheduler/tasks/BlinkTask.h"
+#include "scheduler/tasks/SerialTask.h"
 
+const int PROXIMITY_TRIG_PIN = 5;
+const int PROXIMITY_ECHO_PIN = 4;
+const int LED_PIN = 10;
 
-#define PROXIMITY_TRIG_PIN 12
-#define PROXIMITY_ECHO_PIN 11
-#define LED_PIN    13
+const int PWM_SPEED = 100;
 
-/*
-   -----------------------------------
-   Function declaration
-   -----------------------------------
-*/
+const int SPEED1 = 11;
+const int DIRECTION1 = 13;
+const int SPEED2 = 3;
+const int DIRECTION2 = 12;
+
 void move(int direction);
 
-/*
-   -----------------------------------
-   Hardware devices
-   -----------------------------------
-*/
-L298N motor1(7, 6);
-L298N motor2(5, 4);
+// L298N motor1(SPEED1, DIRECTION1);
+// L298N motor2(SPEED2, DIRECTION2);
 
 Scheduler sched;
+Drive motor(SPEED1, DIRECTION1, SPEED2, DIRECTION2);
 
 float* gloDistanceValue = new float(5.0);
 bool* gloBlinkingState = new bool(false);
@@ -36,18 +33,13 @@ DistanceTask* distanceTask = new DistanceTask(PROXIMITY_TRIG_PIN, PROXIMITY_ECHO
 BlinkTask* blinkingLed = new BlinkTask(LED_PIN, gloBlinkingState);
 SerialTask* serialTask = new SerialTask(gloDistanceValue, gloBlinkingState, move);
 
-/*
-   -----------------------------------
-   setup
-   -----------------------------------
-*/
 void setup() {
   sched.init(50);
-  
+
   distanceTask->init(200);
   blinkingLed->init(200);
   serialTask->init(100);
-  
+
   sched.addTask(distanceTask);
   sched.addTask(blinkingLed);
   sched.addTask(serialTask);
@@ -57,15 +49,9 @@ void loop() {
   sched.schedule();
 }
 
-/*
-   -----------------------------------
-   Moving
-   -----------------------------------
-*/
 void move(int direction)
 {
-  switch (direction) {
-
+  /*switch (direction) {
     case 1://forward
       motor1.forward();
       motor2.forward();
@@ -85,6 +71,23 @@ void move(int direction)
     case 5: //halt
       motor1.stop();
       motor2.stop();
+      break;
+  }*/
+  switch (direction) {
+    case 1: // forward
+      motor.moveForward(PWM_SPEED);
+      break;
+    case 2: // backward
+      motor.moveBackward(PWM_SPEED);
+      break;
+    case 3: // left
+      motor.turnLeft(PWM_SPEED);
+      break;
+    case 4: // right
+      motor.turnRight(PWM_SPEED);
+      break;
+    case 5: // halt
+      motor.stopMoving();
       break;
   }
 }

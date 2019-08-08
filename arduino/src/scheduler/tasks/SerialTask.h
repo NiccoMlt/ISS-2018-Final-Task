@@ -1,9 +1,10 @@
 #ifndef __SERIALTASK__
 #define __SERIALTASK__
 
-#include "Task.h"
-#include "Arduino.h"
-#include "SoftwareSerial.h"
+#include <Arduino.h>
+#include <SoftwareSerial.h>
+
+#include "../Task.h"
 
 class SerialTask: public Task {
 
