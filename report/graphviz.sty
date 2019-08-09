@@ -65,6 +65,32 @@
   \fi
 }
 
+\newcommand{\includegv}[2][scale=1]{%
+  \ifnum\pdfshellescape=1
+  % Yes, enabled
+    \immediate\write18{bash -c "dot -Tpdf #2.gv -o #2.pdf 2> #2.log"}%
+    \IfFileExists{#2.pdf}
+    % the pdf exists: include it
+    {\includegraphics[#1]{#2}}
+    % the pdf was not created - show a hint
+    { \fbox{ \begin{tabular}{l}
+          The file \texttt{#2.pdf} hasn't been created from
+          \texttt{#2.gv} yet. \\
+          We attempted to create it with:\\
+          `\texttt{dot -Tpdf #2.gv -o #2.pdf}' \\
+          but that seems not to have worked.\\
+          \texttt{dot} said : \\
+          "\texttt{\input{#2.log}}"
+        \end{tabular}}
+    }
+  \else
+    \fbox{ \begin{tabular}{l}
+            You need to execute `\texttt{pdflatex}' with the `\texttt{-shell-escape}' option.\\
+            This allows the graphviz package to execute the program dot.
+          \end{tabular}}
+  \fi
+}
+
 \newcommand{\digraph}[3][scale=1]{
   \newwrite\dotfile
   \immediate\openout\dotfile=#2.dot
