@@ -1,0 +1,19 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	home [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	reachBomb [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	
+	home -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	reachBomb -> home [ label = "robotHome" ][ color = black ][ fontcolor = black ]
+	home -> reachBomb [ label = "cmdReachBomb" ][ color = black ][ fontcolor = black ]
+	reachBomb -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+}

@@ -1,0 +1,30 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	doWork [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	updateView [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handlePhoto [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handleBagStatus [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	retrieveBomb [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	handleAlert [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	
+	handlePhoto -> handlePhoto [ label = "timeout(3000)" ][ color = green ][ fontcolor = green ]
+	retrieveBomb -> doWork [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
+	doWork -> handlePhoto [ label = "bag" ][ color = black ][ fontcolor = black ]
+	handleAlert -> handleAlert [ label = "timeout(3000)" ][ color = green ][ fontcolor = green ]
+	handleAlert -> retrieveBomb [ label = "robotHome" ][ color = black ][ fontcolor = black ]
+	doWork -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	handlePhoto -> handleBagStatus [ label = "bagStatus" ][ color = black ][ fontcolor = black ]
+	doWork -> updateView [ label = "robotState" ][ color = red ][ fontcolor = red ][ dir = both ]
+	handleBagStatus -> doWork [ label = "timeout(3000)" ][ color = green ][ fontcolor = green ]
+	doWork -> doWork [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	handleBagStatus -> handleAlert [ label = "alert" ][ color = black ][ fontcolor = black ]
+}
