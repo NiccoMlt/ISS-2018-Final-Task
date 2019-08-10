@@ -28,10 +28,10 @@ Dopo aver delineato tutti i requisiti base, si è scelto di approfondire quelli 
 
 % TODO
 
-\begin{description}
+\begin{description}[itemsep=1em]
   \item[\requirementref{R-startExplore}]
     tramite una console grafica l'utente dovrà poter inviare un comando di inizio esplorazione, il comando dovrà essere ricevuto dal robot, il quale dovrà dare inizio alla fase di esplorazione se il requisito successivo è verificato.
-  \item[\requirementref{R-Explore}]
+  \item[\requirementref{R-explore}]
     l'esplorazione per questo sprint iniziale consisterà in una serie di mosse dummy, in modo da permettere all'utente di vedere il robot muoversi.
   \item[\requirementref{R-tempOk}]
     l'esplorazione dovrà partire soltanto se la temperatura è inferiore ad una certa soglia. Da requisiti iniziali non è chiaro se il robot debba essere reattivo a cambi della temperatura durante la fase di esplorazione, inoltre non è specificato quale componente debba occuparsi sia del sensing che del checking della temperatura. Ci premureremo di chiarire questi aspetti con il committente.
@@ -53,38 +53,38 @@ Per rappresentare in maniera formale l'architettura logica, si è scelto di util
 Questo linguaggio è stato messo a disposizione dalla software house e permette di superare le limitazioni intrinseche della modellazione UML
 (principalmente object-oriented e con notevoli limitazioni nel distribuito).
 
-\begin{figure}[htbp]
-  \centering
-  \includegraphics[width=0.75\textwidth]{res/logicalArchitecture.png}%
-  \label{fig:logicalArchitecture}
-\end{figure}
-
 Il linguaggio QA è adatto per costruire modelli eseguibili di sistemi software e permette di generare rappresentazioni grafiche del sistema,
 permettendo di facilitare la comprensione di \textbf{struttura}, \textbf{interazione} e \textbf{comportamento} dello stesso.
 
-\subsection{Architettura logica}\labelssec{sp1:arch_logica_req}
-
-Partendo con un approccio top-down, abbiamo innanzi tutto riconosciuto 3 componenti principali:
-
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
-  \includegv[width=0.8\textwidth]{res/sprint1/requirements/console}%
+  \includegraphics[width=1\textwidth]{res/logicalArchitecture.png}%
+  \label{fig:logicalArchitecture}
+\end{figure}
+
+\subsection{Architettura logica in output all'analisi dei requisiti}\labelssec{sp1:arch_logica_req}
+
+Partendo con un approccio top-down, sono stati prima di tutto riconosciuti i 3 componenti principali:
+
+\begin{figure}[H]
+  \centering
+  \includegv[width=1\textwidth]{res/sprint1/requirements/console}%
   \caption{Console}%
-  \label{fig:sp1:console}
+  \label{fig:sp1:req:console}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
-  \includegv[width=0.8\textwidth]{res/sprint1/requirements/robotdiscovery}%
+  \includegv[width=1\textwidth]{res/sprint1/requirements/robotdiscovery}%
   \caption{Robot Discovery}%
-  \label{fig:sp1:robotdiscovery}
+  \label{fig:sp1:req:robotdiscovery}
 \end{figure}
 
-\begin{figure}[htbp]
+\begin{figure}[H]
   \centering
-  \includegv[width=0.8\textwidth]{res/sprint1/requirements/robotretrieval}%
+  \includegv[width=1\textwidth]{res/sprint1/requirements/robotretrieval}%
   \caption{Robot Retrieval}%
-  \label{fig:sp1:robotretrieval}
+  \label{fig:sp1:req:robotretrieval}
 \end{figure}
 
 Analizzando i tipi di interazioni, abbiamo deciso che queste ultime funzionano come seguono:
@@ -104,38 +104,75 @@ Analizzando i tipi di interazioni, abbiamo deciso che queste ultime funzionano c
 
 \end{itemize}
 
-\subsection{Rappresentazione formale}\labelssec{sp1:rapp_formale}
+\clearpage
+
+Di seguito è riportata la prima versione dell'architettura logica in output all'analisi dei requisiti formalizzata tramite metamodello QA\@.
 
 \lstinputlisting[language=qa]{res/sprint1/requirements/robot.qa}
 
 \subsection{Analisi del problema}\labelssec{sp1:prob_analysis}
 
-Durante la fase di analisi del problema abbiamo deciso di dividere il robot discovery in due componenti principali:
-
-Durante la fase di analisi del problema abbiamo deciso di dividere il \textbf{robot discovery} in due componenti principali:
+Durante la fase di analisi del problema si è deciso di dividere il \textbf{robot discovery} in due componenti principali:
 
 \begin{itemize}
   \item uno che conterrà la business logic (\textbf{robot-mind}).
   \item uno che lavorerà come adattatore per i robot in ambiente virtuale o fisico (\textbf{robot-adapter}).
 \end{itemize}
 
-Inoltre abbiamo aggiunto un componente che si occupa di valutare se le condizioni per il funzionamento del robot siano favorevoli o meno e di informare la \textbf{robot-mind}.
-
-Durante l'esplorazione il \textbf{robot discovery} ha anche il compito di costruire una \textbf{mappa} dell'ambiente che potrà essere condivisa;
-in questo modo il \textbf{robot retrieval} può elaborare il percorso per raggiungere la bomba all'inizio del suo lavoro.
+Inoltre è stato aggiunto un componente che si occupa di valutare se le condizioni per il funzionamento del robot siano favorevoli o meno e di informare la \textbf{robot-mind}.
 
 \subsubsection{World observer}\labelsssec{sp1:world_observer}
 
-Dato che le informazioni ambientali vengono generate esternamente sia al robot che alla console,
-abbiamo ritenuto approriato istruire un nuovo componente nel sistema che si occupi di osservare le variazioni delle condizioni ambientali
-e che vada a valutarle per decidere se queste sono favorevoli o meno al corretto funzionamento del robot;
+Dato che le informazioni ambientali vengono generate esternamente sia rispetto al robot che rispetto alla console,
+è stato ritenuto approriato istruire un nuovo componente nel sistema che si occupi di osservare le variazioni delle condizioni ambientali
+e che vada a valutarle per decidere se queste sono favorevoli o meno al corretto funzionamento del robot (\requirementref{R-tempOk});
 una volta valutate tali condizioni, il componente emette un evento tramite il quale informa il resto del sistema.
 
 \subsubsection{Robot Adapter e Robot Mind}\labelsssec{sp1:mind_adapter}
 
-Abbiamo ritenuto opportuno separare la logica di funzionamento del robot dal componente che si occupa di eseguire le istruzioni per vari motivi,
-tra cui ottenere una maggiore separazione tra un componente chiave contenente la \textbf{business logic} che è il core del nostro sistema (\textbf{robot-mind}) ed un mero esecutore di comandi (\textbf{robot-adapter}).
-Tra l'altro questo ci garantisce un maggior livello di \textbf{technology independency}, \textbf{riusabilità} e \textbf{tracciabilità} nel nostro sistema.
+Si è ritenuto opportuno separare la logica di funzionamento del robot dal componente che si occupa di eseguire le istruzioni per vari motivi,
+tra cui ottenere una maggiore separazione tra un componente chiave contenente la \textbf{business logic}, core del sistema, (\textbf{robot-mind}) ed un mero esecutore di comandi (\textbf{robot-adapter}).
+Tra l'altro questo permette di mantenere un certo livello di \textbf{technology independency} e \textbf{riusabilità} nel sistema.
 
 Il robot-adapter altro non è che un \textbf{driver} che esegue i comandi ricevuti dalla \textbf{mind} nel mondo fisico o in quello virtuale (o in entrambi) e non deve sapere nulla della logica di funzionamento del sistema.
 
+\subsection{Architettura logica in output all'analisi del problema}\labelssec{sp1:arch_logica_prob}
+
+Procedendo con un approccio top-down, a seguito dello zoom-in sono stati identificati i seguenti componenti:
+
+% TODO
+
+\begin{figure}[H]
+  \centering
+  \includegv[width=0.6\textwidth]{res/sprint1/problem/world_observer}%
+  \caption{World Observer}%
+  \label{fig:sp1:prob:worldobserver}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegv[width=1\textwidth]{res/sprint1/problem/robot_adapter}%
+  \caption{Robot Adapter}%
+  \label{fig:sp1:prob:robotadapter}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegv[width=1\textwidth]{res/sprint1/problem/robot_retriever_mind}%
+  \caption{Robot Retrieval Mind}%
+  \label{fig:sp1:prob:robotretrieval}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegv[width=1.2\textwidth]{res/sprint1/problem/robot_discovery_mind}%
+  \caption{Robot Discovery Mind}%
+  \label{fig:sp1:prob:robotdiscovery}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegv[width=1\textwidth]{res/sprint1/problem/console}%
+  \caption{Console}%
+  \label{fig:sp1:prob:console}
+\end{figure}

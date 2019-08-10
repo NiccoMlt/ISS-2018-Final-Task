@@ -70,6 +70,7 @@
   \DeclareGraphicsExtensions{.eps, .jpg, .png} % chktex 26
 \fi
 %%%%%%%%%%%%%%%
+\usepackage{float}
 \usepackage{graphviz}
 
 \usepackage{caption}
@@ -88,8 +89,6 @@
   frame=single,
   captionpos=b,
   language=Java,
-  aboveskip=3mm,
-  belowskip=3mm,
   showspaces=false,
   showtabs=false,
   showstringspaces=false,
@@ -183,7 +182,9 @@
 \newcommand{\xfaculty}{II~Faculty~of~Engineering}
 \newcommand{\xunibo}{Alma~Mater~Studiorum~--~University~of~Bologna}
 
-\setcounter{secnumdepth}{3}   % Numera fino alla sottosezione nel corpo del testo
+\usepackage{enumitem}
+
+\setcounter{secnumdepth}{2}   % Numera fino alla sottosezione nel corpo del testo
 \setcounter{tocdepth}{3}      % Numera fino alla sotto-sottosezione nell'indice
 
 \usepackage[%
