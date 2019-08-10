@@ -11,7 +11,7 @@ const config = {
             name: "sonar-1",
             position: { x: 0.8, y: 0.8 },
             senseAxis: { x: true, y: false }
-        }, 
+        },
         {
             name: "sonar-2",
             position: { x: 0.2, y: 0.2 },
