@@ -1,6 +1,5 @@
 package it.unibo.robotadapter.serial;
 
-import it.unibo.robotadapter.IRobotSerialObserver;
 import it.unibo.supports.serial.JSSCSerialComm;
 import it.unibo.supports.serial.SerialPortConnSupport;
 import java.util.ArrayList;

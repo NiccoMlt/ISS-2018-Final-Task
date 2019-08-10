@@ -3,11 +3,17 @@
 build_ctxRobot.gradle
 GENERATED ONLY ONCE
 USAGE:
-	gradle  -b build_ctxRobot.gradle qawrapper
-	./gradlew.bat -b build_ctxRobot.gradle eclipse		//to set the dependency on the library
-	./gradlew.bat -b build_ctxRobot.gradle build
-	./gradlew.bat -b build_ctxRobot.gradle -q tasks --all
-	./gradlew.bat -b build_ctxRobot.gradle cleanDistDir	//to clean the src directory
+	gradle -b build_ctxRobot.gradle qawrapper
+ON WINDOWS:
+	.\gradlew.bat -b build_ctxRobot.gradle eclipse		    // to set the dependency on the library
+	.\gradlew.bat -b build_ctxRobot.gradle build
+	.\gradlew.bat -b build_ctxRobot.gradle -q tasks --all
+	.\gradlew.bat -b build_ctxRobot.gradle cleanDistDir	  // to clean the src directory
+ON LINUX:
+  ./gradlew -b build_ctxRobot.gradle eclipse		        // to set the dependency on the library
+	./gradlew -b build_ctxRobot.gradle build
+	./gradlew -b build_ctxRobot.gradle -q tasks --all
+	./gradlew -b build_ctxRobot.gradle cleanDistDir	      // to clean the src directory
 ================================================================================
 */
 apply plugin: 'java'
@@ -34,6 +40,9 @@ sourceSets {
   main {
     java {
       srcDirs = ['src', 'src-gen']
+    }
+    resources {
+      srcDirs = ['srcMore']
     }
   }
   test {
@@ -89,7 +98,6 @@ ARDUINO
 /*
 JSON
 */
-
   // https://mvnrepository.com/artifact/org.json/json
   compile group: 'org.json', name: 'json', version: '20160810'
 /*
@@ -97,7 +105,6 @@ MQTT
 */
   // https://mvnrepository.com/artifact/org.eclipse.paho/org.eclipse.paho.client.mqttv3
   compile group: 'org.eclipse.paho', name: 'org.eclipse.paho.client.mqttv3', version: '1.1.0'
-
 /*
 BLUETOOTH
 */
@@ -108,13 +115,11 @@ RXJAVA
 */
   //https://mvnrepository.com/artifact/io.reactivex.rxjava2/rxjava
   //compile group: 'io.reactivex.rxjava2', name: 'rxjava', version: '2.0.6'
-
 /*
 log pi4j
 */
   // https://mvnrepository.com/artifact/log4j/log4j
   //compile group: 'log4j', name: 'log4j', version: '1.2.16'
-
 }
 
 /*

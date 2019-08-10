@@ -49,9 +49,11 @@ public class SerialExecutor implements IRobotExecutor {
                 break;
             case "blinkStart":
                 qa.println("Started blinking");
+                robotSupport.executeTheCommand("b");
                 break;
             case "blinkStop":
                 qa.println("Stopped blinking");
+                robotSupport.executeTheCommand("n");
                 break;
             default:
                 qa.println("Unexpected command \"" + cmd + "\""); // TODO
