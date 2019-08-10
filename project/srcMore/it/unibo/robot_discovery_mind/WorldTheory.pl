@@ -1,11 +1,11 @@
 %==============================================
-% WorldTheory.pl for actor worldobserver
+% WorldTheory.pl for actor robot_discovery_mind
 %==============================================
 /*
 For a QActor as a singleton statically degined in the model
 */
-myname(qatuworldobserver).	%%old version (deprecated)
-actorobj(qatuworldobserver).	%% see registerActorInProlog18 in QActor
+myname(qaturobot_discovery_mind).	%%old version (deprecated)
+actorobj(qaturobot_discovery_mind).	%% see registerActorInProlog18 in QActor
 
 /*
 For a QActor instance of name=Name dynamically created
@@ -81,7 +81,7 @@ evalGuard( G ) :-
 
 output( M ):-stdout <- println( M ).
 %-------------------------------------------------
-%  TuProlo FEATURES of the QActor worldobserver
+%  TuProlo FEATURES of the QActor robot_discovery_mind
 %-------------------------------------------------
 dialog( FileName ) :-  
 	java_object('javax.swing.JFileChooser', [], Dialog),
@@ -89,7 +89,7 @@ dialog( FileName ) :-
 	Dialog <- getSelectedFile returns File,
 	File <- getName returns FileName. 		 
 
-%% :- stdout <- println(  "hello from world theory of worldobserver" ). 
+%% :- stdout <- println(  "hello from world theory of robot_discovery_mind" ). 
 
 %-------------------------------------------------
 %  UTILITIES for TuProlog computations
@@ -147,9 +147,9 @@ dec(I,K,N):-
 actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 
 %-------------------------------------------------
-%  User static rules about worldobserver
+%  User static rules about robot_discovery_mind
 %------------------------------------------------- 
-evaluateTemp:-retract( temperature( X)),eval( lt,X,25).
+environment( notok).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

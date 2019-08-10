@@ -1,0 +1,1 @@
+plan(1,reachBomb, sentence(true,move(print("RETRIVING BOMB ...")),'','' ))

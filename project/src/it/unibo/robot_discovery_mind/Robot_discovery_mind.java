@@ -2,12 +2,12 @@
 /*
 This code is generated only ONCE
 */
-package it.unibo.robotadapter;
+package it.unibo.robot_discovery_mind;
 import it.unibo.is.interfaces.IOutputEnvView;
 import it.unibo.qactors.QActorContext;
 
-public class Robotadapter extends AbstractRobotadapter { 
-	public Robotadapter(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
+public class Robot_discovery_mind extends AbstractRobot_discovery_mind { 
+	public Robot_discovery_mind(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
 		super(actorId, myCtx, outEnvView);
 	}
 /*

@@ -1,11 +1,11 @@
 %==============================================
-% WorldTheory.pl for actor robotadapter
+% WorldTheory.pl for actor robot_adapter
 %==============================================
 /*
 For a QActor as a singleton statically degined in the model
 */
-myname(qaturobotadapter).	%%old version (deprecated)
-actorobj(qaturobotadapter).	%% see registerActorInProlog18 in QActor
+myname(qaturobot_adapter).	%%old version (deprecated)
+actorobj(qaturobot_adapter).	%% see registerActorInProlog18 in QActor
 
 /*
 For a QActor instance of name=Name dynamically created
@@ -81,7 +81,7 @@ evalGuard( G ) :-
 
 output( M ):-stdout <- println( M ).
 %-------------------------------------------------
-%  TuProlo FEATURES of the QActor robotadapter
+%  TuProlo FEATURES of the QActor robot_adapter
 %-------------------------------------------------
 dialog( FileName ) :-  
 	java_object('javax.swing.JFileChooser', [], Dialog),
@@ -89,7 +89,7 @@ dialog( FileName ) :-
 	Dialog <- getSelectedFile returns File,
 	File <- getName returns FileName. 		 
 
-%% :- stdout <- println(  "hello from world theory of robotadapter" ). 
+%% :- stdout <- println(  "hello from world theory of robot_adapter" ). 
 
 %-------------------------------------------------
 %  UTILITIES for TuProlog computations
@@ -147,7 +147,7 @@ dec(I,K,N):-
 actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 
 %-------------------------------------------------
-%  User static rules about robotadapter
+%  User static rules about robot_adapter
 %------------------------------------------------- 
 robotType( "robotVirtual",setuparg( "localhost")).
 /*

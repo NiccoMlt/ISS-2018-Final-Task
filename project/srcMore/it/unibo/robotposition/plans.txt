@@ -1,4 +1,0 @@
-plan(1,init, sentence(true,move(print("Robot position init")),'','' ))
-plan(1,update, sentence(true,eventswitch(robotSonar, Â»robotSonar( distance( X)), raise( robotState , state( sonarDistance( X)) )') ),'','' ))
-plan(2,update, sentence(true,eventswitch(robotSonarObstacle, Â»obstacle( N), raise( robotState , state( sonarObstacle( N)) )') ),'','' ))
-plan(3,update, sentence(true,move(resumeplan),'','' ))
