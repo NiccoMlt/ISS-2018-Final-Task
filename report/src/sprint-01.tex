@@ -24,32 +24,31 @@ il passo successivo è individuare i requisiti prioritari da realizzare in quest
 
 \subsection{Analisi dei requisiti}\labelssec{sp1:req_analysis}
 
-Dopo aver delineato tutti i requisiti base, si è scelto di approfondire quelli maggiormente fondanti e di valore per il prodotto.
-
-% TODO
+Dopo aver delineato tutti i requisiti base, si è scelto di approfondire quelli maggiormente fondanti e di valore per il prodotto:
 
 \begin{description}[itemsep=1em]
   \item[\requirementref{R-startExplore}]
     tramite una console grafica l'utente dovrà poter inviare un comando di inizio esplorazione, il comando dovrà essere ricevuto dal robot, il quale dovrà dare inizio alla fase di esplorazione se il requisito successivo è verificato.
   \item[\requirementref{R-explore}]
-    l'esplorazione per questo sprint iniziale consisterà in una serie di mosse dummy, in modo da permettere all'utente di vedere il robot muoversi.
+    l'esplorazione per questo sprint iniziale sarà dummy, in modo da permettere all'utente di vedere il robot muoversi.
   \item[\requirementref{R-tempOk}]
-    l'esplorazione dovrà partire soltanto se la temperatura è inferiore ad una certa soglia. Da requisiti iniziali non è chiaro se il robot debba essere reattivo a cambi della temperatura durante la fase di esplorazione, inoltre non è specificato quale componente debba occuparsi sia del sensing che del checking della temperatura. Ci premureremo di chiarire questi aspetti con il committente.
+    l'esplorazione dovrà partire soltanto se la temperatura è inferiore ad una certa soglia.
+    Da requisiti iniziali non è chiaro se il robot debba essere reattivo a cambi della temperatura durante la fase di esplorazione;
+    per il momento si assume di no.
   \item[\requirementref{R-stopExplore}]
-    in seguito ad un comando dell'utente l'esplorazione dovrà essere interrotta ed il robot rimarrà in attesa di sapere dall'utente se deve tornare a casa oppure proseguire l'esplorazione appena interrotta. Non è chiaro cosa debba fare il robot se non gli vengono fornite altre istruzioni.
+    in seguito ad un comando dell'utente l'esplorazione dovrà essere interrotta ed il robot rimarrà in attesa di sapere dall'utente se deve tornare a casa oppure proseguire l'esplorazione appena interrotta.
   \item[\requirementref{R-continueExplore}]
     se l'utente ha inviato il comando per riprendere l'esplorazione il robot deve riprenderla.
   \item[\requirementref{R-backHome}]
-    se invece l'utente ha deciso che il robot debba tornare alla sua base, il robot deve farlo. Specifichiamo però che in questo primo sprint non essendo stato ancora introdotto il concetto di mappa, il ritorno a casa sarà soltanto simulato, tuttavia il robot si troverà in uno stato in cui potrà iniziare una nuova esplorazione.
+    se invece l'utente ha deciso che il robot debba tornare alla sua base, il robot deve farlo.
+    Si specifica però che in questo primo sprint non essendo stato ancora introdotto il concetto di mappa, dunque il ritorno a casa sarà soltanto simulato.
 \end{description}
-
-% TODO
 
 Il prodotto dell'analisi dei requisiti deve essere una prima versione dell'architettura logica, che modelli e rappresenti formalmente i requisiti del sistema.
 
 \subsection{Metamodello e QA}\labelssec{qa}
 
-Per rappresentare in maniera formale l'architettura logica, si è scelto di utilizzare il meta-linguaggio QA, nella sua versione 1.5.13.2.
+Per rappresentare in maniera formale l'architettura logica, si è scelto di utilizzare il meta-linguaggio QA, nella sua versione \textbf{1.5.13.2}.
 Questo linguaggio è stato messo a disposizione dalla software house e permette di superare le limitazioni intrinseche della modellazione UML
 (principalmente object-oriented e con notevoli limitazioni nel distribuito).
 
@@ -87,20 +86,19 @@ Partendo con un approccio top-down, sono stati prima di tutto riconosciuti i 3 c
   \label{fig:sp1:req:robotretrieval}
 \end{figure}
 
-Analizzando i tipi di interazioni, abbiamo deciso che queste ultime funzionano come seguono:
+Analizzando i tipi di interazioni, si è deciso che queste ultime funzionano come seguono:
 
 \begin{itemize}
   \item
     Il robot invia informazioni sullo stato alla console tramite l'invio di messaggi di tipo \textbf{fire-and-forget}
     (\texttt{dispatch} nel meta-linguaggio QA).
 
-    Essendo il tipo di interazione \textit{uno-ad-uno}, abbiamo ritenuto appropriato utilizzare come metodo di interazione lo scambio di messaggi;
-    tra l'altro questo conferisce anche una maggiore sicurezza al nostro sistema.
+    Essendo il tipo di interazione \textit{uno-ad-uno}, si è ritenuto appropriato utilizzare come metodo di interazione lo scambio di messaggi.
 
   \item
     La console invia istruzioni ai robot anch'essa tramite l'invio di messaggi;
     le ragioni sono analoghe al caso precedente,
-    e a maggior ragione è evidente come siamo interessati che vi sia uno e soltanto un destinatario.
+    e a maggior ragione è evidente come vi sia uno e soltanto un destinatario.
 
 \end{itemize}
 
@@ -140,8 +138,6 @@ Il robot-adapter altro non è che un \textbf{driver} che esegue i comandi ricevu
 
 Procedendo con un approccio top-down, a seguito dello zoom-in sono stati identificati i seguenti componenti:
 
-% TODO
-
 \begin{figure}[H]
   \centering
   \includegv[width=0.6\textwidth]{res/sprint1/problem/world_observer}%
@@ -176,3 +172,30 @@ Procedendo con un approccio top-down, a seguito dello zoom-in sono stati identif
   \caption{Console}%
   \label{fig:sp1:prob:console}
 \end{figure}
+
+Procedendo con l'analisi delle interazioni, sono state effettuate le seguenti modifiche:
+\begin{itemize}
+    \item
+      I comandi ricevuti dal \textbf{robot adapter} possono essere \textbf{messaggi};
+      questo è dovuto al fatto che il robot potrebbe ricevere comandi urgenti ed è fondamentale che vengano effettivamente elaborati;
+    \item
+      Il \textbf{world observer} osserva le condizioni ambientali notificate tramite \textbf{eventi} e,
+      dopo aver operato le sue valutazioni, emette anch'esso degli eventi per informare il resto del sistema che le condizioni sono favorevoli o avverse.
+      Infatti non è necessario notificare di ciò uno specifico componente del sistema, né è necessaria alcuna forma di garanzia sul fatto che prima o poi queste informazioni vengano elaborate.
+\end{itemize}
+
+\subsection{Software già disponibile}\labelssec{sp1:avail_sw}
+
+Nella fase di analisi del problema, l'approccio top-down deve andare parzialmente incontro all'approccio bottom-up:
+la software house, infatti, fornisce alcuni componenti tecnologici già realizzati ed è consigliabile appoggiarsi ad essi per realizzare alcuni componenti del sistema:
+
+\begin{itemize}
+    \item il \textbf{robot adapter} deve quindi occuparsi di adattare il robot che ci viene fornito (fisico o virtuale), alla struttura modellata nel sistema;
+    \item la \textbf{console} si occupa invece di adattare l'interfaccia grafica messa a disposizione dal framework QA (WebGUI) alla console specificata dai requisiti.
+\end{itemize}
+
+\subsection{Rappresentazione formale in output alla fase di analisi del problema}\labelssec{sp1:qa}
+
+Di seguito è riportata la versione finale per lo Sprint 1 dell'architettura logica in output all'analisi del problema formalizzata tramite metamodello QA\@.
+
+\lstinputlisting[language=qa]{res/sprint1/problem/robot.qa}

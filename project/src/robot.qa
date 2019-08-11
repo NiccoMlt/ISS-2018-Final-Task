@@ -33,7 +33,7 @@ Dispatch robotCmdPriority: cmd(X)
  * *********************************************************
  */
 
-Dispatch cmdStop: cmdStop                                               // R-stopAtBag
+Dispatch cmdStop: cmdStop                                               // R-stopAtBag & R-stopExplore
 Dispatch cmdGoHome: cmdGoHome                                           // R-backHome
 Dispatch cmdExplore: cmdExplore                                         // R-explore
 Dispatch cmdReachBomb: cmdReachBomb                                     // R-reachBag
@@ -52,12 +52,6 @@ Dispatch bag: bag(picture(X))                                           // R-sen
 Dispatch alert: alert                                                   // R-alert
 /** X = bomb|bag ; Y = arguments */
 Dispatch bagStatus: bagStatus(X, args(Y))
- 
-/** X = distance */
-Event robotSonar: robotSonar(distance(X))
-/** X = name ; virtual sonar */
-Event robotSonarObstacle : obstacle(X)
-// Event robotSonarWall: sonar(SONAR, TARGET, DISTANCE)
 
 /** (X,Y) = coordinates ; M = w|a|s|d|h */
 Event robotState: state(position(X,Y), movement(M))                     // R-consoleUpdate
@@ -104,7 +98,7 @@ QActor robot_adapter context ctxRobot {
 //      robotType("robotDemo", setuparg("")).
     }
 
-    /** Stato iniziale del Robot Adapter, logga l'avvio. */
+    /** Stato iniziale del Robot Adapter. */
     State init initial [
 
     ] transition
@@ -115,7 +109,8 @@ QActor robot_adapter context ctxRobot {
         [ ?? robotType(T, setuparg(A)) ] selfMsg robotAdapterAdd: robot(T, A)
     ] transition
         whenTime 2000 -> doWork
-        whenMsg robotAdapterAdd: robot(T,A) do javaRun it.unibo.robot_adapter.robots.setUp(T, A)
+        whenMsg robotAdapterAdd: robot(T,A) do 
+            javaRun it.unibo.robot_adapter.robots.setUp(T, A)
         finally repeatPlan
 
     /** 
@@ -349,7 +344,7 @@ QActor console context ctxRobot {
     ] transition
         whenTime 3000 -> handlePhoto
         whenMsg bagStatus -> handleBagStatus,
-        whenEvent usercmd -> adaptCommand                           // TODO demo
+        whenEvent usercmd -> adaptCommand
         finally repeatPlan
 
     /**

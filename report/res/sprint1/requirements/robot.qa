@@ -1,133 +1,79 @@
 System robot
 
-/*
- * *********************************************************
- * Messaggi & Eventi Ambiente
- * *********************************************************
- */
-
 Dispatch environmentValid: environmentValid
 
 Event environmentOK: environmentOK
 Event environmentNOTOK: environmentNOTOK
 
 /** X = temperature (°C) */
-Event temperature: temperature(X)
+Event temperature: temperature(X)                                   // R-TempOk
 
-/*
- * *********************************************************
- * Messaggi & Eventi Robot
- * *********************************************************
- */
-
-Dispatch cmdStop: cmdStop                                           // R-stopAtBag
+Dispatch cmdStop: cmdStop                                           // R-stopExplore
 Dispatch cmdGoHome: cmdGoHome                                       // R-backHome
 Dispatch cmdExplore: cmdExplore                                     // R-explore
-Dispatch cmdReachBomb: cmdReachBomb                                 // R-reachBag
+Dispatch cmdReachBomb: cmdReachBomb
 
 /** X = photo */
-Dispatch bag: bag(picture(X))                                       // R-sendPhoto & R-storePhoto
+Dispatch bag: bag(picture(X))
 
-/*
- * *********************************************************
- * Messaggi & Eventi Console
- * *********************************************************
- */
-Dispatch alert: alert                                               // R-alert
+Dispatch alert: alert
 
 /** X = true|false ; Y = bag arguments */
 Dispatch bagStatus: isBomb(X, bag(Y))
 
 /** (X,Y) = coordinates ; M = w|a|s|d|h */
-Dispatch robotState: state(position(X,Y), movement(M))              // R-consoleUpdate
+Dispatch robotState: state(position(X,Y), movement(M))
 
 Dispatch robotHome: robotHome
 Dispatch robotNearBag: robotNearBag
 
-/** Contesto locale del robot. */
 Context ctxRobot ip [ host="localhost" port=8079 ]
 
-/** Attore che modella il robot che effettua l'esplorazione. */
 QActor robotdiscovery context ctxRobot {
 
-    /**
-     * Lo stato home è lo stato iniziale del robot, nel quale esso è in base.
-     * 
-     * Quando in questo stato, la console ne viene notificata.
-     * 
-     * Attende di passare in esplorazione quando richiesto dalla console 
-     * e con uno stato ambientale OK.
-     */
     State home initial [
         onMsg robotHome: robotHome -> forward console -m robotHome: robotHome
     ] transition
         stopAfter 60000
         whenMsg [ !? environmentOK ] cmdExplore -> exploration      // R-explore
-     
-    /**
-     * Lo stato exploration è lo stato più importante per la fase di discovery.
-     *
-     * Il robot lampeggia, esplora, reagisce a comandi di stop e 
-     * gestisce eventuali borse passando allo stato handleBag.
-     */
+
     State exploration [
         println("START BLINKING ...");
-        // ACTION: start blinking                                  // R-blinkLed (start)
-        println("EXPLORING ...")       // TODO implement logic     // R-consoleUpdate
+        // ACTION: start blinking                                  // R-blinkLed
+        println("EXPLORING ...")
         // ACTION: explore the environment
     ] transition
         stopAfter 60000
         whenMsg cmdStop -> idle,                                    // R-stopExplore
         whenMsg robotNearBag -> handleBag
 
-    /**
-     * Lo stato handleBag è lo stato che permette di gestire una borsa.
-     *
-     * Il robot si ferma, smette di lampeggiare, scatta una foto e la invia alla console.
-     * 
-     * Una volta ricevute istruzioni dalla console, ritorna alla base o ad esplorare.
-     */
     State handleBag [
-        // ACTION: halt                                             // R-stopAtBag
-        // ACTION: stop blinking                                    // R-blinkLed (stop)
-        // ACTION: take picture                                     // R-takePhoto
-        forward console -m bag: bag(picture(X))                     // R-stopAtBag & R-sendPhoto
+        // ACTION: halt
+        // ACTION: stop blinking                                    // R-blinkLed
+        // ACTION: take picture
+        forward console -m bag: bag(picture(X))
     ] transition
         stopAfter 60000
         whenMsg cmdGoHome -> home,
         whenMsg cmdExplore -> exploration
 
-    /**
-     * Lo stato idle prevede che il robot resti fermo, senza lampeggiare, in attesa di comandi.
-     */
     State idle [
         // ACTION: halt
-        // ACTION: stop blinking                                    // R-blinkLed (stop)
+        // ACTION: stop blinking                                    // R-blinkLed
     ] transition
         stopAfter 60000
         whenMsg cmdExplore -> exploration,                          // R-continueExplore
         whenMsg cmdGoHome -> home                                   // R-backHome
 }
 
-/** Attore che modella il robot che si occupa della bomba. */
 QActor robotretrieval context ctxRobot {
-   
-   /**
-     * Lo stato home è lo stato iniziale del robot, nel quale esso è in base.
-     * 
-     * Attende un messaggio della console per avviarsi verso la bomba.
-     */
+
    State home initial [
-       
+
    ] transition
        stopAfter 60000
-       whenMsg cmdReachBomb -> reachBomb                            // R-reachBag
+       whenMsg cmdReachBomb -> reachBomb
 
-    /**
-     * Lo stato reachBomb è lo stato in cui il robot viaggia verso la bomba.
-     *
-     * Lo stato si ripete finché non raggiunge la bomba e torna indietro, poi passa ad home.
-     */
     State reachBomb [
         // ACTION: reach bomb and bring it home
     ] transition
@@ -135,75 +81,45 @@ QActor robotretrieval context ctxRobot {
         whenMsg robotHome -> home
 }
 
-/** Attore console. */
 QActor console context ctxRobot {
 
-    /**
-     * Stato principale della console.
-     *
-     * Per un attesa massima di 60s, attende messaggi dal robot e li gestisce.
-     */
      State doWork initial [
-        println("Console init")        
+        println("Console init")
     ] transition
         stopAfter 60000
-        whenMsg robotState -> updateView,                           // R-consoleUpdate
+        whenMsg robotState -> updateView,
         whenMsg bag -> handlePhoto
         finally repeatPlan
 
-    /**
-     * Lo stato handlePhoto gestisce la ricezione di una foto dal robot.
-     *
-     * Attende un messaggio di bagStatus per gestirlo.
-     */
     State handlePhoto [
-        onMsg bag: bag(picture(X)) -> selfMsg bagStatus: isBomb(false) // ACTION: evaluate 
+        onMsg bag: bag(picture(X)) -> selfMsg bagStatus: isBomb(false) // ACTION: evaluate
     ] transition
         whenTime 3000 -> handlePhoto
         whenMsg bagStatus -> handleBagStatus
 
-    /**
-     * Lo stato handleBagStatus permette di gestire se la borsa è una bomba o no.
-     *
-     * Se lo è, memorizza la foto, ordina al robot di tornare e segnala un alert.
-     * Se non lo è, ordina al robot di continuare l'esplorazione.
-     */
     State handleBagStatus [
         onMsg bagStatus: isBomb(true, bag(picture(X))) -> {
-            // ACTION: store picture                                // R-storePhoto
-            forward robotdiscovery -m cmdGoHome: cmdGoHome;         // R-backHomeSinceBomb
-            selfMsg alert: alert                                    // R-alert
+            // ACTION: store picture
+            forward robotdiscovery -m cmdGoHome: cmdGoHome;
+            selfMsg alert: alert
         };
-        onMsg bagStatus: isBomb(false) -> 
-            forward robotdiscovery -m cmdExplore: cmdExplore        // R-continueExploreAfterPhoto
+        onMsg bagStatus: isBomb(false) ->
+            forward robotdiscovery -m cmdExplore: cmdExplore
     ] transition
         whenTime 3000 -> doWork
         whenMsg alert -> handleAlert
 
-    /**
-     * Lo stato handleAlert permette di gestire uno stato di allerta.
-     *
-     * Aspetta che il robot sia tornato poi lo manda a raccogliere la bomba.
-     */
     State handleAlert [
 
     ] transition
         whenTime 3000 -> handleAlert
-        whenMsg robotHome -> retrieveBomb                           // R-whaitForHome & R-reachBag
+        whenMsg robotHome -> retrieveBomb
 
-    /**
-     * Lo stato retrieveBomb ordina al robot retriever di raggiungere la bomba.
-     */
     State retrieveBomb [
-        forward robotretrieval -m cmdReachBomb: cmdReachBomb        // R-reachBag
+        forward robotretrieval -m cmdReachBomb: cmdReachBomb
     ] transition
         whenTime 100 -> doWork
 
-    /**
-     * Lo stato updateView permette di gestire gli aggiornamenti di stato della vista.
-     *
-     * Una volta fatto, riprende lo stato precedente.
-     */
     State updateView resumeLastPlan [
         onMsg robotState: state(X) -> printCurrentMessage
     ]
