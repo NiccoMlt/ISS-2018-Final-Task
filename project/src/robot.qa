@@ -6,7 +6,7 @@ System robot
  * *********************************************************
  */
  
- /** X = OK | NOTOK */
+/** X = ok | notok */
 Event environment: environment(X)
 
 /** X = temperature (°C) */
@@ -20,7 +20,11 @@ Event temperature: temperature(X)
  
 /** T = Type ; A = args */
 Dispatch robotAdapterAdd: robot(T, A)
+
+/** Comando al robot ; X = w|a|s|d|h */
 Event robotCmd: cmd(X)
+
+/** X = w|a|s|d|h */
 Dispatch robotCmdPriority: cmd(X)
 
 /*
@@ -28,13 +32,15 @@ Dispatch robotCmdPriority: cmd(X)
  * Messaggi & Eventi Mind
  * *********************************************************
  */
+
 Dispatch cmdStop: cmdStop                                               // R-stopAtBag
 Dispatch cmdGoHome: cmdGoHome                                           // R-backHome
 Dispatch cmdExplore: cmdExplore                                         // R-explore
 Dispatch cmdReachBomb: cmdReachBomb                                     // R-reachBag
 
-/** X = action */
+/** X = halt|takePhoto */
 Dispatch handleBag: handleBag(X)                                        // R-stopAtBag & R-takePhoto
+
 /** X = photo */
 Dispatch bag: bag(picture(X))                                           // R-sendPhoto & R-storePhoto
 
@@ -61,26 +67,8 @@ Dispatch robotNearBag: robotNearBag
 /** X=robotgui(CMD) CMD=s(low) ; from robot GUI */
 Event usercmd: usercmd(X)
 
-/** Contesto locale del robot. */
+/** Contesto locale del robot. Console web a localhost:8080 */
 Context ctxRobot ip [ host="localhost" port=8079 ] -httpserver
-
-/*
- * ---------------------------------------------------------------------------------
- * Environment condition handler for robots
- * ---------------------------------------------------------------------------------
- */
-/*
-// TODO
-EventHandler handle_environment for environment {
-    // Robot discovery
-    demo retract(environment(X)) for robot_discovery_mind;
-    memoCurrentEvent for robot_discovery_mind;
-    
-    // Robot retriever
-    demo retract(environment(X)) for robot_retriever_mind;
-    memoCurrentEvent for robot_retriever_mind
-};
-*/
 
 /** Attore che osserva l'ambiente e valuta la temperatura. */
 QActor world_observer context ctxRobot {
@@ -112,14 +100,13 @@ QActor robot_adapter context ctxRobot {
     
     Rules {
 //      robotType("robotSerial", setuparg("/dev/ttyACM0")).
-//      robotType("robotSerial", setuparg("/dev/rfcomm0")).
-        robotType("robotVirtual", setuparg("localhost")).
+      robotType("robotVirtual", setuparg("localhost")).
 //      robotType("robotDemo", setuparg("")).
     }
 
     /** Stato iniziale del Robot Adapter, logga l'avvio. */
     State init initial [
-        println("Robot adapter init")
+
     ] transition
         whenTime 100 -> initRobots
     
@@ -144,14 +131,14 @@ QActor robot_adapter context ctxRobot {
         whenEvent robotCmd -> executeCommand
         finally repeatPlan
 
-    /** Stato di interpretazione comandi TODO. */
+    /** Stato di interpretazione comandi. */
     State executeCommand resumeLastPlan [
         onMsg robotCmdPriority: cmd(X) -> javaRun it.unibo.robot_adapter.robots.doMove(X);
         onEvent robotCmd: cmd(X) -> javaRun it.unibo.robot_adapter.robots.doMove(X)
     ]
 }
 
-/** Attore che modella la mente del robot dicovery, separata dal robot fisico. */
+/** Attore che modella la mente del robot discovery, separata dal robot fisico. */
 QActor robot_discovery_mind context ctxRobot {
     
     Rules {
@@ -159,16 +146,11 @@ QActor robot_discovery_mind context ctxRobot {
     }
 
     /**
-     * Lo stato home è lo stato del robot nel quale esso può iniziare ad operare.
-     *
-     * Una volta entrato in questo stato, invia un messaggio alla console.
+     * Lo stato home è lo stato iniziale della mind del robot.
      *
      * Attende per 60s di ricevere un comando o un evento:
-     * - riguardante l'ambiente (non più OK)
-     * - per iniziare l'esplorazione (discovery)
-     * - per raggiungere la bomba (retriever)
-     * 
-     * TODO
+     * - riguardante l'ambiente,
+     * - per iniziare l'esplorazione.
      */
     State home initial [
         onMsg robotHome: robotHome -> forward console -m robotHome: robotHome
@@ -178,12 +160,6 @@ QActor robot_discovery_mind context ctxRobot {
             demo replaceRule(environment(X), environment(E)),
         whenMsg [ !? environment(ok) ] cmdExplore -> goToExploration    // R-explore
         finally repeatPlan
-
-    /*
-     * ********************************************************* *
-     * Exploration business logic                                *
-     * ********************************************************* *
-     */
 
     /**
      * Lo stato goToExploration è lo stato che precede l'inizio dell'esplorazione.
@@ -198,13 +174,13 @@ QActor robot_discovery_mind context ctxRobot {
     /**
      * Lo stato exploration è lo stato più importante per la fase di discovery.
      *
-     * Il robot invia alla console il proprio stato,
-     * gestisce eventuali comandi o borse vicine
-     * e continua ad esplorare.
+     * Mentre il robot esplora, la mind gestisce eventuali comandi o borse vicine.
      */
     State exploration [
-        println("EXPLORING ...");       // TODO implement logic         // R-consoleUpdate
-        emit robotCmd: cmd(w)           // TODO debug
+        // TODO implement logic ***
+        emit robotCmd: cmd(w);
+        println("EXPLORING ...")                                        // R-consoleUpdate
+        // ************************
     ] transition
         stopAfter 60000
         whenMsg cmdStop -> goToIdle,                                    // R-stopExplore
@@ -230,7 +206,7 @@ QActor robot_discovery_mind context ctxRobot {
         println("HANDLING BAG ...");
         onMsg handleBag: handleBag(halt) -> {                           // R-stopAtBag
             emit robotCmd: cmd(h);
-            emit robotCmd: cmd(blinkStop)
+            emit robotCmd: cmd(blinkStop)                               // R-blinkLed (stop)
         };
         onMsg handleBag: handleBag(takePhoto) -> {
             println("TAKE PHOTO ...");  // TODO implement               // R-takePhoto
@@ -273,16 +249,22 @@ QActor robot_discovery_mind context ctxRobot {
     ] transition
         stopAfter 60000
         whenMsg robotHome -> home
-
 }
 
-/** TODO */
+/** Attore che modella la mente del robot retriever, separata dal robot fisico. */
 QActor robot_retriever_mind context ctxRobot {
     
     Rules {
         environment(notok).
     }
     
+    /**
+     * Lo stato home è lo stato iniziale della mind del robot.
+     *
+     * Attende di ricevere un comando o un evento:
+     * - riguardante l'ambiente,
+     * - per raggiungere la bomba.
+     */
     State home initial [
         
     ] transition
@@ -291,12 +273,6 @@ QActor robot_retriever_mind context ctxRobot {
             demo replaceRule(environment(X), environment(E)),
         whenMsg [ !? environment(ok) ] cmdReachBomb -> goToReachBomb    // R-reachBag
         finally repeatPlan
-
-    /*
-     * ********************************************************* *
-     * Retrieval business logic                                     *
-     * ********************************************************* *
-     */
 
     /**
      * Lo stato goToReachBomb è lo stato che precede lo stato di viaggio verso la bomba.
@@ -330,34 +306,34 @@ QActor console context ctxRobot {
     /**
      * Stato principale della console.
      *
-     * Per un attesa massima di 60s,
-     * attende messaggi dal robot e li gestisce.
+     * Attende messaggi dal robot e li gestisce.
      */
     State doWork [
-        // delay 1000;
-        // emit temperature: temperature(18);                       // TODO demo
-        
-        // delay 3000;
-        // forward robot_discovery_mind -m cmdExplore: cmdExplore;  // TODO demo
-        // delay 2000;
-        // forward robot_discovery_mind -m cmdStop: cmdStop         // TODO demo
+        // TODO demo operations: ******************************
+        delay 1000;
+        emit temperature: temperature(18);
+        delay 3000;
+        forward robot_discovery_mind -m cmdExplore: cmdExplore;
+        delay 2000;
+        forward robot_discovery_mind -m cmdStop: cmdStop
+        // ****************************************************
     ] transition
         stopAfter 60000
-        whenEvent usercmd -> adaptCommand,                          // TODO demo
+        whenEvent usercmd -> adaptCommand,
         whenEvent robotState -> updateView,                             // R-consoleUpdate
         whenMsg bag -> handlePhoto
         finally repeatPlan
     
-    /** TODO */
+    /** Lo stato adaptCommand permette di convertire comandi provenienti dalla WebGUI. */
     State adaptCommand resumeLastPlan [
         printCurrentEvent;
-        onEvent usercmd: usercmd(robotgui(cmd(explore))) -> 
+        onEvent usercmd: usercmd(robotgui(cmd(explore))) ->
             forward robot_discovery_mind -m cmdExplore: cmdExplore;
         onEvent usercmd: usercmd(robotgui(cmd(halt))) -> 
             forward robot_discovery_mind -m cmdStop: cmdStop;
-        onEvent usercmd: usercmd(robotgui(cmd(home))) -> 
+        onEvent usercmd: usercmd(robotgui(cmd(home))) ->
             forward robot_discovery_mind -m cmdGoHome: cmdGoHome;
-        onEvent usercmd: usercmd(robotgui(bagStatus(bomb))) -> 
+        onEvent usercmd: usercmd(robotgui(bagStatus(bomb))) ->
             selfMsg bagStatus: bagStatus(bomb, args(picture(nothing)));
         onEvent usercmd: usercmd(robotgui(bagStatus(bag))) -> 
             selfMsg bagStatus: bagStatus(bag, args(nothing))

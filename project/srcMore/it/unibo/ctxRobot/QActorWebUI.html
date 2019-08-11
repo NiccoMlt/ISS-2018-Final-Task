@@ -8,10 +8,10 @@
 <body>
 <h3 id="h3">Robot Web UI</h3>
 
-<div> 
+<div>
 <input size=85% type="textArea" id="input" value="[ true ], play('./audio/music_interlude20.wav'),20000,'alarm,obstacle', 'handleAlarm,handleObstacle'" />
 <input style="height: 30px; width: 90px;" type="button"
- id="ExternalForward" value="RUN" 
+ id="ExternalForward" value="RUN"
  onmousedown="document.getElementById('inputArea').value= document.getElementById('inputArea').value+'\n'+document.getElementById('input').value;
  send('i-'+document.getElementById('input').value); "
 <br/>
@@ -25,7 +25,7 @@
 <button onclick="setSpeed('medium');">speedMedium</button>
 <button onclick="setSpeed('low');">speedLow</button>
 </center>
-   
+
 </div>
  	<table id="robots">
 		<tr>
@@ -50,7 +50,7 @@
 			<td>
                 <center>
 				<table style="background-color: #d9f7f3">
-					<tr>
+					<!-- <tr>
 						<td align="center"><input
 							style="height: 40px; width: 90px; color:red" type="button"
 							id="ExternalAlarm" value="FIRE" onmousedown="send('e(alarm(fire))');" /></td>
@@ -58,7 +58,7 @@
 							style="height: 60px; width: 90px;" type="button"
 							id="ExternalForward" value="FORWARD" onmousedown="send('w('+curSpeed+')');" /></td>
 						<td align="center"><input
-							style="height: 60px; width: 90px; color:red " type="button" 
+							style="height: 60px; width: 90px; color:red " type="button"
 							id="ExternalAlarm" value="OBSTACLE" onmousedown="send('e(alarm(obstacle))');" /></td>
 					</tr>
 					<tr>
@@ -82,7 +82,26 @@
 						<td align="center"><input
 							style="height: 40px; width: 90px; color:blue" type="button"
 							id="ExternalAlarm" value="STOP" onmousedown="send('e(cmd(stop))');" /></td>
-					</tr>
+          </tr> -->
+          <tr>
+						<td align="center"><input
+							style="height: 60px; width: 90px;" type="button"
+							id="ExternalExplore" value="EXPLORE" onmousedown="send('cmd(explore)');"  /></td>
+						<td align="center"><input
+							style="height: 60px; width: 90px;" type="button"
+							id="ExternalHalt" value="HALT" onmousedown="send('cmd(halt)');"  /></td>
+						<td align="center"><input
+							style="height: 60px; width: 90px;" type="button"
+							id="ExternalHome" value="HOME" onmousedown="send('cmd(home)');" /></td>
+          </tr>
+          <tr>
+						<td align="center"><input
+							style="height: 60px; width: 90px;" type="button"
+							id="ExternalBomb" value="BOMB" onmousedown="send('bagStatus(bomb)');"  /></td>
+						<td align="center"><input
+							style="height: 60px; width: 90px;" type="button"
+							id="ExternalBag" value="BAG" onmousedown="send('bagStatus(bag)');" /></td>
+          </tr>
 				</table>
                 </center>
 			</td>
