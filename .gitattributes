@@ -283,8 +283,9 @@ Procfile    text
 *.qak text linguist-language=Xtext linguist-detectable=true
 
 ## Linguist configurations ##
-*.fz          text  linguist-language=xml
-*.czrc        text  linguist-language=json
+*.fz          text  linguist-language=XML
+*.czrc        text  linguist-language=JSON
+*.pl          text  linguist-language=Prolog
 src-gen/*           linguist-generated=true linguist-detectable=true
 srcMore/*           linguist-generated=true linguist-detectable=true
 sites/*             linguist-generated=true linguist-documentation
