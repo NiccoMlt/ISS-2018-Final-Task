@@ -128,7 +128,7 @@ QActor robot_adapter context ctxRobot {
         [ ?? robotType(T, setuparg(A)) ] selfMsg robotAdapterAdd: robot(T, A)
     ] transition
         whenTime 2000 -> doWork
-        whenMsg robotAdapterAdd: robot(T,A) do javaRun it.unibo.robotadapter.robots.setUp(T, A)
+        whenMsg robotAdapterAdd: robot(T,A) do javaRun it.unibo.robot_adapter.robots.setUp(T, A)
         finally repeatPlan
 
     /** 
@@ -146,8 +146,8 @@ QActor robot_adapter context ctxRobot {
 
     /** Stato di interpretazione comandi TODO. */
     State executeCommand resumeLastPlan [
-        onMsg robotCmdPriority: cmd(X) -> javaRun it.unibo.robotadapter.robots.doMove(X);
-        onEvent robotCmd: cmd(X) -> javaRun it.unibo.robotadapter.robots.doMove(X)
+        onMsg robotCmdPriority: cmd(X) -> javaRun it.unibo.robot_adapter.robots.doMove(X);
+        onEvent robotCmd: cmd(X) -> javaRun it.unibo.robot_adapter.robots.doMove(X)
     ]
 }
 

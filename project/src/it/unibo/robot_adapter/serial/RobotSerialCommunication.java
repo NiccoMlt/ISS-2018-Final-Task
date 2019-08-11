@@ -1,4 +1,4 @@
-package it.unibo.robotadapter.serial;
+package it.unibo.robot_adapter.serial;
 
 import it.unibo.supports.serial.JSSCSerialComm;
 import it.unibo.supports.serial.SerialPortConnSupport;

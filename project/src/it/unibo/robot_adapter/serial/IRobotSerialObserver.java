@@ -1,4 +1,4 @@
-package it.unibo.robotadapter.serial;
+package it.unibo.robot_adapter.serial;
 
 /**
  * Interface for an Observer of a SerialRobot.

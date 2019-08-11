@@ -1,4 +1,4 @@
-package it.unibo.robotadapter.virtual;
+package it.unibo.robot_adapter.virtual;
 
 import it.unibo.qactors.akka.QActor;
 import java.io.BufferedReader;

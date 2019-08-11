@@ -1,7 +1,7 @@
-package it.unibo.robotadapter.serial;
+package it.unibo.robot_adapter.serial;
 
 import it.unibo.qactors.akka.QActor;
-import it.unibo.robotadapter.IRobotExecutor;
+import it.unibo.robot_adapter.IRobotExecutor;
 
 /**
  * RobotExecutor realization that controls a serial-connected Arduino.
@@ -39,6 +39,7 @@ public class SerialExecutor implements IRobotExecutor {
 
     @Override
     public void doMove(final QActor qa, final String cmd) {
+        qa.println("Serial robot executing command: " + cmd);
         switch (cmd) {
             case "h":
             case "w":
@@ -56,7 +57,7 @@ public class SerialExecutor implements IRobotExecutor {
                 robotSupport.executeTheCommand("n");
                 break;
             default:
-                qa.println("Unexpected command \"" + cmd + "\""); // TODO
+                qa.println("Unexpected command \"" + cmd + "\"");
         }
     }
 }

@@ -1,4 +1,4 @@
-package it.unibo.robotadapter;
+package it.unibo.robot_adapter;
 
 import it.unibo.qactors.akka.QActor;
 
