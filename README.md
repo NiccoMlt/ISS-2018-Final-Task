@@ -1,7 +1,8 @@
 # Laboratorio di Sistemi Software 2018 - Final task
 
-[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
 [![Build Status](https://travis-ci.com/NiccoMlt/ISS-2018-Final-Task.svg?branch=master)](https://travis-ci.com/NiccoMlt/ISS-2018-Final-Task)
+[![Commitizen friendly](https://img.shields.io/badge/commitizen-friendly-brightgreen.svg)](http://commitizen.github.io/cz-cli/)
+[![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 
 Elaborato finale per Laboratorio di Sistemi Software 2018.
 
@@ -32,8 +33,6 @@ Il repository è composto dai seguenti sottoprogetti:
     È basato sul [codice fornito dal professore](https://github.com/anatali/iss2018Lab/tree/master/it.unibo.mbot2018/Soffritti), a sua volta derivato da un [progetto di Pierfrancesco Soffritti](https://github.com/PierfrancescoSoffritti/configurable-threejs-app).
 
 ## Licenza
-
-[![GitHub](https://img.shields.io/github/license/NiccoMlt/ISS-2018-Final-Task)](https://opensource.org/licenses/Apache-2.0)
 
 Il codice personalmente realizzato per il progetto e per la struttura del documento di relazione sono forniti sotto licenza [Apache License, Version 2.0](https://opensource.org/licenses/Apache-2.0).
 
