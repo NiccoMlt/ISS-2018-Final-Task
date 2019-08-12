@@ -8,14 +8,6 @@
 % arara: pdflatex: { synctex: yes, shell: yes }
 % arara: pdflatex: { synctex: yes, shell: yes }
 
-%% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
-\begin{filecontents*}{\jobname.xmpdata}
-  \Title{Laboratorio~di~Sistemi~Software~--~Tema~finale}
-  \Author{Niccolò Maltoni}
-  \Copyright{Questo documento è fornito sotto licenza Creative Commons Attribution-ShareAlike 4.0 International}
-  \CopyrightURL{http://creativecommons.org/licenses/by-sa/4.0}
-\end{filecontents*}
-
 \documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -38,6 +30,18 @@
     italian=guillemets  % imposta lo stile per l'italiano
 ]{csquotes}                     % serve a impostare lo stile delle virgolette
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{filecontents}       % permette di definire ambienti filecontents (senza * finale) per sovrascrivere il file
+\usepackage{silence}            % silenzia warning attesi
+\WarningFilter{latex}{Overwriting file}
+
+%% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
+\begin{filecontents}{\jobname.xmpdata}
+  \Title{Laboratorio~di~Sistemi~Software~--~Tema~finale}
+  \Author{Niccolò Maltoni}
+  \Copyright{Questo documento è fornito sotto licenza Creative Commons Attribution-ShareAlike 4.0 International}
+  \CopyrightURL{http://creativecommons.org/licenses/by-sa/4.0}
+\end{filecontents}
 
 \usepackage{relsize, etoolbox}  % permette di riferirsi ad ambienti specifici
 \AtBeginEnvironment{foreigndisplayquote}{\smaller}
@@ -120,9 +124,9 @@
       whenTime,resumeLastPlan,initial,finally,javaRun,println,%
       emit,forward,do},
   otherkeywords={:,->,-m,;,.,\,,[,],:-},
-  morestring=*[d]{``}, % chk segnala errore con "
+  morestring=*[d]{"},
   morecomment=[l]{//},
-  morecomment=[s]{/*}{*/} % chk segnala errore con \/* e con *\/
+  morecomment=[s]{/*}{*/}
 }
 
 \newcommand{\java}{\textsf{Java}}
@@ -184,12 +188,15 @@
 \setcounter{secnumdepth}{2}   % Numera fino alla sottosezione nel corpo del testo
 \setcounter{tocdepth}{3}      % Numera fino alla sotto-sottosezione nell'indice
 
+\usepackage[a-1b]{pdfx}
+
 \usepackage[%
   depth=3,              % equivale a bookmarksdepth di hyperref
   open=false,           % equivale a bookmarksopen di hyperref
   numbered=true         % equivale a bookmarksnumbered di hyperref
 ]{bookmark}                     % Gestisce i segnalibri meglio di hyperref
-\usepackage{hyperref}           % Gestisce tutte le cose ipertestuali del pdf
+
+% \usepackage{hyperref}           % Gestisce tutte le cose ipertestuali del pdf
 \hypersetup{%
   pdfpagemode={UseNone},
   hidelinks,            % nasconde i collegamenti (non vengono quadrettati)
@@ -201,13 +208,9 @@
   plainpages=false,
   breaklinks,
   pdfstartview={Fit},
-  pdfauthor={Niccolò Maltoni},
-  pdfcreator={Niccolò Maltoni},
-  pdftitle={Laboratorio di Sistemi Software - Tema finale}, % chktex 8
   pdflang={it}
 }
 
-\usepackage[a-1b]{pdfx}
 \usepackage[%
   italian,            % definizione delle lingue da usare
   nameinlink          % inserisce i link nei riferimenti
