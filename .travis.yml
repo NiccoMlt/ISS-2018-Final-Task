@@ -17,6 +17,7 @@ matrix:
         - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
         - cd ./report
         - arara --version
+        - dot -V
       install:
         - arara --log --verbose report.tex
       script:
