@@ -5,8 +5,8 @@
 % !TEX TS-program = arara
 % !TeX spellcheck = it-IT
 
-% arara: pdflatex: { synctex: yes, shell: yes }
-% arara: pdflatex: { synctex: yes, shell: yes }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode  }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode  }
 
 Essendo lo Sprint iniziale, è stata realizzata un'attenta analisi di tutti i requisiti forniti dal committente
 con uno sguardo generale su tutto il sistema, in modo da poter chiarire con quest'ultimo eventuali incomprensioni.
@@ -57,7 +57,7 @@ permettendo di facilitare la comprensione di \textbf{struttura}, \textbf{interaz
 
 \begin{figure}[H]
   \centering
-  \includegraphics[width=1\textwidth]{res/logicalArchitecture.png}%
+  \includegraphics[width=1\textwidth]{res/logicalArchitecture.png}
   \label{fig:logicalArchitecture}
 \end{figure}
 
@@ -67,21 +67,21 @@ Partendo con un approccio top-down, sono stati prima di tutto riconosciuti i 3 c
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1\textwidth]{res/sprint1/requirements/console}%
+  \includegv[width=1\textwidth]{res/sprint1/requirements/console}
   \caption{Console}%
   \label{fig:sp1:req:console}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1\textwidth]{res/sprint1/requirements/robotdiscovery}%
+  \includegv[width=1\textwidth]{res/sprint1/requirements/robotdiscovery}
   \caption{Robot Discovery}%
   \label{fig:sp1:req:robotdiscovery}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1\textwidth]{res/sprint1/requirements/robotretrieval}%
+  \includegv[width=1\textwidth]{res/sprint1/requirements/robotretrieval}
   \caption{Robot Retrieval}%
   \label{fig:sp1:req:robotretrieval}
 \end{figure}
@@ -140,35 +140,35 @@ Procedendo con un approccio top-down, a seguito dello zoom-in sono stati identif
 
 \begin{figure}[H]
   \centering
-  \includegv[width=0.6\textwidth]{res/sprint1/problem/world_observer}%
+  \includegv[width=0.6\textwidth]{res/sprint1/problem/world_observer}
   \caption{World Observer}%
   \label{fig:sp1:prob:worldobserver}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1\textwidth]{res/sprint1/problem/robot_adapter}%
+  \includegv[width=1\textwidth]{res/sprint1/problem/robot_adapter}
   \caption{Robot Adapter}%
   \label{fig:sp1:prob:robotadapter}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1\textwidth]{res/sprint1/problem/robot_retriever_mind}%
+  \includegv[width=1\textwidth]{res/sprint1/problem/robot_retriever_mind}
   \caption{Robot Retrieval Mind}%
   \label{fig:sp1:prob:robotretrieval}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1.2\textwidth]{res/sprint1/problem/robot_discovery_mind}%
+  \includegv[width=1.2\textwidth]{res/sprint1/problem/robot_discovery_mind}
   \caption{Robot Discovery Mind}%
   \label{fig:sp1:prob:robotdiscovery}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1\textwidth]{res/sprint1/problem/console}%
+  \includegv[width=1\textwidth]{res/sprint1/problem/console}
   \caption{Console}%
   \label{fig:sp1:prob:console}
 \end{figure}
@@ -194,7 +194,7 @@ la software house, infatti, fornisce alcuni componenti tecnologici già realizza
     \item la \textbf{console} si occupa invece di adattare l'interfaccia grafica messa a disposizione dal framework QA (WebGUI) alla console specificata dai requisiti.
 \end{itemize}
 
-\subsection{Rappresentazione formale in output alla fase di analisi del problema}\labelssec{sp1:qa}
+\subsection[Rappresentazione formale]{Rappresentazione formale in output alla fase di analisi del problema}\labelssec{sp1:qa}
 
 Di seguito è riportata la versione finale per lo Sprint 1 dell'architettura logica in output all'analisi del problema formalizzata tramite metamodello QA\@.
 

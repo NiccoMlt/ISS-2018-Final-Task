@@ -5,8 +5,8 @@
 % !TEX TS-program = arara
 % !TeX spellcheck = it-IT
 
-% arara: pdflatex: { synctex: yes, shell: yes }
-% arara: pdflatex: { synctex: yes, shell: yes }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
 
 \documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
 
@@ -33,6 +33,7 @@
 
 \usepackage{filecontents}       % permette di definire ambienti filecontents (senza * finale) per sovrascrivere il file
 \usepackage{silence}            % silenzia warning attesi
+\WarningFilter{latex}{Writing file}
 \WarningFilter{latex}{Overwriting file}
 
 %% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
@@ -188,7 +189,7 @@
 \setcounter{secnumdepth}{2}   % Numera fino alla sottosezione nel corpo del testo
 \setcounter{tocdepth}{3}      % Numera fino alla sotto-sottosezione nell'indice
 
-\usepackage[a-1b]{pdfx}
+\usepackage[a-1b]{pdfx}         % permette di generare PDF/A; importa anche hyperref
 
 \usepackage[%
   depth=3,              % equivale a bookmarksdepth di hyperref
@@ -196,7 +197,7 @@
   numbered=true         % equivale a bookmarksnumbered di hyperref
 ]{bookmark}                     % Gestisce i segnalibri meglio di hyperref
 
-% \usepackage{hyperref}           % Gestisce tutte le cose ipertestuali del pdf
+% \usepackage{hyperref}         % Gestisce tutte le cose ipertestuali del pdf; importato automaticamente
 \hypersetup{%
   pdfpagemode={UseNone},
   hidelinks,            % nasconde i collegamenti (non vengono quadrettati)
