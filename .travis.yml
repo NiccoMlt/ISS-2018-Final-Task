@@ -8,10 +8,13 @@ matrix:
         apt:
           packages:
             - icc-profiles
-            - texlive-full
+            - miktex
           sources:
-            - sourceline: "ppa:jonathonf/texlive"
+            - sourceline: "deb http://miktex.org/download/ubuntu xenial universe"
+              key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
       before_install:
+        - sudo miktexsetup --shared=yes finish
+        - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
         - cd ./report
         - arara --version
       install:
