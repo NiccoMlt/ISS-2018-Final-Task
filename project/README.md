@@ -38,8 +38,8 @@ Per generare codice dal metamodello, è necessario che siano installati i plugin
 ### QA plugin fornito dal professore
 
   - Ottenere i file jar dalla cartella [``plugins``](https://github.com/anatali/iss2018/tree/master/it.unibo.issMaterial/plugins) del repositori del corso:
-    - ([it.unibo.xtext.qactor_1.5.15](https://github.com/anatali/iss2018/raw/master/it.unibo.issMaterial/plugins/it.unibo.xtext.qactor_1.5.15.jar)
-    - [it.unibo.xtext.qactor.ui_1.5.15](https://github.com/anatali/iss2018/raw/master/it.unibo.issMaterial/plugins/it.unibo.xtext.qactor.ui_1.5.15.jar))
+    - [it.unibo.xtext.qactor_1.5.15](https://github.com/anatali/iss2018/raw/master/it.unibo.issMaterial/plugins/it.unibo.xtext.qactor_1.5.15.jar)
+    - [it.unibo.xtext.qactor.ui_1.5.15](https://github.com/anatali/iss2018/raw/master/it.unibo.issMaterial/plugins/it.unibo.xtext.qactor.ui_1.5.15.jar)
   - Mettere i file nella cartella ``dropins`` nella root della cartella di installazione di Eclipse (per esempio, ``C:\Users\<username>\eclipse\java\eclipse\dropins`` o ``/usr/lib/eclipse/dropins/``)
   - Ricaricare Eclipse
 
