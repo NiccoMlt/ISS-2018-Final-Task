@@ -1,0 +1,261 @@
+System robot
+
+/** X = ok | notok */
+Event environment: environment(X)
+
+/** X = temperature (°C) */
+Event temperature: temperature(X)
+
+/** T = Type ; A = args */
+Dispatch robotAdapterAdd: robot(T, A)
+
+/** Comando al robot ; X = w|a|s|d|h */
+Event robotCmd: cmd(X)
+
+/** X = w|a|s|d|h */
+Dispatch robotCmdPriority: cmd(X)
+
+Dispatch cmdStop: cmdStop                                               // R-stopExplore
+Dispatch cmdGoHome: cmdGoHome                                           // R-backHome
+Dispatch cmdExplore: cmdExplore                                         // R-explore
+Dispatch cmdReachBomb: cmdReachBomb
+
+/** X = halt|takePhoto */
+Dispatch handleBag: handleBag(X)
+
+/** X = photo */
+Dispatch bag: bag(picture(X))
+
+Dispatch alert: alert
+/** X = bomb|bag ; Y = arguments */
+Dispatch bagStatus: bagStatus(X, args(Y))
+
+/** X = distance */
+Event robotSonar: robotSonar(distance(X))
+/** X = name ; virtual sonar */
+Event robotSonarObstacle : obstacle(X)
+
+/** (X,Y) = coordinates ; M = w|a|s|d|h */
+Event robotState: state(position(X,Y), movement(M))
+
+Dispatch robotHome: robotHome
+Dispatch robotNearBag: robotNearBag
+
+/** X=robotgui(CMD) CMD=s(low) ; from WebGUI */
+Event usercmd: usercmd(X)
+
+Context ctxRobot ip [ host="localhost" port=8079 ] -httpserver
+
+QActor world_observer context ctxRobot {
+
+    Rules {
+        temperature(18).
+
+        evaluateTemp :- temperature(X), eval(lt, X, 25).                // R-TempOk
+        evaluateEnvironment :- evaluateTemp.
+    }
+
+    State doObserve initial [
+        [ !? evaluateEnvironment ]
+            emit environment: environment(ok)
+        else
+            emit environment: environment(notok)
+    ] transition
+        whenTime 1000 -> doObserve
+        whenEvent temperature: temperature(X) do
+            ReplaceRule temperature(Z) with temperature(X)              // R-TempOk
+        finally repeatPlan
+}
+
+QActor robot_adapter context ctxRobot {
+
+    Rules {
+        robotType("robotVirtual", setuparg("localhost")).
+    }
+
+    State init initial [
+
+    ] transition
+        whenTime 100 -> initRobots
+
+    State initRobots [
+        [ ?? robotType(T, setuparg(A)) ] selfMsg robotAdapterAdd: robot(T, A)
+    ] transition
+        whenTime 2000 -> doWork
+        whenMsg robotAdapterAdd: robot(T,A) do
+            javaRun it.unibo.robot_adapter.robots.setUp(T, A)
+        finally repeatPlan
+
+    State doWork [
+
+    ] transition
+        stopAfter 60000
+        whenMsg robotCmdPriority -> executeCommand,
+        whenEvent robotCmd -> executeCommand
+        finally repeatPlan
+
+    State executeCommand resumeLastPlan [
+        onMsg robotCmdPriority: cmd(X) ->
+            javaRun it.unibo.robot_adapter.robots.doMove(X);
+        onEvent robotCmd: cmd(X) ->
+            javaRun it.unibo.robot_adapter.robots.doMove(X)
+    ]
+}
+
+QActor robot_discovery_mind context ctxRobot {
+
+    Rules {
+        environment(notok).
+    }
+
+    State home initial [
+        onMsg robotHome: robotHome -> forward console -m robotHome: robotHome
+    ] transition
+        stopAfter 60000
+        whenEvent environment: environment(E) do
+            demo replaceRule(environment(X), environment(E)),
+        whenMsg [ !? environment(ok) ] cmdExplore -> goToExploration    // R-explore
+        finally repeatPlan
+
+    State goToExploration [
+        forward robot_adapter -m robotCmdPriority: cmd(blinkStart)      // R-blinkLed
+    ] transition
+        whenTime 100 -> exploration
+
+    State exploration [
+        println("EXPLORING ...")
+    ] transition
+        stopAfter 60000
+        whenMsg cmdStop -> goToIdle,                                    // R-stopExplore
+        whenMsg robotNearBag -> goToHandleBag
+
+    State goToHandleBag [
+        selfMsg handleBag: handleBag(halt);
+        selfMsg handleBag: handleBag(takePhoto)
+    ] transition
+        whenTime 10 -> handleBag
+
+    State handleBag [
+        println("HANDLING BAG ...");
+        onMsg handleBag: handleBag(halt) -> {
+            emit robotCmd: cmd(h);
+            emit robotCmd: cmd(blinkStop)                               // R-blinkLed
+        };
+        onMsg handleBag: handleBag(takePhoto) -> {
+            println("TAKE PHOTO ...");  // TODO implement
+            forward console -m bag: bag(picture(X))
+        }
+    ] transition
+        whenTime 1000 -> handleBag
+        whenMsg handleBag -> handleBag,
+        whenMsg cmdGoHome -> returnHome,
+        whenMsg cmdExplore -> goToExploration
+
+    State goToIdle [
+        forward robot_adapter -m robotCmdPriority: cmd(h);
+        forward robot_adapter -m robotCmdPriority: cmd(blinkStop)       // R-blinkLed
+    ] transition
+        whenTime 100 -> idle
+
+    State idle [
+
+    ] transition
+        stopAfter 60000
+        whenMsg cmdExplore -> exploration,                              // R-continueExplore
+        whenMsg cmdGoHome -> returnHome                                 // R-backHome
+
+    State returnHome [
+        println("GOING HOME...")
+    ] transition
+        stopAfter 60000
+        whenMsg robotHome -> home
+}
+
+QActor robot_retriever_mind context ctxRobot {
+
+    Rules {
+        environment(notok).
+    }
+
+    State home initial [
+
+    ] transition
+        stopAfter 60000
+        whenEvent environment: environment(E) do
+            demo replaceRule(environment(X), environment(E)),
+        whenMsg [ !? environment(ok) ] cmdReachBomb -> goToReachBomb
+        finally repeatPlan
+
+    State goToReachBomb [
+
+    ] transition
+        whenTime 1000 -> reachBomb
+
+    State reachBomb [
+        println("RETRIVING BOMB ...")
+    ] transition
+        whenTime 3000 -> reachBomb
+        whenMsg robotHome -> home
+}
+
+QActor console context ctxRobot {
+
+    State init initial [
+        println("Console init")
+    ] transition
+        whenTime 100 -> doWork
+
+    State doWork [
+
+    ] transition
+        stopAfter 60000
+        whenEvent usercmd -> adaptCommand,
+        whenEvent robotState -> updateView,
+        whenMsg bag -> handlePhoto
+        finally repeatPlan
+
+    State adaptCommand resumeLastPlan [
+        printCurrentEvent;
+        onEvent usercmd: usercmd(robotgui(cmd(explore))) ->
+            forward robot_discovery_mind -m cmdExplore: cmdExplore;
+        onEvent usercmd: usercmd(robotgui(cmd(halt))) ->
+            forward robot_discovery_mind -m cmdStop: cmdStop;
+        onEvent usercmd: usercmd(robotgui(cmd(home))) ->
+            forward robot_discovery_mind -m cmdGoHome: cmdGoHome;
+        onEvent usercmd: usercmd(robotgui(bagStatus(bomb))) ->
+            selfMsg bagStatus: bagStatus(bomb, args(picture(nothing)));
+        onEvent usercmd: usercmd(robotgui(bagStatus(bag))) ->
+            selfMsg bagStatus: bagStatus(bag, args(nothing))
+    ]
+
+    State handlePhoto [
+        onMsg bag: bag(picture(X)) -> printCurrentMessage
+    ] transition
+        whenTime 3000 -> handlePhoto
+        whenMsg bagStatus -> handleBagStatus,
+        whenEvent usercmd -> adaptCommand
+        finally repeatPlan
+
+    State handleBagStatus [
+        onMsg bagStatus: bagStatus(bomb, args(picture(X))) -> {
+            // TODO implement save X
+            forward robot_discovery_mind -m cmdGoHome: cmdGoHome;
+            selfMsg alert: alert
+        };
+        onMsg bagStatus: bagStatus(bag, Y) ->
+            forward robot_discovery_mind -m cmdExplore: cmdExplore
+    ] transition
+        whenTime 3000 -> doWork
+        whenMsg alert -> handleAlert
+
+    State handleAlert [
+
+    ] transition
+        whenTime 3000 -> handleAlert
+        whenMsg robotHome: robotHome do
+            forward robot_retriever_mind -m cmdReachBomb: cmdReachBomb
+
+    State updateView resumeLastPlan [
+        onMsg robotState: state(X) -> printCurrentMessage
+    ]
+}

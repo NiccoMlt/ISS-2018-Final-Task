@@ -7,13 +7,18 @@ matrix:
       addons:
         apt:
           packages:
+            - graphviz
             - icc-profiles
-            - texlive-full
+            - miktex
           sources:
-            - sourceline: "ppa:jonathonf/texlive"
+            - sourceline: "deb http://miktex.org/download/ubuntu xenial universe"
+              key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
       before_install:
+        - sudo miktexsetup --shared=yes finish
+        - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
         - cd ./report
         - arara --version
+        - dot -V
       install:
         - arara --log --verbose report.tex
       script:
@@ -27,3 +32,29 @@ matrix:
         draft: true
         on:
           repo: NiccoMlt/ISS-2018-Final-Task
+    - name: JVM project build
+      language: java
+      jdk: openjdk8
+      before_install:
+        - cd ./project
+        - gradle -b build_ctxRobot.gradle qawrapper
+        - chmod +x ./gradlew
+      install:
+        - ./gradlew -b build_ctxRobot.gradle eclipse
+      script:
+        - ./gradlew -b build_ctxRobot.gradle clean assemble
+        - ./gradlew -b build_ctxRobot.gradle test --tests "it.unibo.TestRBlinkLed"
+        - ./gradlew -b build_ctxRobot.gradle test --tests "it.unibo.TestROkTemperature"
+    - name: PlatformIO Arduino
+      language: python
+      python:
+        - "2.7"
+      sudo: false
+      before_install:
+        - cd arduino
+      install:
+        - pip install -U platformio
+        - platformio update
+      script:
+        - platformio run
+

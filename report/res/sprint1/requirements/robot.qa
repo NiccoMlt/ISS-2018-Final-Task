@@ -1,0 +1,126 @@
+System robot
+
+Dispatch environmentValid: environmentValid
+
+Event environmentOK: environmentOK
+Event environmentNOTOK: environmentNOTOK
+
+/** X = temperature (°C) */
+Event temperature: temperature(X)                                   // R-TempOk
+
+Dispatch cmdStop: cmdStop                                           // R-stopExplore
+Dispatch cmdGoHome: cmdGoHome                                       // R-backHome
+Dispatch cmdExplore: cmdExplore                                     // R-explore
+Dispatch cmdReachBomb: cmdReachBomb
+
+/** X = photo */
+Dispatch bag: bag(picture(X))
+
+Dispatch alert: alert
+
+/** X = true|false ; Y = bag arguments */
+Dispatch bagStatus: isBomb(X, bag(Y))
+
+/** (X,Y) = coordinates ; M = w|a|s|d|h */
+Dispatch robotState: state(position(X,Y), movement(M))
+
+Dispatch robotHome: robotHome
+Dispatch robotNearBag: robotNearBag
+
+Context ctxRobot ip [ host="localhost" port=8079 ]
+
+QActor robotdiscovery context ctxRobot {
+
+    State home initial [
+        onMsg robotHome: robotHome -> forward console -m robotHome: robotHome
+    ] transition
+        stopAfter 60000
+        whenMsg [ !? environmentOK ] cmdExplore -> exploration      // R-explore
+
+    State exploration [
+        println("START BLINKING ...");
+        // ACTION: start blinking                                  // R-blinkLed
+        println("EXPLORING ...")
+        // ACTION: explore the environment
+    ] transition
+        stopAfter 60000
+        whenMsg cmdStop -> idle,                                    // R-stopExplore
+        whenMsg robotNearBag -> handleBag
+
+    State handleBag [
+        // ACTION: halt
+        // ACTION: stop blinking                                    // R-blinkLed
+        // ACTION: take picture
+        forward console -m bag: bag(picture(X))
+    ] transition
+        stopAfter 60000
+        whenMsg cmdGoHome -> home,
+        whenMsg cmdExplore -> exploration
+
+    State idle [
+        // ACTION: halt
+        // ACTION: stop blinking                                    // R-blinkLed
+    ] transition
+        stopAfter 60000
+        whenMsg cmdExplore -> exploration,                          // R-continueExplore
+        whenMsg cmdGoHome -> home                                   // R-backHome
+}
+
+QActor robotretrieval context ctxRobot {
+
+   State home initial [
+
+   ] transition
+       stopAfter 60000
+       whenMsg cmdReachBomb -> reachBomb
+
+    State reachBomb [
+        // ACTION: reach bomb and bring it home
+    ] transition
+        stopAfter 60000
+        whenMsg robotHome -> home
+}
+
+QActor console context ctxRobot {
+
+     State doWork initial [
+        println("Console init")
+    ] transition
+        stopAfter 60000
+        whenMsg robotState -> updateView,
+        whenMsg bag -> handlePhoto
+        finally repeatPlan
+
+    State handlePhoto [
+        onMsg bag: bag(picture(X)) -> selfMsg bagStatus: isBomb(false) // ACTION: evaluate
+    ] transition
+        whenTime 3000 -> handlePhoto
+        whenMsg bagStatus -> handleBagStatus
+
+    State handleBagStatus [
+        onMsg bagStatus: isBomb(true, bag(picture(X))) -> {
+            // ACTION: store picture
+            forward robotdiscovery -m cmdGoHome: cmdGoHome;
+            selfMsg alert: alert
+        };
+        onMsg bagStatus: isBomb(false) ->
+            forward robotdiscovery -m cmdExplore: cmdExplore
+    ] transition
+        whenTime 3000 -> doWork
+        whenMsg alert -> handleAlert
+
+    State handleAlert [
+
+    ] transition
+        whenTime 3000 -> handleAlert
+        whenMsg robotHome -> retrieveBomb
+
+    State retrieveBomb [
+        forward robotretrieval -m cmdReachBomb: cmdReachBomb
+    ] transition
+        whenTime 100 -> doWork
+
+    State updateView resumeLastPlan [
+        onMsg robotState: state(X) -> printCurrentMessage
+    ]
+}

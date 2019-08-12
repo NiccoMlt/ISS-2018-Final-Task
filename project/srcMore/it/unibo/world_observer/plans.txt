@@ -1,0 +1,1 @@
+plan(1,doObserve, sentence( evaluateEnvironment,raise( environment , environment( ok) )'),'','' ))

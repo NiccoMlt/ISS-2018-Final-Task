@@ -5,16 +5,8 @@
 % !TEX TS-program = arara
 % !TeX spellcheck = it-IT
 
-% arara: pdflatex: { synctex: yes, shell: yes }
-% arara: pdflatex: { synctex: yes, shell: yes }
-
-%% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
-\begin{filecontents*}{\jobname.xmpdata}
-  \Title{Laboratorio~di~Sistemi~Software~--~Tema~finale}
-  \Author{Niccolò Maltoni}
-  \Copyright{Questo documento è fornito sotto licenza Creative Commons Attribution-ShareAlike 4.0 International}
-  \CopyrightURL{http://creativecommons.org/licenses/by-sa/4.0}
-\end{filecontents*}
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
 
 \documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
 
@@ -38,6 +30,20 @@
     italian=guillemets  % imposta lo stile per l'italiano
 ]{csquotes}                     % serve a impostare lo stile delle virgolette
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\usepackage{filecontents}       % permette di definire ambienti filecontents (senza * finale) per sovrascrivere il file
+\usepackage{silence}            % silenzia warning attesi
+\WarningFilter{latex}{Writing file}
+\WarningFilter{latex}{Overwriting file}
+
+%% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
+\begin{filecontents}{\jobname.xmpdata}
+  \Title{Laboratorio di Sistemi Software - Tema finale}
+  \Subject{Realizzazione di un sistema per l'individuazione e rimozione di una bomba dalla hall di un aeroporto tramite robot controllato da remoto.}
+  \Author{Niccolò Maltoni}
+  \Copyright{Questo documento è fornito sotto licenza Apache License, Version 2.0}
+  \CopyrightURL{https://opensource.org/licenses/Apache-2.0}
+\end{filecontents}
 
 \usepackage{relsize, etoolbox}  % permette di riferirsi ad ambienti specifici
 \AtBeginEnvironment{foreigndisplayquote}{\smaller}
@@ -70,6 +76,60 @@
   \DeclareGraphicsExtensions{.eps, .jpg, .png} % chktex 26
 \fi
 %%%%%%%%%%%%%%%
+\usepackage{float}
+\usepackage{graphviz}
+
+\usepackage{listings}
+\usepackage{listingsutf8}
+
+\definecolor{dkgreen}{rgb}{0,0.6,0}
+\definecolor{gray}{rgb}{0.5,0.5,0.5}
+\definecolor{mauve}{rgb}{0.58,0,0.82}
+
+\lstset{
+  extendedchars=true,
+  inputencoding=utf8/latin1,
+  frame=single,
+  captionpos=b,
+  language=Java,
+  showspaces=false,
+  showtabs=false,
+  showstringspaces=false,
+  columns=flexible,
+  basicstyle={\small\ttfamily},
+  numbers=none,
+  numberstyle=\tiny\color{gray},
+  keywordstyle=\color{blue},
+  commentstyle=\color{dkgreen},
+  stringstyle=\color{mauve},
+  breaklines=true,
+  breakatwhitespace=true,
+  keepspaces=true,
+  numbersep=5pt,
+  tabsize=2
+}
+
+\lstdefinelanguage{qa}{
+  basicstyle=\ttfamily\scriptsize,
+  numbers=left,
+  numberstyle=\scriptsize,
+  stepnumber=1,
+  numbersep=8pt,
+  tabsize=2,
+  showstringspaces=false,
+  breaklines=true,
+  breakatwhitespace=true,
+  keywordstyle=\color{mauve}\bfseries,
+  commentstyle=\color{dkgreen},stringstyle=\color{blue},
+  morekeywords={System,Event,Dispatch,Context,QActor,Rules,State,%
+      demo,whenMsg,whenEvent,onMsg,onEvent,transition,stopAfter,%
+      whenTime,resumeLastPlan,initial,finally,javaRun,println,%
+      emit,forward,do},
+  otherkeywords={:,->,-m,;,.,\,,[,],:-},
+  morestring=*[d]{"}, % chktex 18
+  morecomment=[l]{//},
+  morecomment=[s]{/*}{*/}
+}
 
 \newcommand{\java}{\textsf{Java}}
 \newcommand{\contact}{\emph{Contact}}
@@ -125,15 +185,20 @@
 \newcommand{\xfaculty}{II~Faculty~of~Engineering}
 \newcommand{\xunibo}{Alma~Mater~Studiorum~--~University~of~Bologna}
 
-\setcounter{secnumdepth}{3}   % Numera fino alla sottosezione nel corpo del testo
+\usepackage{enumitem}
+
+\setcounter{secnumdepth}{2}   % Numera fino alla sottosezione nel corpo del testo
 \setcounter{tocdepth}{3}      % Numera fino alla sotto-sottosezione nell'indice
+
+\usepackage[a-1b]{pdfx}         % permette di generare PDF/A; importa anche hyperref
 
 \usepackage[%
   depth=3,              % equivale a bookmarksdepth di hyperref
   open=false,           % equivale a bookmarksopen di hyperref
   numbered=true         % equivale a bookmarksnumbered di hyperref
 ]{bookmark}                     % Gestisce i segnalibri meglio di hyperref
-\usepackage{hyperref}           % Gestisce tutte le cose ipertestuali del pdf
+
+% \usepackage{hyperref}         % Gestisce tutte le cose ipertestuali del pdf; importato automaticamente
 \hypersetup{%
   pdfpagemode={UseNone},
   hidelinks,            % nasconde i collegamenti (non vengono quadrettati)
@@ -145,13 +210,9 @@
   plainpages=false,
   breaklinks,
   pdfstartview={Fit},
-  pdfauthor={Niccolò Maltoni},
-  pdfcreator={Niccolò Maltoni},
-  pdftitle={Laboratorio di Sistemi Software - Tema finale}, % chktex 8
   pdflang={it}
 }
 
-\usepackage[a-1b]{pdfx}
 \usepackage[%
   italian,            % definizione delle lingue da usare
   nameinlink          % inserisce i link nei riferimenti
@@ -159,20 +220,21 @@
 
 \begin{document}
 
-\title{Software Engineering\\
- process report template}
+\title{\textbf{LSS --- Laboratorio di Sistemi Software}\\tema finale\\\textit{\small \url{https://github.com/NiccoMlt/ISS-2018-Final-Task}}}
 
 \author{\xauthA}
 
 \institute{%
-  \xunibo{}\\\email{}\ niccolo.maltoni@studio.unibo.it
+  \xunibo{}\\\email{}\ \href{mailto:niccolo.maltoni@studio.unibo.it}{niccolo.maltoni@studio.unibo.it}
 }
 
-\maketitle
+{\def\addcontentsline#1#2#3{}\maketitle}
+
+\tableofcontents
 
 %===========================================================================
-% \section{Introduzione}\labelsec{intro}
-% TODO: sezione probabilmente non necessaria
+\section{Introduzione}\labelsec{intro}
+\input{src/intro.tex}
 %===========================================================================
 
 %===========================================================================
@@ -191,8 +253,11 @@
 %===========================================================================
 
 %===========================================================================
-\section{Analisi dei requisiti}\labelsec{req_analysis}
+\section{Analisi dei requisiti generale}\labelsec{req_analysis}
 \input{src/analisi-dei-requisiti.tex}
+
+\section{Sprint 1}\labelsec{sprint1}
+\input{src/sprint-01.tex}
 
 %===========================================================================
 % \subsection{Casi d'uso}\labelssec{use_cases}

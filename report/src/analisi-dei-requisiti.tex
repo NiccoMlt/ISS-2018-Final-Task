@@ -5,8 +5,9 @@
 % !TEX TS-program = arara
 % !TeX spellcheck = it-IT
 
-% arara: pdflatex: { synctex: yes, shell: yes }
-% arara: pdflatex: { synctex: yes, shell: yes }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+
 Dall'analisi dei requisiti forniti dal committente è possibile definire i seguenti requisiti:
 
 \begin{enumerate}
@@ -80,7 +81,7 @@ Infine, deve consentire l'invio di un comando per far sì che un altro robot pos
 \subsubsection{Robot Discovery}\labelsssec{discovery}
 
 Robot Discovery è un ddr robot che si occupa dell'esplorazione dell'ambiente per rilevare la presenza di eventuali ordigni.
-Il robot per il committente è un dispositivo fisico in grado di muoversi nell'ambiente grazie a delle ruote motrici, fornito di un LED
+Il robot per il committente è un dispositivo fisico in grado di muoversi nell'ambiente grazie a delle ruote motrici, fornito di un LED
 e dotato di un sonar posto frontalmente per individuare ostacoli.
 
 Esso permette di essere avviato e/o stoppato remotamente.
@@ -93,81 +94,87 @@ Robot Discovery è un drr robot che ha il compito di raggiungere la borsa indivi
 
 \subsection{Dettaglio sui requisiti della fase di esplorazione}\labelssec{explore}
 
-\subsubsection[R-explore]{\requirementref{R-explore}}\labelsssec{R-explore}
+\begin{description}[itemsep=1em]
+  \item[\requirementref{R-explore}]\labelsssec{R-explore}
 
-Durante la fase di esplorazione il robot deve muoversi nella stanza, raccogliendo informazioni per creare una rappresentazione del territorio comprendente ostacoli e posizioni degli ordigni.
-L'output di questa fase consiste in una rappresentazione che deve riportare le informazioni riguardanti la stanza e deve essere condivisa con gli altri componenti del sistema.
-In questa rappresentazione dovranno essere segnalate le posizioni di eventuali ostacoli, in modo che il robot Retriever possa ottimizzare il proprio percorso verso l'ordigno da rimuovere.
+  Durante la fase di esplorazione il robot deve muoversi nella stanza, raccogliendo informazioni per creare una rappresentazione del territorio comprendente ostacoli e posizioni degli ordigni.
+  L'output di questa fase consiste in una rappresentazione che deve riportare le informazioni riguardanti la stanza e deve essere condivisa con gli altri componenti del sistema.
+  In questa rappresentazione dovranno essere segnalate le posizioni di eventuali ostacoli, in modo che il robot Retriever possa ottimizzare il proprio percorso verso l'ordigno da rimuovere.
 
-\subsubsection[R-startExplore]{\requirementref{R-startExplore}}\labelsssec{R-startExplore}
+  \item[\requirementref{R-startExplore}]\labelsssec{R-startExplore}
 
-L'esplorazione deve partire in seguito all'invio di un comando da parte dell'operatore.
+  L'esplorazione deve partire in seguito all'invio di un comando da parte dell'operatore.
 
-\subsubsection[R-TempOk]{\requirementref{R-TempOk}}\labelsssec{R-TempOk}
+  \item[\requirementref{R-TempOk}]\labelsssec{R-TempOk}
 
-L'esplorazione deve partire solo se la temperatura rispetta le condizioni prestabilite.
+  L'esplorazione deve partire solo se la temperatura rispetta le condizioni prestabilite.
 
-\subsubsection[R-stopExplore]{\requirementref{R-stopExplore}}\labelsssec{R-stopExplore}
+  \item[\requirementref{R-stopExplore}]\labelsssec{R-stopExplore}
 
-L'esplorazione deve stopparsi in caso l'utente lo richieda.
-Emerge quindi la necessità da parte del robot di essere reattivo ai comandi ricevuti.
+  L'esplorazione deve stopparsi in caso l'utente lo richieda.
+  Emerge quindi la necessità da parte del robot di essere reattivo ai comandi ricevuti.
 
-\subsubsection[R-backHome]{\requirementref{R-backHome}}\labelsssec{R-backHome}
+  \item[\requirementref{R-backHome}]\labelsssec{R-backHome}
 
-Il robot deve tornare alla posizione iniziale se richiesto dall'utente al seguito dello stop dell'esplorazione.
+  Il robot deve tornare alla posizione iniziale se richiesto dall'utente al seguito dello stop dell'esplorazione.
 
-\subsubsection[R-continueExplore]{\requirementref{R-continueExplore}}\labelsssec{R-continueExplore}
+  \item[\requirementref{R-continueExplore}]\labelsssec{R-continueExplore}
 
-Il robot deve continuare l'esplorazione se richiesto dall'utente.
+  Il robot deve continuare l'esplorazione se richiesto dall'utente.
 
-\subsubsection[R-blinkLed]{\requirementref{R-blinkLed}}\labelsssec{R-blinkLed}
+  \item[\requirementref{R-blinkLed}]\labelsssec{R-blinkLed}
 
-Il LED del robot deve lampeggiare se esso è in fase di esplorazione.
+  Il LED del robot deve lampeggiare se esso è in fase di esplorazione.
 
-\subsubsection[R-consoleUpdate]{\requirementref{R-consoleUpdate}}\labelsssec{R-consoleUpdate}
+  \item[\requirementref{R-consoleUpdate}]\labelsssec{R-consoleUpdate}
 
-La console deve contenere le informazioni aggiornate riguardo allo stato di esplorazione del robot.
+  La console deve contenere le informazioni aggiornate riguardo allo stato di esplorazione del robot.
 
-\subsubsection[R-stopAtBag]{\requirementref{R-stopAtBag}}\labelsssec{R-stopAtBag}
+  \item[\requirementref{R-stopAtBag}]\labelsssec{R-stopAtBag}
 
-Il robot deve fermarsi in prossimità di una valigia.
+  Il robot deve fermarsi in prossimità di una valigia.
 
-\subsubsection[R-takePhoto]{\requirementref{R-takePhoto}}\labelsssec{R-takePhoto}
+  \item[\requirementref{R-takePhoto}]\labelsssec{R-takePhoto}
 
-Il robot deve scattare una fotografia all'ostacolo appena individuato.
+  Il robot deve scattare una fotografia all'ostacolo appena individuato.
 
-\subsubsection[R-sendPhoto]{\requirementref{R-sendPhoto}}\labelsssec{R-sendPhoto}
+  \item[\requirementref{R-sendPhoto}]\labelsssec{R-sendPhoto}
 
-Il robot deve inviare la fotografia appena scattata alla console.
+  Il robot deve inviare la fotografia appena scattata alla console.
 
-\subsubsection[R-alert]{\requirementref{R-alert}}\labelsssec{R-alert}
+  \item[\requirementref{R-alert}]\labelsssec{R-alert}
 
-Il device dell'operatore, una volta ricevuta la foto, deve essere in grado di riconoscere
-se la valigia contiene una bomba, ed, in questo caso, inviare una notifica all'operatore.
+  Il device dell'operatore, una volta ricevuta la foto, deve essere in grado di riconoscere
+  se la valigia contiene una bomba, ed, in questo caso, inviare una notifica all'operatore.
 
-\subsubsection[R-storePhoto]{\requirementref{R-storePhoto}}\labelsssec{R-storePhoto}
+  \item[\requirementref{R-storePhoto}]\labelsssec{R-storePhoto}
 
-La fotografia deve essere salvata in modo permanente contestualmente alle informazioni relative.
+  La fotografia deve essere salvata in modo permanente contestualmente alle informazioni relative.
 
-\subsubsection[R-backHomeSinceBomb]{\requirementref{R-backHomeSinceBomb}}\labelsssec{R-backHomeSinceBomb}
+  \item[\requirementref{R-backHomeSinceBomb}]\labelsssec{R-backHomeSinceBomb}
 
-In caso la valigia contenga un ordigno, il robot Discovery deve tornare immediatamente alla posizione iniziale.
+  In caso la valigia contenga un ordigno, il robot Discovery deve tornare immediatamente alla posizione iniziale.
 
-\subsubsection[R-continueExploreAfterPhoto]{\requirementref{R-continueExploreAfterPhoto}}\labelsssec{R-continueExploreAfterPhoto}
+  \item[\requirementref{R-continueExploreAfterPhoto}]\labelsssec{R-continueExploreAfterPhoto}
 
-Se la valigia non contiene una bomba allora al robot viene comandato di continuare l'esplorazione, aggiornando contestualmente la mappa del territorio.
+  Se la valigia non contiene una bomba allora al robot viene comandato di continuare l'esplorazione, aggiornando contestualmente la mappa del territorio.
+\end{description}
 
 \subsection{Dettaglio sui requisiti della fase di recupero}\labelssec{retrieve}
 
-\subsubsection[R-waitForHome]{\requirementref{R-waitForHome}}\labelsssec{R-waitForHome}
+\begin{description}[itemsep=1em]
 
-Il sistema è in attesa che il robot discovery torni alla base.
+  \item[\requirementref{R-waitForHome}]\labelsssec{R-waitForHome}
 
-\subsubsection[R-reachBag]{\requirementref{R-reachBag}}\labelsssec{R-reachBag}
+  Il sistema è in attesa che il robot discovery torni alla base.
 
-Il robot Retriever deve raggiungere la posizione dell'ordigno.
-L'assunzione fatta è che il territorio sia rimasto invariato rispetto alla fase di esplorazione precedente.
+  \item[\requirementref{R-reachBag}]\labelsssec{R-reachBag}
 
-\subsubsection[R-bagAtHome]{\requirementref{R-bagAtHome}}\labelsssec{R-bagAtHome}
+  Il robot Retriever deve raggiungere la posizione dell'ordigno.
+  L'assunzione fatta è che il territorio sia rimasto invariato rispetto alla fase di esplorazione precedente.
 
-Il robot Retriever dopo aver raccolto l'ordigno in un contenitore sicuro deve tornare alla base evitando gli ostacoli come in precedenza.
+  \item[\requirementref{R-bagAtHome}]\labelsssec{R-bagAtHome}
+
+  Il robot Retriever dopo aver raccolto l'ordigno in un contenitore sicuro deve tornare alla base evitando gli ostacoli come in precedenza.
+
+\end{description}
