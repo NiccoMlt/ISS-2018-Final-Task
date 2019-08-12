@@ -150,6 +150,7 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %  User static rules about robot_discovery_mind
 %------------------------------------------------- 
 environment( notok).
+ledState( off).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

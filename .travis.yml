@@ -42,7 +42,7 @@ matrix:
       install:
         - ./gradlew -b build_ctxRobot.gradle eclipse
       script:
-        - ./gradlew -b build_ctxRobot.gradle clean build
+        - ./gradlew -b build_ctxRobot.gradle clean build test
     - name: PlatformIO Arduino
       language: python
       python:

@@ -94,8 +94,8 @@ QActor robot_adapter context ctxRobot {
     
     Rules {
 //      robotType("robotSerial", setuparg("/dev/ttyACM0")).
-      robotType("robotVirtual", setuparg("localhost")).
-//      robotType("robotDemo", setuparg("")).
+//      robotType("robotVirtual", setuparg("localhost")).
+      robotType("robotDemo", setuparg("")).
     }
 
     /** Stato iniziale del Robot Adapter. */
@@ -128,8 +128,10 @@ QActor robot_adapter context ctxRobot {
 
     /** Stato di interpretazione comandi. */
     State executeCommand resumeLastPlan [
-        onMsg robotCmdPriority: cmd(X) -> javaRun it.unibo.robot_adapter.robots.doMove(X);
-        onEvent robotCmd: cmd(X) -> javaRun it.unibo.robot_adapter.robots.doMove(X)
+        onMsg robotCmdPriority: cmd(X) ->
+            javaRun it.unibo.robot_adapter.robots.doMove(X);
+        onEvent robotCmd: cmd(X) ->
+            javaRun it.unibo.robot_adapter.robots.doMove(X)
     ]
 }
 
@@ -138,6 +140,8 @@ QActor robot_discovery_mind context ctxRobot {
     
     Rules {
         environment(notok).
+        /** ledState(X) ; X = off|blinking */
+        ledState(off).
     }
 
     /**
@@ -162,7 +166,8 @@ QActor robot_discovery_mind context ctxRobot {
      * La mind abilita il lampeggio del LED sul robot e inizia ad esplorare.
      */
     State goToExploration [
-        forward robot_adapter -m robotCmdPriority: cmd(blinkStart)      // R-blinkLed (start)
+        forward robot_adapter -m robotCmdPriority: cmd(blinkStart);     // R-blinkLed (start)
+        ReplaceRule ledState(off) with ledState(blinking)
     ] transition
         whenTime 100 -> exploration
 
@@ -201,7 +206,8 @@ QActor robot_discovery_mind context ctxRobot {
         println("HANDLING BAG ...");
         onMsg handleBag: handleBag(halt) -> {                           // R-stopAtBag
             emit robotCmd: cmd(h);
-            emit robotCmd: cmd(blinkStop)                               // R-blinkLed (stop)
+            emit robotCmd: cmd(blinkStop);                              // R-blinkLed (stop)
+            ReplaceRule ledState(blinking) with ledState(off)
         };
         onMsg handleBag: handleBag(takePhoto) -> {
             println("TAKE PHOTO ...");  // TODO implement               // R-takePhoto
@@ -220,7 +226,8 @@ QActor robot_discovery_mind context ctxRobot {
      */
     State goToIdle [
         forward robot_adapter -m robotCmdPriority: cmd(h);
-        forward robot_adapter -m robotCmdPriority: cmd(blinkStop)       // R-blinkLed (stop)
+        forward robot_adapter -m robotCmdPriority: cmd(blinkStop);      // R-blinkLed (stop)
+        ReplaceRule ledState(blinking) with ledState(off)
     ] transition
         whenTime 100 -> idle
 

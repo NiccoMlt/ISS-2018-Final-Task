@@ -1,5 +1,6 @@
 plan(1,home, sentence(true,msgswitch(robotHome, robotHome , forward(console, robotHome,robotHome)),'','' ))
 plan(1,goToExploration, sentence(true,forward(robot_adapter, robotCmdPriority,cmd( blinkStart)),'','' ))
+plan(2,goToExploration, sentence(true,not here  GuardMove,'','' ))
 plan(1,exploration, sentence(true,raise( robotCmd , cmd( w) )'),'','' ))
 plan(2,exploration, sentence(true,move(print("EXPLORING ...")),'','' ))
 plan(1,goToHandleBag, sentence(true,notHere SendDispatch,'','' ))
@@ -9,4 +10,5 @@ plan(2,handleBag, sentence(true,msgswitch(handleBag, handleBag( halt) , not here
 plan(3,handleBag, sentence(true,msgswitch(handleBag, handleBag( takePhoto) , not here StateMoveNormal),'','' ))
 plan(1,goToIdle, sentence(true,forward(robot_adapter, robotCmdPriority,cmd( h)),'','' ))
 plan(2,goToIdle, sentence(true,forward(robot_adapter, robotCmdPriority,cmd( blinkStop)),'','' ))
+plan(3,goToIdle, sentence(true,not here  GuardMove,'','' ))
 plan(1,returnHome, sentence(true,move(print("GOING HOME...")),'','' ))

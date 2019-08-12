@@ -199,3 +199,16 @@ la software house, infatti, fornisce alcuni componenti tecnologici già realizza
 Di seguito è riportata la versione finale per lo Sprint 1 dell'architettura logica in output all'analisi del problema formalizzata tramite metamodello QA\@.
 
 \lstinputlisting[language=qa]{res/sprint1/problem/robot.qa}
+
+\subsection{Progettazione}\labelssec{sp1:project}
+
+In questa fase sono state progettate le soluzioni alle problematiche individuate nelle fasi precedenti.
+
+Per quanto riguarda la progettazione della struttura del sistema, si è scelto di utilizzare la struttura suggerita dal framework QA, in quanto ritenuta adeguata a quanto richiesto.
+In particolare, il fatto che si basi su pattern architetturale MVC permette di intervenire più facilmente sui singoli moduli, potendone cambiare il comportamento senza dover effettuare modiche troppo onerose.
+
+La scelta di questo modulo comporta inoltre l'utilizzo futuro della tecnologia \textbf{MQTT} come protocollo \textit{publish/subscribe} e di \textbf{Akka} per lo scambio di messaggi tra gli attori,
+vincolo che non comporta eccessivi problemi di progettazione per il fatto che i QA possiedono nativamente un supporto per la comunicazione publish/subscribe.
+
+Al fine di velocizzare i tempi di realizzazione del sistema, evitando di dover affrontare problematiche relative al robot fisico,
+è stato utilizzato, per questo primo sprint, un robot demo mock e il robot virtuale a dispoizione, realizzando comunque il sistema in modo che l'utilizzo del robot fisico potesse essere effettuato con sforzo esiguo.

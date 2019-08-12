@@ -139,6 +139,11 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String myselfName = "goToExploration";  
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmd(X)","cmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmdPriority","robot_adapter", QActorContext.dispatch, temporaryStr ); 
+	    	{
+	    	String tStr1 = "ledState(off)";
+	    	String tStr2 = "ledState(blinking)";
+	    	 replaceRule( tStr1, tStr2 );  
+	    	 }
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
 	          new StateFun[]{}, 
@@ -206,6 +211,11 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    		emit( "robotCmd", temporaryStr );
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine, "cmd(X)","cmd(blinkStop)", guardVars ).toString();
 	    		emit( "robotCmd", temporaryStr );
+	    		{
+	    		String tStr1 = "ledState(blinking)";
+	    		String tStr2 = "ledState(off)";
+	    		 replaceRule( tStr1, tStr2 );  
+	    		 }
 	    		};//actionseq
 	    	}
 	    	//onMsg 
@@ -241,6 +251,11 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	sendMsg("robotCmdPriority","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmd(X)","cmd(blinkStop)", guardVars ).toString();
 	    	sendMsg("robotCmdPriority","robot_adapter", QActorContext.dispatch, temporaryStr ); 
+	    	{
+	    	String tStr1 = "ledState(blinking)";
+	    	String tStr2 = "ledState(off)";
+	    	 replaceRule( tStr1, tStr2 );  
+	    	 }
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
 	          new StateFun[]{}, 
