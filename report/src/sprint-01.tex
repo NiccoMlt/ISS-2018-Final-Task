@@ -16,7 +16,9 @@ L'obiettivo di questo primo Sprint è individuare struttura e interazioni di mas
   \item
     con l'analisi dei requisiti si vuole far emergere i componenti del sistema del committente;
   \item
-    con l'analisi del problema si vuole identificare eventuali ulteriori componenti di interesse per la futura progettazione.
+    con l'analisi del problema si vuole identificare eventuali ulteriori componenti di interesse per la futura progettazione;
+  \item
+    con la fase di progettazione si vuole decidere a livello più basso le scelte tecnologiche e come procedere per la stesura del codice.
 \end{itemize}
 
 Una volta formalizzata un prima analisi dei requisiti generale, reperibile in questo documento alla \Cref{sec:req_analysis},
@@ -52,7 +54,7 @@ Per rappresentare in maniera formale l'architettura logica, si è scelto di util
 Questo linguaggio è stato messo a disposizione dalla software house e permette di superare le limitazioni intrinseche della modellazione UML
 (principalmente object-oriented e con notevoli limitazioni nel distribuito).
 
-Il linguaggio QA è adatto per costruire modelli eseguibili di sistemi software e permette di generare rappresentazioni grafiche del sistema,
+Il linguaggio QA è adatto per costruire modelli eseguibili di sistemi software e permette di generare rappresentazioni grafiche del sistema,
 permettendo di facilitare la comprensione di \textbf{struttura}, \textbf{interazione} e \textbf{comportamento} dello stesso.
 
 \begin{figure}[H]
@@ -205,17 +207,17 @@ Di seguito è riportata la versione finale per lo Sprint 1 dell'architettura log
 In questa fase sono state progettate le soluzioni alle problematiche individuate nelle fasi precedenti.
 
 Per quanto riguarda la progettazione della struttura del sistema, si è scelto di utilizzare la struttura suggerita dal framework QA, in quanto ritenuta adeguata a quanto richiesto.
-In particolare, il fatto che si basi su pattern architetturale MVC permette di intervenire più facilmente sui singoli moduli, potendone cambiare il comportamento senza dover effettuare modiche troppo onerose.
+In particolare, il fatto che si basi su pattern architetturale MVC permette di intervenire più facilmente sui singoli moduli, potendone cambiare il comportamento senza dover effettuare modifiche troppo onerose.
 
-La scelta di questo modulo comporta inoltre l'utilizzo futuro della tecnologia \textbf{MQTT} come protocollo \textit{publish/subscribe} e di \textbf{Akka} per lo scambio di messaggi tra gli attori,
-vincolo che non comporta eccessivi problemi di progettazione per il fatto che i QA possiedono nativamente un supporto per la comunicazione publish/subscribe.
+La scelta di questo modulo comporta inoltre l'utilizzo futuro della tecnologia \textbf{MQTT} come protocollo \textit{publish/subscribe} e di \textbf{Akka} per lo \textit{scambio di messaggi} tra gli attori,
+vincolo che non comporta eccessivi problemi di progettazione per il fatto che i QA possiedono nativamente un supporto per la comunicazione \textit{publish/subscribe}.
 
 Al fine di velocizzare i tempi di realizzazione del sistema, evitando di dover affrontare problematiche relative al robot fisico,
 è stato utilizzato, per questo primo sprint, un robot demo mock e il robot virtuale a dispoizione, realizzando comunque il sistema in modo che l'utilizzo del robot fisico potesse essere effettuato con sforzo esiguo.
 
 Per quanto rigurarda il test planning, si intende realizzare test automatizzati solo per alcuni dei requisiti da soddisfare, cioé quelli per i quali l'esecuzione di una demo non è sufficiente a comprenderne il corretto funzionamento.
 
-Per svolgere i test si intende utilizzare il supporto fornito dal modulo \texttt{QActorUtils} della software house, che permette di ispezionare la base di conoscenza interna, ottenere i riferimenti e mandare messaggi ai QActors di un determinato contesto;
+Per svolgere i test si intende utilizzare \texttt{QActorUtils}, modulo di supporto fornito dalla software house che permette di ispezionare la base di conoscenza interna, ottenere i riferimenti e mandare messaggi ai QActors di un determinato contesto;
 in questo modo, è possibile realizzare test JUnit verificabili tramite CI (come Travis CI) o IDE (come Eclipse).
 
 È evidente come i test automatici siano parziali e non esaustivi, ma possono essere di aiuto per testare l'interazione ed il comportamento complessivo del sistema.
