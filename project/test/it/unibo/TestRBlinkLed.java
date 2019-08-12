@@ -5,21 +5,24 @@ import static org.junit.Assert.fail;
 
 import java.util.Collections;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import alice.tuprolog.NoSolutionException;
 import alice.tuprolog.SolveInfo;
 import it.unibo.ctxRobot.MainCtxRobot;
+import it.unibo.qactors.QActorContext;
 import it.unibo.qactors.QActorUtils;
 import it.unibo.qactors.akka.QActor;
 
 public class TestRBlinkLed {
+    private QActorContext context;
     private QActor mind;
     
     @Before
     public void setUp() throws Exception {
-        MainCtxRobot.initTheContext();
+        context = MainCtxRobot.initTheContext();
         System.out.println(" ***TEST:*** TestRBlinkLed waits for a while ........ ");
         Thread.sleep(3000);
         mind = QActorUtils.getQActor("robot_discovery_mind_ctrl");
@@ -51,6 +54,13 @@ public class TestRBlinkLed {
             assertTrue(ledState.equals("off"));
         } catch (final NoSolutionException e) {
             fail(e.getMessage());
+        }
+    }
+    
+    @After
+    public void shutdown() throws Exception {
+        if(context != null) {
+            context.terminateQActorSystem();
         }
     }
 }

@@ -5,20 +5,23 @@ import static org.junit.Assert.assertTrue;
 
 import java.util.Collections;
 
+import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 
 import alice.tuprolog.SolveInfo;
 import it.unibo.ctxRobot.MainCtxRobot;
+import it.unibo.qactors.QActorContext;
 import it.unibo.qactors.QActorUtils;
 import it.unibo.qactors.akka.QActor;
 
 public class TestROkTemperature {
+    private QActorContext context;
     private QActor worldobserver;
 
     @Before
     public void setUp() throws Exception {
-        MainCtxRobot.initTheContext();
+        context = MainCtxRobot.initTheContext();
         System.out.println(" ***TEST:*** TestROkTemperature waits for a while ........ ");
         Thread.sleep(3000);
         QActorUtils.getQActor("robot_discovery_mind_ctrl");
@@ -41,5 +44,12 @@ public class TestROkTemperature {
         tempOk = sol.isSuccess();
         System.out.println(tempOk);
         assertFalse(tempOk);
+    }
+    
+    @After
+    public void shutdown() throws Exception {
+        if(context != null) {
+            context.terminateQActorSystem();
+        }
     }
 }

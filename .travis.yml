@@ -44,7 +44,6 @@ matrix:
       script:
         - ./gradlew -b build_ctxRobot.gradle clean build
         - ./gradlew -b build_ctxRobot.gradle test --tests "TestRBlinkLed"
-        - ./gradlew -b build_ctxRobot.gradle test --tests "TestROkTemperature"
     - name: PlatformIO Arduino
       language: python
       python:
