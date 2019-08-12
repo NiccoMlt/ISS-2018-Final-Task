@@ -30,3 +30,11 @@ Il repository è composto dai seguenti sottoprogetti:
     contiene un ambiente di simulazione Web per l'implementazione virtuale del Robot.
 
     È basato sul [codice fornito dal professore](https://github.com/anatali/iss2018Lab/tree/master/it.unibo.mbot2018/Soffritti), a sua volta derivato da un [progetto di Pierfrancesco Soffritti](https://github.com/PierfrancescoSoffritti/configurable-threejs-app).
+
+## Licenza
+
+[![GitHub](https://img.shields.io/github/license/NiccoMlt/ISS-2018-Final-Task)](https://opensource.org/licenses/Apache-2.0)
+
+Il codice personalmente realizzato per il progetto e per la struttura del documento di relazione sono forniti sotto licenza [Apache License, Version 2.0](https://opensource.org/licenses/Apache-2.0).
+
+Librerie e codice forniti dal professore o da altri appartengono ai rispettivi proprietari.
