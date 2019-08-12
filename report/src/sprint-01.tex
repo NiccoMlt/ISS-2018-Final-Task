@@ -200,7 +200,7 @@ Di seguito è riportata la versione finale per lo Sprint 1 dell'architettura log
 
 \lstinputlisting[language=qa]{res/sprint1/problem/robot.qa}
 
-\subsection{Progettazione}\labelssec{sp1:project}
+\subsection{Progettazione e Test planning}\labelssec{sp1:project}
 
 In questa fase sono state progettate le soluzioni alle problematiche individuate nelle fasi precedenti.
 
@@ -212,3 +212,22 @@ vincolo che non comporta eccessivi problemi di progettazione per il fatto che i 
 
 Al fine di velocizzare i tempi di realizzazione del sistema, evitando di dover affrontare problematiche relative al robot fisico,
 è stato utilizzato, per questo primo sprint, un robot demo mock e il robot virtuale a dispoizione, realizzando comunque il sistema in modo che l'utilizzo del robot fisico potesse essere effettuato con sforzo esiguo.
+
+Per quanto rigurarda il test planning, si intende realizzare test automatizzati solo per alcuni dei requisiti da soddisfare, cioé quelli per i quali l'esecuzione di una demo non è sufficiente a comprenderne il corretto funzionamento.
+
+Per svolgere i test si intende utilizzare il supporto fornito dal modulo \texttt{QActorUtils} della software house, che permette di ispezionare la base di conoscenza interna, ottenere i riferimenti e mandare messaggi ai QActors di un determinato contesto;
+in questo modo, è possibile realizzare test JUnit verificabili tramite CI (come Travis CI) o IDE (come Eclipse).
+
+È evidente come i test automatici siano parziali e non esaustivi, ma possono essere di aiuto per testare l'interazione ed il comportamento complessivo del sistema.
+Per la natura dei requisiti è stato possibile automatizzare i seguenti test per i requisiti:
+
+\begin{description}
+  \item[TestRBlinkLed]
+    si vuole accertare che se il robot è in fase di esplorazione il LED lmapeggi, mentre se è fermo allora il LED sia spento.
+  \item[TestROkTemperature]
+    viene testato che se la temperatura è superiore alla soglia, il worldobserver se ne accorge e sa che lo stato dell'ambiente non è adeguato.
+\end{description}
+
+Per quanto riguarda gli altri requisiti, gli unici test che sono stati condotti sono di tipo qualitativo, osservando l'esecuzione di un sistema mock valutando i casi di utilizzo.
+
+In questo caso, il monitoring è stato effettuato sfruttuando l'interfaccia Web e i log sulla console.
