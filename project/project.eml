@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <component inheritJdk="true">
 	<exclude-output/>
-	<contentEntry url="file://$MODULE_DIR$"/>
+	<contentEntry url="file://$MODULE_DIR$">
+		<testFolder url="file://$MODULE_DIR$/test"/>
+	</contentEntry>
 	<lib name="akka-remote_2.11-2.5.1.jar" scope="COMPILE">
 		<srcroot url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.typesafe.akka/akka-remote_2.11/2.5.1/f9abdee1d5a54df0dc3941ccec08ded5749aa398/akka-remote_2.11-2.5.1-sources.jar!/"/>
 	</lib>
