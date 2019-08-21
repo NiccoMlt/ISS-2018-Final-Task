@@ -1,6 +1,8 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include <Drive.h>
+
+// #include <Drive.h>
+#include "actuators/L298N.h"
 
 #include "scheduler/Scheduler.h"
 #include "scheduler/tasks/DistanceTask.h"
@@ -20,11 +22,11 @@ const int DIRECTION2 = 12;
 
 void move(int direction);
 
-// L298N motor1(SPEED1, DIRECTION1);
-// L298N motor2(SPEED2, DIRECTION2);
+L298N motor1(SPEED1, DIRECTION1);
+L298N motor2(SPEED2, DIRECTION2);
 
 Scheduler sched;
-Drive motor(SPEED1, DIRECTION1, SPEED2, DIRECTION2);
+// Drive motor(SPEED1, DIRECTION1, SPEED2, DIRECTION2);
 
 float* gloDistanceValue = new float(5.0);
 bool* gloBlinkingState = new bool(false);
@@ -51,7 +53,7 @@ void loop() {
 
 void move(int direction)
 {
-  /*switch (direction) {
+  switch (direction) {
     case 1://forward
       motor1.forward();
       motor2.forward();
@@ -72,7 +74,8 @@ void move(int direction)
       motor1.stop();
       motor2.stop();
       break;
-  }*/
+  }
+  /*
   switch (direction) {
     case 1: // forward
       motor.moveForward(PWM_SPEED);
@@ -90,4 +93,5 @@ void move(int direction)
       motor.stopMoving();
       break;
   }
+  */
 }
