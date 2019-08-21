@@ -1,5 +1,6 @@
 package it.unibo.robot_adapter;
 
+import it.unibo.qactors.QActorContext;
 import it.unibo.qactors.akka.QActor;
 import it.unibo.robot_adapter.demo.DemoExecutor;
 import it.unibo.robot_adapter.serial.SerialExecutor;
@@ -96,8 +97,30 @@ public class robots {
     public static void doMove(final QActor qa, final String cmd) { // Args MUST be String
         try {
             executors.values().forEach(execs -> execs.forEach(executor -> executor.doMove(qa, cmd)));
+            sendCommandCompleted(qa, cmd);
         } catch (final Exception e) {
-            e.printStackTrace();
+            System.out.println( "movePlanUtil ERROR:" + e.getMessage() );
+        }
+    }
+    
+    public static void doMove(QActor qa, String cmd, String duration) { // Args MUST be String
+        try {
+            executors.values().forEach(l -> l.forEach(e -> e.doMove(qa, cmd)));
+            Thread.sleep(Integer.parseInt(duration));
+            sendCommandCompleted(qa, cmd);
+        } catch (Exception e) {
+            System.out.println( "movePlanUtil ERROR:" + e.getMessage() );
+        }
+    }
+    
+    private static void sendCommandCompleted(final QActor qa, final String cmd) throws Exception {
+        switch (cmd) {
+            case "a":
+            case "d":
+                final String temporaryStr = "moveMsgCmdDone(CMD)".replace("CMD", cmd);
+                qa.sendMsg("moveMsgCmdDone", "robot_advanced", QActorContext.dispatch, temporaryStr);
+                break;
+            default:
         }
     }
 }

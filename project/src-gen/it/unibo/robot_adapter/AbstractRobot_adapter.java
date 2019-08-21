@@ -138,7 +138,7 @@ public abstract class AbstractRobot_adapter extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_adapter_"+myselfName,false,
 	          new StateFun[]{stateTab.get("executeCommand"), stateTab.get("executeCommand") }, 
-	          new String[]{"true","M","robotCmdPriority", "true","E","robotCmd" },
+	          new String[]{"true","M","robotCmd", "true","M","robotAdapterCmd" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
 	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );
@@ -152,31 +152,35 @@ public abstract class AbstractRobot_adapter extends QActor {
 	    	String myselfName = "executeCommand";  
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(X)");
-	    	if( currentMessage != null && currentMessage.msgId().equals("robotCmdPriority") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(X)")) && 
+	    	curT = Term.createTerm("robotCmd(X)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("robotCmd") && 
+	    		pengine.unify(curT, Term.createTerm("robotCmd(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
 	    		String arg1 = "X" ;
-	    		arg1 =  updateVars( Term.createTerm("cmd(X)"), Term.createTerm("cmd(X)"), 
+	    		arg1 =  updateVars( Term.createTerm("robotCmd(X)"), Term.createTerm("robotCmd(X)"), 
 	    			                Term.createTerm(currentMessage.msgContent()),  arg1 );	                
 	    		//end arg1
 	    		it.unibo.robot_adapter.robots.doMove(this,arg1 );
 	    		}
 	    	}
-	    	//onEvent 
+	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("cmd(X)");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("robotCmd") && 
-	    		pengine.unify(curT, Term.createTerm("cmd(X)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			{/* JavaLikeMove */ 
-	    			String arg1 = "X" ;
-	    			arg1 =  updateVars( Term.createTerm("cmd(X)"), Term.createTerm("cmd(X)"), 
-	    				                Term.createTerm(currentEvent.getMsg()),  arg1 );	                
-	    			//end arg1
-	    			it.unibo.robot_adapter.robots.doMove(this,arg1 );
-	    			}
+	    	curT = Term.createTerm("robotCmd(X,X)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("robotAdapterCmd") && 
+	    		pengine.unify(curT, Term.createTerm("robotCmd(M,T)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		{/* JavaLikeMove */ 
+	    		String arg1 = "X" ;
+	    		arg1 =  updateVars( Term.createTerm("robotCmd(M,T)"), Term.createTerm("robotCmd(X,X)"), 
+	    			                Term.createTerm(currentMessage.msgContent()),  arg1 );	                
+	    		//end arg1
+	    		String arg2 = "T" ;
+	    		arg2 =  updateVars( Term.createTerm("robotCmd(M,T)"), Term.createTerm("robotCmd(X,X)"), 
+	    			                Term.createTerm(currentMessage.msgContent()),  arg2 );	                
+	    		//end arg2
+	    		it.unibo.robot_adapter.robots.doMove(this,arg1,arg2 );
+	    		}
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"robot_adapter_"+myselfName,false,true);
 	    }catch(Exception e_executeCommand){  

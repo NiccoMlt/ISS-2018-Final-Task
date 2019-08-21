@@ -98,23 +98,11 @@ public abstract class AbstractConsole extends QActor {
 	     pr.incNumIter(); 	
 	    	String myselfName = "doWork";  
 	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "doWork";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "temperature(X)","temperature(18)", guardVars ).toString();
-	    	emit( "temperature", temporaryStr );
-	    	//delay  ( no more reactive within a plan)
 	    	aar = delayReactive(3000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "doWork";
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdExplore","cmdExplore", guardVars ).toString();
 	    	sendMsg("cmdExplore","robot_discovery_mind", QActorContext.dispatch, temporaryStr ); 
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(2000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "doWork";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdStop","cmdStop", guardVars ).toString();
-	    	sendMsg("cmdStop","robot_discovery_mind", QActorContext.dispatch, temporaryStr ); 
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("adaptCommand"), stateTab.get("updateView"), stateTab.get("handlePhoto") }, 

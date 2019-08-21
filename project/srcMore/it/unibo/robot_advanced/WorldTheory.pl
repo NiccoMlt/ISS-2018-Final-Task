@@ -1,11 +1,11 @@
 %==============================================
-% WorldTheory.pl for actor robot_discovery_mind
+% WorldTheory.pl for actor robot_advanced
 %==============================================
 /*
 For a QActor as a singleton statically degined in the model
 */
-myname(qaturobot_discovery_mind).	%%old version (deprecated)
-actorobj(qaturobot_discovery_mind).	%% see registerActorInProlog18 in QActor
+myname(qaturobot_advanced).	%%old version (deprecated)
+actorobj(qaturobot_advanced).	%% see registerActorInProlog18 in QActor
 
 /*
 For a QActor instance of name=Name dynamically created
@@ -81,7 +81,7 @@ evalGuard( G ) :-
 
 output( M ):-stdout <- println( M ).
 %-------------------------------------------------
-%  TuProlo FEATURES of the QActor robot_discovery_mind
+%  TuProlo FEATURES of the QActor robot_advanced
 %-------------------------------------------------
 dialog( FileName ) :-  
 	java_object('javax.swing.JFileChooser', [], Dialog),
@@ -89,7 +89,7 @@ dialog( FileName ) :-
 	Dialog <- getSelectedFile returns File,
 	File <- getName returns FileName. 		 
 
-%% :- stdout <- println(  "hello from world theory of robot_discovery_mind" ). 
+%% :- stdout <- println(  "hello from world theory of robot_advanced" ). 
 
 %-------------------------------------------------
 %  UTILITIES for TuProlog computations
@@ -147,20 +147,10 @@ dec(I,K,N):-
 actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 
 %-------------------------------------------------
-%  User static rules about robot_discovery_mind
+%  User static rules about robot_advanced
 %------------------------------------------------- 
-environment( notok).
-ledState( off).
-numOfExplorations( 3).
-curGoal( 0,0).
-continueForward( T):-timew( T),inc( repeatForward,1,R),getVal( nstep,N),output( continueForward( R,N,T)),eval( lt,R,N).
-continueExplore( V):-numOfExplorations( MAX),inc( curNumExplore,1,V),output( continueExplore( V,MAX)),eval( le,V,MAX),replaceRule( curGoal( _,_),curGoal( V,V)).
-continueExplore( V):-removeeRule( curGoal( _,_)).
-eval( eq,X,X).
-doTheMove( M):-move( M1), ! ,eval( eq,M,M1), ! ,doTheFirstMove( M).
-doTheFirstMove( w):-retract( move( w)), ! .
-doTheFirstMove( a):-retract( move( a)), ! .
-doTheFirstMove( d):-retract( move( d)), ! .
+timew( 255).
+timeTurn( 500).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),
