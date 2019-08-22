@@ -3,12 +3,12 @@
 
 #include "ProximitySensor.h"
 
-Ultrasonic* ultrasonic;
+Ultrasonic *ultrasonic;
 
-ProximitySensor::ProximitySensor(int trigPin, int echoPin){
+ProximitySensor::ProximitySensor(int trigPin, int echoPin) {
   ultrasonic = new Ultrasonic(trigPin, echoPin);
 }
 
-float ProximitySensor::getDistance(){
+float ProximitySensor::getDistance() {
   return ultrasonic->read();
 }

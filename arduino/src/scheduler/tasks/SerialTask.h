@@ -10,8 +10,8 @@ class SerialTask: public Task {
 
 public:
   SerialTask(float* gloDistanceValue, bool* gloBlinkingState, void (*move)(int));
-  void init(int period);
-  void tick();
+  void init(int period) override;
+  void tick() override;
 
 private:
 	void remoteCmdExecutor();

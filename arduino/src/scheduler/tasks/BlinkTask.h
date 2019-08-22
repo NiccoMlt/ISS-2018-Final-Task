@@ -8,8 +8,9 @@ class BlinkTask: public Task {
 
 public:
   BlinkTask(int pin, bool* gloBlinkState);
-  void init(int period);
-  void tick();
+
+  void init(int period) override;
+  void tick() override;
 
 protected:
   void reset();

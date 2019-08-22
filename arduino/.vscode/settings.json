@@ -4,7 +4,7 @@
         "PLATFORMIO_CALLER": "vscode"
     },
     "terminal.integrated.env.linux": {
-        "PATH": "/home/nicco/.platformio/penv/bin:/home/nicco/.platformio/penv:/home/nicco/.yarn/bin:/opt/devkitpro/tools/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin",
+        "PATH": "/home/nicco/.yarn/bin:/opt/devkitpro/tools/bin:/usr/local/bin:/usr/bin:/bin:/usr/local/sbin:/usr/lib/jvm/default/bin:/usr/bin/site_perl:/usr/bin/vendor_perl:/usr/bin/core_perl:/var/lib/snapd/snap/bin",
         "PLATFORMIO_CALLER": "vscode"
     }
 }

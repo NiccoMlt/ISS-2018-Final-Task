@@ -8,8 +8,8 @@ class DistanceTask: public Task {
 
 public:
   DistanceTask(int trigPin, int echoPin, float* gloDistanceValue);
-  void init(int period);
-  void tick();
+  void init(int period) override;
+  void tick() override;
 
 private:
   int trigPin, echoPin;
