@@ -22,37 +22,66 @@ const int DIRECTION2 = 12;
 
 void move(int direction);
 
-L298N motor1(SPEED1, DIRECTION1);
-L298N motor2(SPEED2, DIRECTION2);
+L298N motor1(SPEED1, DIRECTION1); // right from back
+L298N motor2(SPEED2, DIRECTION2); // left from back
 
-Scheduler sched;
+Scheduler *sched;
 // Drive motor(SPEED1, DIRECTION1, SPEED2, DIRECTION2);
 
-float* gloDistanceValue = new float(5.0);
-bool* gloBlinkingState = new bool(false);
+float gloDistanceValue = 5.0;
+bool gloBlinkingState = false;
 
-DistanceTask* distanceTask = new DistanceTask(PROXIMITY_TRIG_PIN, PROXIMITY_ECHO_PIN, gloDistanceValue);
-BlinkTask* blinkingLed = new BlinkTask(LED_PIN, gloBlinkingState);
-SerialTask* serialTask = new SerialTask(gloDistanceValue, gloBlinkingState, move);
+// DistanceTask* distanceTask = new DistanceTask(PROXIMITY_TRIG_PIN, PROXIMITY_ECHO_PIN, gloDistanceValue);
+BlinkTask *blinkingLed;
+SerialTask *serialTask;
 
 void setup() {
-  sched.init(50);
+  sched = new Scheduler();
+  sched->init(50);
 
   distanceTask->init(100);
-  blinkingLed->init(200);
-  serialTask->init(50);
 
-  sched.addTask(distanceTask);
-  sched.addTask(blinkingLed);
-  sched.addTask(serialTask);
+  blinkingLed = new BlinkTask(LED_PIN, &gloBlinkingState);
+  blinkingLed->init(200);
+
+  motor1.setSpeed(50);  // TODO: debug
+  motor2.setSpeed(150); // TODO: debug
+
+  serialTask = new SerialTask(&gloDistanceValue, &gloBlinkingState, move);
+  serialTask->init(100);
+
+  // sched->addTask(distanceTask);
+  sched->addTask(blinkingLed);
+  sched->addTask(serialTask);
 }
 
 void loop() {
-  sched.schedule();
+  sched->schedule();
 }
 
-void move(int direction)
-{
+void move(int direction) {
+  Serial.print("Moving to direction: ");
+  Serial.print(direction);
+  Serial.print(" which means: ");
+  switch (direction) {
+    case 1:
+      Serial.println("Forward (both motors forward)");
+      break;
+    case 2:
+      Serial.println("Backward (both motors backward)");
+      break;
+    case 3:
+      Serial.println("Left (motor 1 backward, motor 2 forward)");
+      break;
+    case 4:
+      Serial.println("Right (motor 1 forward, motor 2 backward)");
+      break;
+    case 5:
+      Serial.println("halt");
+    default:
+      break;
+  }
+
   switch (direction) {
     case 1://forward
       motor1.forward();
@@ -75,6 +104,7 @@ void move(int direction)
       motor2.stop();
       break;
   }
+
   /*
   switch (direction) {
     case 1: // forward
