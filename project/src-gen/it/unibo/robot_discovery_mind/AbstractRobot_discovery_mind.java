@@ -179,15 +179,15 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("goToExploration",-1);
 	    	String myselfName = "goToExploration";  
-	    	temporaryStr = "\"EXPLORING ...\"";
-	    	println( temporaryStr );  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(X)","robotCmd(blinkStart)", guardVars ).toString();
-	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	{
 	    	String tStr1 = "ledState(off)";
 	    	String tStr2 = "ledState(blinking)";
 	    	 replaceRule( tStr1, tStr2 );  
 	    	 }
+	    	temporaryStr = "\"EXPLORING ...\"";
+	    	println( temporaryStr );  
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
+	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	parg = "assign(curNumExplore,0)";
 	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    	solveGoal( parg ); //sept2017
@@ -252,9 +252,9 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(X)","robotCmd(h)", guardVars ).toString();
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(h)", guardVars ).toString();
 	    		sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
-	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(X)","robotCmd(blinkStop)", guardVars ).toString();
+	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
 	    		sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    		{
 	    		String tStr1 = "ledState(blinking)";
@@ -292,9 +292,9 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("goToIdle",-1);
 	    	String myselfName = "goToIdle";  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(X)","robotCmd(h)", guardVars ).toString();
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(h)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(X)","robotCmd(blinkStop)", guardVars ).toString();
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	{
 	    	String tStr1 = "ledState(blinking)";
@@ -369,7 +369,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	sendMsg("waitMoveCompleted",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
 	    	}
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?doTheMove(M)" )) != null ){
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(X)","robotCmd(M)", guardVars ).toString();
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(M)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_advanced", QActorContext.dispatch, temporaryStr ); 
 	    	}
 	    	//bbb

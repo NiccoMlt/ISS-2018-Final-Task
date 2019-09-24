@@ -12,21 +12,18 @@ import java.util.HashMap;
 import java.util.Optional;
 
 public class robots {
-    
+
     public static enum Type {
-        ROBOT_SERIAL("robotSerial"),
-        ROBOT_DEMO("robotDemo"),
-        ROBOT_VIRTUAL("robotVirtual");
-        
+        ROBOT_SERIAL("robotSerial"), ROBOT_DEMO("robotDemo"), ROBOT_VIRTUAL("robotVirtual");
+
         private final String name;
 
         private Type(final String name) {
             this.name = name;
         }
-        
+
         public static final Type parseString(final String type) throws IllegalArgumentException {
-            return Arrays.asList(Type.values()).stream()
-                    .filter(t -> t.name.equals(type)).findFirst()
+            return Arrays.asList(Type.values()).stream().filter(t -> t.name.equals(type)).findFirst()
                     .orElseGet(() -> Type.valueOf(type));
         }
     }
@@ -45,17 +42,17 @@ public class robots {
             Optional<IRobotExecutor> opt = Optional.empty();
             final Type enumType = Type.parseString(robotType);
             switch (enumType) {
-                case ROBOT_SERIAL:
-                    opt = Optional.of(new SerialExecutor());
-                    break;
-                case ROBOT_DEMO:
-                    opt = Optional.of(new DemoExecutor());
-                    break;
-                case ROBOT_VIRTUAL:
-                    opt = Optional.of(new VirtualExecutor());
-                    break;
-                default:
-                    qa.println("Can't find executor for robot type: " + enumType.name);
+            case ROBOT_SERIAL:
+                opt = Optional.of(new SerialExecutor());
+                break;
+            case ROBOT_DEMO:
+                opt = Optional.of(new DemoExecutor());
+                break;
+            case ROBOT_VIRTUAL:
+                opt = Optional.of(new VirtualExecutor());
+                break;
+            default:
+                qa.println("Can't find executor for robot type: " + enumType.name);
             }
             opt.ifPresent(executor -> {
                 qa.println("Setup robot \"" + enumType.name + "\" with args=" + args);
@@ -102,7 +99,7 @@ public class robots {
             System.out.println( "movePlanUtil ERROR:" + e.getMessage() );
         }
     }
-    
+
     public static void doMove(QActor qa, String cmd, String duration) { // Args MUST be String
         try {
             executors.values().forEach(l -> l.forEach(e -> e.doMove(qa, cmd)));
@@ -111,14 +108,15 @@ public class robots {
         } catch (Exception e) {
             System.out.println( "movePlanUtil ERROR:" + e.getMessage() );
         }
+
     }
     
-    private static void sendCommandCompleted(final QActor qa, final String cmd) throws Exception {
+    private static void sendCommandCompleted(QActor qa, String cmd) throws Exception {
         switch (cmd) {
             case "a":
             case "d":
-                final String temporaryStr = "moveMsgCmdDone(CMD)".replace("CMD", cmd);
-                qa.sendMsg("moveMsgCmdDone", "robot_advanced", QActorContext.dispatch, temporaryStr);
+                String temporaryStr = "moveMsgCmdDone(CMD)".replace("CMD", cmd);
+                qa.sendMsg("moveMsgCmdDone","robot_advanced", QActorContext.dispatch, temporaryStr);
                 break;
             default:
         }

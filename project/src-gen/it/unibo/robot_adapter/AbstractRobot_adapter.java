@@ -154,11 +154,11 @@ public abstract class AbstractRobot_adapter extends QActor {
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("robotCmd(X)");
 	    	if( currentMessage != null && currentMessage.msgId().equals("robotCmd") && 
-	    		pengine.unify(curT, Term.createTerm("robotCmd(X)")) && 
+	    		pengine.unify(curT, Term.createTerm("robotCmd(M)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
 	    		String arg1 = "X" ;
-	    		arg1 =  updateVars( Term.createTerm("robotCmd(X)"), Term.createTerm("robotCmd(X)"), 
+	    		arg1 =  updateVars( Term.createTerm("robotCmd(M)"), Term.createTerm("robotCmd(X)"), 
 	    			                Term.createTerm(currentMessage.msgContent()),  arg1 );	                
 	    		//end arg1
 	    		it.unibo.robot_adapter.robots.doMove(this,arg1 );
@@ -166,17 +166,17 @@ public abstract class AbstractRobot_adapter extends QActor {
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("robotCmd(X,X)");
+	    	curT = Term.createTerm("robotCmd(X,T)");
 	    	if( currentMessage != null && currentMessage.msgId().equals("robotAdapterCmd") && 
 	    		pengine.unify(curT, Term.createTerm("robotCmd(M,T)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		{/* JavaLikeMove */ 
 	    		String arg1 = "X" ;
-	    		arg1 =  updateVars( Term.createTerm("robotCmd(M,T)"), Term.createTerm("robotCmd(X,X)"), 
+	    		arg1 =  updateVars( Term.createTerm("robotCmd(M,T)"), Term.createTerm("robotCmd(X,T)"), 
 	    			                Term.createTerm(currentMessage.msgContent()),  arg1 );	                
 	    		//end arg1
 	    		String arg2 = "T" ;
-	    		arg2 =  updateVars( Term.createTerm("robotCmd(M,T)"), Term.createTerm("robotCmd(X,X)"), 
+	    		arg2 =  updateVars( Term.createTerm("robotCmd(M,T)"), Term.createTerm("robotCmd(X,T)"), 
 	    			                Term.createTerm(currentMessage.msgContent()),  arg2 );	                
 	    		//end arg2
 	    		it.unibo.robot_adapter.robots.doMove(this,arg1,arg2 );

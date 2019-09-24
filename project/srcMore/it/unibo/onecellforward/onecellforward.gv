@@ -19,6 +19,7 @@ digraph finite_state_machine {
 	handleStop [ color = blue ][ fontcolor = blue ][ penwidth = 3 ]
 	
 	startWork -> endMoveForward [ label = "timeout(255)" ][ color = green ][ fontcolor = green ]
+	init -> handleToutBuiltIn [ label = "timeout(600000)" ][ color = green ][ fontcolor = green ]
 	startWork -> handleStop [ label = "cmdStop" ][ color = black ][ fontcolor = black ]
 	probableFixedObstacle -> consumePendingCollisions [ label = "switch" ][ color = black ][ fontcolor = black ]
 	consumePendingCollisions -> handleError [ label = "timeout(3000)" ][ color = green ][ fontcolor = green ]
@@ -29,6 +30,5 @@ digraph finite_state_machine {
 	endMoveForward -> init [ label = "switch" ][ color = black ][ fontcolor = black ]
 	consumePendingCollisions -> sendAnswerAfterCollision [ label = "obstacleNear" ][ color = black ][ fontcolor = black ]
 	init -> handleStop [ label = "cmdStop" ][ color = black ][ fontcolor = black ]
-	init -> handleToutBuiltIn [ label = "timeout(6000000)" ][ color = green ][ fontcolor = green ]
 	sendAnswerAfterCollision -> init [ label = "switch" ][ color = black ][ fontcolor = black ]
 }

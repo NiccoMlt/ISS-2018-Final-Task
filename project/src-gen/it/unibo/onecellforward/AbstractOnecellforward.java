@@ -84,7 +84,7 @@ public abstract class AbstractOnecellforward extends QActor {
 	     msgTransition( pr,myselfName,"onecellforward_"+myselfName,false,
 	          new StateFun[]{stateTab.get("handleStop"), stateTab.get("startWork") }, 
 	          new String[]{"true","M","cmdStop", "true","M","moveMsgCmd" },
-	          6000000, "handleToutBuiltIn" );//msgTransition
+	          600000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -171,7 +171,7 @@ public abstract class AbstractOnecellforward extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("sendAnswerAfterCollision",-1);
 	    	String myselfName = "sendAnswerAfterCollision";  
-	    	temporaryStr = "\"onecellforward_sendAnswerAfterCollision\"";
+	    	temporaryStr = "\"onecellforward sendAnswerAfterCollision\"";
 	    	println( temporaryStr );  
 	    	ignoreCurrentCaller();
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " ??moveWDuration(T)" )) != null ){
