@@ -11,6 +11,7 @@ digraph finite_state_machine {
 	
 	home [ color = red ][ fontcolor = red ][ penwidth = 3 ]
 	reachBomb [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	checkTemperatureAndRetrieve [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	goToReachBomb [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
 	home -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
@@ -18,6 +19,8 @@ digraph finite_state_machine {
 	home -> action [ label = "environment" ][ color = red ][ fontcolor = red ][ dir = both ]
 	reachBomb -> home [ label = "robotHome" ][ color = black ][ fontcolor = black ]
 	home -> home [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
+	home -> checkTemperatureAndRetrieve [ label = "cmdReachBomb" ][ color = black ][ fontcolor = black ]
+	checkTemperatureAndRetrieve -> goToReachBomb [ label = "cmdReachBomb" ][ color = black ][ fontcolor = black ]
 	reachBomb -> reachBomb [ label = "timeout(3000)" ][ color = green ][ fontcolor = green ]
-	home -> goToReachBomb [ label = "[ !? environment(ok) ], cmdReachBomb" ][ color = black ][ fontcolor = black ]
+	checkTemperatureAndRetrieve -> home [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
 }

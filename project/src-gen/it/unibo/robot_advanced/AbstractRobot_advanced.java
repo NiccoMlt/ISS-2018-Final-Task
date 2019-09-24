@@ -115,10 +115,18 @@ public abstract class AbstractRobot_advanced extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?timeTurn(T)" )) != null ){
+	    		{//actionseq
+	    		temporaryStr = "\"Moving left\"";
+	    		println( temporaryStr );  
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M,T)","robotCmd(a,T)", guardVars ).toString();
 	    		sendMsg("robotAdapterCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
+	    		};//actionseq
 	    		}
-	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"waitMoveCompleted","waitMoveCompleted", guardVars ).toString();
+	    		else{ {//actionseq
+	    		temporaryStr = "\"NOT moving left\"";
+	    		println( temporaryStr );  
+	    		};//actionseq
+	    		}temporaryStr = QActorUtils.unifyMsgContent(pengine,"waitMoveCompleted","waitMoveCompleted", guardVars ).toString();
 	    		sendMsg("waitMoveCompleted",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
 	    		};//actionseq
 	    	}
@@ -131,10 +139,18 @@ public abstract class AbstractRobot_advanced extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?timeTurn(T)" )) != null ){
+	    		{//actionseq
+	    		temporaryStr = "\"Moving right\"";
+	    		println( temporaryStr );  
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M,T)","robotCmd(d,T)", guardVars ).toString();
 	    		sendMsg("robotAdapterCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
+	    		};//actionseq
 	    		}
-	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"waitMoveCompleted","waitMoveCompleted", guardVars ).toString();
+	    		else{ {//actionseq
+	    		temporaryStr = "\"NOT moving right\"";
+	    		println( temporaryStr );  
+	    		};//actionseq
+	    		}temporaryStr = QActorUtils.unifyMsgContent(pengine,"waitMoveCompleted","waitMoveCompleted", guardVars ).toString();
 	    		sendMsg("waitMoveCompleted",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
 	    		};//actionseq
 	    	}
@@ -147,10 +163,18 @@ public abstract class AbstractRobot_advanced extends QActor {
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
 	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?timew(T)" )) != null ){
+	    		{//actionseq
+	    		temporaryStr = "\"Moving forward\"";
+	    		println( temporaryStr );  
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"moveMsgCmd(TF)","moveMsgCmd(T)", guardVars ).toString();
 	    		sendMsg("moveMsgCmd","onecellforward", QActorContext.dispatch, temporaryStr ); 
+	    		};//actionseq
 	    		}
-	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"waitMoveCompleted","waitMoveCompleted", guardVars ).toString();
+	    		else{ {//actionseq
+	    		temporaryStr = "\"NOT moving forward\"";
+	    		println( temporaryStr );  
+	    		};//actionseq
+	    		}temporaryStr = QActorUtils.unifyMsgContent(pengine,"waitMoveCompleted","waitMoveCompleted", guardVars ).toString();
 	    		sendMsg("waitMoveCompleted",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
 	    		};//actionseq
 	    	}
@@ -169,6 +193,8 @@ public abstract class AbstractRobot_advanced extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("waitMoveComletedAnswer",-1);
 	    	String myselfName = "waitMoveComletedAnswer";  
+	    	temporaryStr = "\"Waiting\"";
+	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_advanced_"+myselfName,false,
 	          new StateFun[]{stateTab.get("receivedMoveCompletedAnswer"), stateTab.get("receivedMoveCompletedAnswer") }, 
@@ -184,6 +210,8 @@ public abstract class AbstractRobot_advanced extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("receivedMoveCompletedAnswer",-1);
 	    	String myselfName = "receivedMoveCompletedAnswer";  
+	    	temporaryStr = "\"Stopped waiting\"";
+	    	println( temporaryStr );  
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("moveMsgCmdDone(X)");

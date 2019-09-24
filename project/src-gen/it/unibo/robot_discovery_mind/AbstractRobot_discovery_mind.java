@@ -57,6 +57,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("init",init);
 	    	stateTab.put("home",home);
+	    	stateTab.put("checkTemperatureAndExplore",checkTemperatureAndExplore);
 	    	stateTab.put("goToExploration",goToExploration);
 	    	stateTab.put("exploration",exploration);
 	    	stateTab.put("goToHandleBag",goToHandleBag);
@@ -146,14 +147,33 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	             //QActorContext.terminateQActorSystem(this); 
 	          }
 	          },
-	           stateTab.get("goToExploration") }, 
-	          new String[]{"true","E","environment", " !?environment(ok)" ,"M","cmdExplore" },
+	           stateTab.get("checkTemperatureAndExplore") }, 
+	          new String[]{"true","E","environment", "true","M","cmdExplore" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_home){  
 	    	 println( getName() + " plan=home WARNING:" + e_home.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//home
+	    
+	    StateFun checkTemperatureAndExplore = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("checkTemperatureAndExplore",-1);
+	    	String myselfName = "checkTemperatureAndExplore";  
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?environment(ok)" )) != null ){
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdExplore","cmdExplore", guardVars ).toString();
+	    	sendMsg("cmdExplore",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
+	    	}
+	    	//bbb
+	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
+	          new StateFun[]{stateTab.get("goToExploration") }, 
+	          new String[]{"true","M","cmdExplore" },
+	          100, "home" );//msgTransition
+	    }catch(Exception e_checkTemperatureAndExplore){  
+	    	 println( getName() + " plan=checkTemperatureAndExplore WARNING:" + e_checkTemperatureAndExplore.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//checkTemperatureAndExplore
 	    
 	    StateFun goToExploration = () -> {	
 	    try{	
@@ -175,11 +195,9 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	parg = "assign(nstep,0)";
 	    	//QActorUtils.solveGoal(myself,parg,pengine );  //sets currentActionResult		
 	    	solveGoal( parg ); //sept2017
-	    	//bbb
-	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
-	          new StateFun[]{}, 
-	          new String[]{},
-	          100, "exploration" );//msgTransition
+	    	//switchTo exploreStep
+	        switchToPlanAsNextState(pr, myselfName, "robot_discovery_mind_"+myselfName, 
+	              "exploreStep",false, false, null); 
 	    }catch(Exception e_goToExploration){  
 	    	 println( getName() + " plan=goToExploration WARNING:" + e_goToExploration.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

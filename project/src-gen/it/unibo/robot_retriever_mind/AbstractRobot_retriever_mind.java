@@ -56,6 +56,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
 	    	stateTab.put("home",home);
+	    	stateTab.put("checkTemperatureAndRetrieve",checkTemperatureAndRetrieve);
 	    	stateTab.put("goToReachBomb",goToReachBomb);
 	    	stateTab.put("reachBomb",reachBomb);
 	    }
@@ -107,14 +108,33 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	             //QActorContext.terminateQActorSystem(this); 
 	          }
 	          },
-	           stateTab.get("goToReachBomb") }, 
-	          new String[]{"true","E","environment", " !?environment(ok)" ,"M","cmdReachBomb" },
+	           stateTab.get("checkTemperatureAndRetrieve") }, 
+	          new String[]{"true","E","environment", "true","M","cmdReachBomb" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_home){  
 	    	 println( getName() + " plan=home WARNING:" + e_home.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//home
+	    
+	    StateFun checkTemperatureAndRetrieve = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("checkTemperatureAndRetrieve",-1);
+	    	String myselfName = "checkTemperatureAndRetrieve";  
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?environment(ok)" )) != null ){
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdReachBomb","cmdReachBomb", guardVars ).toString();
+	    	sendMsg("cmdReachBomb",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
+	    	}
+	    	//bbb
+	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
+	          new StateFun[]{stateTab.get("goToReachBomb") }, 
+	          new String[]{"true","M","cmdReachBomb" },
+	          100, "home" );//msgTransition
+	    }catch(Exception e_checkTemperatureAndRetrieve){  
+	    	 println( getName() + " plan=checkTemperatureAndRetrieve WARNING:" + e_checkTemperatureAndRetrieve.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//checkTemperatureAndRetrieve
 	    
 	    StateFun goToReachBomb = () -> {	
 	    try{	

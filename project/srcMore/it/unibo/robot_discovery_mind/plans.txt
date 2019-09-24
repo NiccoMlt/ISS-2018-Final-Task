@@ -1,5 +1,6 @@
 plan(1,init, sentence(true,not here StateMoveNormal,'','' ))
 plan(1,home, sentence(true,msgswitch(robotHome, robotHome , forward(console, robotHome,robotHome)),'','' ))
+plan(1,checkTemperatureAndExplore, sentence( environment( ok),notHere SendDispatch,'','' ))
 plan(1,goToExploration, sentence(true,move(print("EXPLORING ...")),'','' ))
 plan(2,goToExploration, sentence(true,forward(robot_adapter, robotCmd,robotCmd( blinkStart)),'','' ))
 plan(3,goToExploration, sentence(true,not here  GuardMove,'','' ))

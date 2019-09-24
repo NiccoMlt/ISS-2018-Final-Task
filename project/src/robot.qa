@@ -1,124 +1,60 @@
 System robot
 
-/*
- * *********************************************************
- * Eventi Ambiente
- * *********************************************************
- */
- 
-/** X = ok | notok */
 Event environment: environment(X)
-
-/** X = temperature (°C) */
 Event temperature: temperature(X)
 
-/*
- * *********************************************************
- * Messaggi Robot Adapter
- * *********************************************************
- */
- 
-/** T = Type ; A = args */
 Dispatch robotAdapterAdd: robot(T, A)
-/** T = duration (int) ; M = w|a|s|d|h */
 Dispatch robotAdapterCmd: robotCmd(M, T)
-
-/** X = w|a|s|d|h */
 Dispatch robotCmd: robotCmd(X)
 
-/*
- * *********************************************************
- * Messaggi Robot-one-cell-forward
- * *********************************************************
- */
- 
 Dispatch collisionDispatch: obstacle(TARGET)
 Dispatch obstacleNear: obstacleNear
 Dispatch moveMsgCmd: moveMsgCmd(TF)
-/** X = cmd done */
+
 Dispatch moveMsgCmdDone: moveMsgCmdDone(X) 
 Dispatch moveMsgCmdObstacle: moveMsgCmdObstacle(X)
 
-/*
- * *********************************************************
- * Messaggi Robot-advanced
- * *********************************************************
- */
 Dispatch waitMoveCompleted: waitMoveCompleted
 
-/*
- * *********************************************************
- * Messaggi Planner
- * *********************************************************
- */
 Dispatch endAction: endAction 
 
-/* 
- * *********************************************************
- * Eventi Posizione Robot
- * *********************************************************
- */
 Event robotSonar: robotSonar(distance(X))
-/** From robot virtual sonar obstacle; X = name */
 Event robotSonarObstacle: obstacle(X)
-/** From robot physical sonar obstacle (wall) */
 // Event robotSonarWall: sonar(SONAR, TARGET, DISTANCE)
-
-/*
- * *********************************************************
- * Messaggi Mind
- * *********************************************************
- */
 
 Dispatch cmdStop: cmdStop                                               // R-stopAtBag & R-stopExplore
 Dispatch cmdGoHome: cmdGoHome                                           // R-backHome
 Dispatch cmdExplore: cmdExplore                                         // R-explore
 Dispatch cmdReachBomb: cmdReachBomb                                     // R-reachBag
 
-/** X = halt|takePhoto */
 Dispatch handleBag: handleBag(X)                                        // R-stopAtBag & R-takePhoto
-
-/** X = photo */
 Dispatch bag: bag(picture(X))                                           // R-sendPhoto & R-storePhoto
 
-/*
- * *********************************************************
- * Messaggi & Eventi Console
- * *********************************************************
- */
 Dispatch alert: alert                                                   // R-alert
-/** X = bomb|bag ; Y = arguments */
 Dispatch bagStatus: bagStatus(X, args(Y))
 
-/** (X,Y) = coordinates ; M = w|a|s|d|h */
 Event robotState: state(position(X,Y), movement(M))                     // R-consoleUpdate
 Dispatch robotHome: robotHome
 Dispatch robotNearBag: robotNearBag
 
-/** X=robotgui(CMD) CMD=s(low) ; from robot GUI */
 Event usercmd: usercmd(X)
 
-/** Contesto locale del robot. Console web a localhost:8080 */
 Context ctxRobot ip [ host="localhost" port=8079 ] -httpserver
- 
-/** Handler sonar virtuale TODO (manca per il fisico) */
-EventHandler collisionevh for robotSonarObstacle -print  {   
+
+
+EventHandler collisionevh for robotSonarObstacle -print {   
     forwardEvent onecellforward -m collisionDispatch
 };
 
-/** Attore che osserva l'ambiente e valuta la temperatura. */
+
 QActor world_observer context ctxRobot {
 
     Rules {
-        // Impostazioni di default:
         temperature(18).
-        // Regole di valutazione:
         evaluateTemp :- temperature(X), eval(lt, X, 25).                // R-TempOk
-        // Regola di valutazione complessiva:
         evaluateEnvironment :- evaluateTemp.
     }
     
-    /** Lo stato doObserve è lo stato nel quale viene verificata la temperatura. */
     State doObserve initial [
         [ !? evaluateEnvironment ] 
             emit environment: environment(ok)
@@ -131,44 +67,35 @@ QActor world_observer context ctxRobot {
         finally repeatPlan
 }
 
-/** Attore che modella un robot. */
+
 QActor robot_adapter context ctxRobot {
     
     Rules {
 //      robotType("robotSerial", setuparg("/dev/ttyACM0")).
-//      robotType("robotVirtual", setuparg("localhost")).
-      robotType("robotDemo", setuparg("")).
+        robotType("robotVirtual", setuparg("localhost")).
+      // robotType("robotDemo", setuparg("")).
     }
 
-    /** Stato iniziale del Robot Adapter. */
-    State init initial [
-
-    ] transition
+    State init initial []
+    transition
         whenTime 100 -> initRobots
     
-    /** Stato di inizializzazione degli Executor del Robot Adapter. */
     State initRobots [
-        [ ?? robotType(T, setuparg(A)) ] selfMsg robotAdapterAdd: robot(T, A)
+        [ ?? robotType(T, setuparg(A)) ]
+            selfMsg robotAdapterAdd: robot(T, A)
     ] transition
         whenTime 2000 -> doWork
         whenMsg robotAdapterAdd: robot(T,A) do 
             javaRun it.unibo.robot_adapter.robots.setUp(T, A)
         finally repeatPlan
 
-    /** 
-     * Stato effettivo di lavoro. 
-     * 
-     * Esegue i comandi provenienti da messaggi ed eventi.
-     */
-    State doWork [
-
-    ] transition
+    State doWork []
+    transition
         stopAfter 60000
         whenMsg robotCmd -> executeCommand,
         whenMsg robotAdapterCmd -> executeCommand
         finally repeatPlan
 
-    /** Stato di interpretazione comandi. */
     State executeCommand resumeLastPlan [
         onMsg robotCmd: robotCmd(X) ->
             javaRun it.unibo.robot_adapter.robots.doMove(X);
@@ -177,86 +104,72 @@ QActor robot_adapter context ctxRobot {
     ]
 }
 
-/** Permette di muovere il robot avanti di una cella. */
+
 QActor onecellforward context ctxRobot {
     
     Rules{
-        timew(10). // impostato da moveMsgCmd
+        timew(10). // tempo impostato da moveMsgCmd
         moveTimeInfo(timew(TF), moveWDuration(TD)) :- 
             timew(TF),
             moveWDuration(TD).
     }
     
-    /** Stato iniziale. */
-    State init initial [
-
-    ]
+    State init initial []
     transition stopAfter 6000000
-        whenMsg cmdStop -> handleStop,  // primo caso valutato
-        whenMsg moveMsgCmd -> startWork // altrimenti valuta comando di move
+        // stop ha la priorità sul movimento
+        whenMsg cmdStop -> handleStop,
+        whenMsg moveMsgCmd -> startWork
 
-    /** TODO: Stato nel quale inizia il lavoro. */
     State startWork [
         onMsg moveMsgCmd: moveMsgCmd(TF) -> ReplaceRule timew(_) with timew(TF);
-        
-        // salva il messaggio corrente: currentMessage è perso quando lo stato cambia
-        javaOp "storeCurrentMessageForReply()";  // utilizzato da replyToCaller
-        
-        // [!? timew( T )] println(doMoveForward_timeForForward(T));
+        javaOp "storeCurrentMessageForReply()"; // salva il messaggio corrente
         javaRun it.unibo.utils.movePlanUtil.startTimer();
-        
-        [ !? timew(T) ] forward robot_adapter -m robotAdapterCmd: robotCmd(w,T)
+        [ !? timew(T) ]
+            forward robot_adapter -m robotAdapterCmd: robotCmd(w, T)
     ] transition
-        // [ !? timew(T) ] whenTime T -> endMoveForward
-        whenTime 255 -> endMoveForward                      // async
-        whenMsg cmdStop -> handleStop,                      // primo caso valutato
-        whenMsg collisionDispatch -> probableFixedObstacle  // si considera solo ostacoli fissi
+        /* [ !? timew(T) ] whenTime T */ whenTime 255 -> // async
+            endMoveForward
+        whenMsg cmdStop -> handleStop,
+        whenMsg collisionDispatch -> probableFixedObstacle
 
-    /** TODO: Stato di gestione di un ostacolo. */
-    State probableFixedObstacle[ 
-        forward robot_adapter -m robotAdapterCmd: robotCmd(h,0);
+    State probableFixedObstacle [
+        forward robot_adapter -m robotAdapterCmd: robotCmd(h, 0);
         javaRun it.unibo.utils.movePlanUtil.getDuration();
-        [ !? moveWDuration(T) ] println(onecellforward_probableFixedObstacle(T));
+        [ !? moveWDuration(T) ]
+            println(onecellforward_probableFixedObstacle(T));
         selfMsg obstacleNear: obstacleNear
     ] switchTo consumePendingCollisions
 
-    /** TODO: Stato di gestione di una collisione. */
     State consumePendingCollisions [
         println("onecellforward_consumePendingCollisions: (a physical sonar should ...)")
     ] transition
         whenTime 3000 -> handleError
-        whenMsg cmdStop -> handleStop,  // primo caso valutato
+        whenMsg cmdStop -> handleStop,
         whenMsg collisionDispatch -> consumePendingCollisions,
         whenMsg obstacleNear -> sendAnswerAfterCollision
 
-    /** TODO: Stato successivo alla collisione. */
     State sendAnswerAfterCollision [
         println("onecellforward_sendAnswerAfterCollision");
-        javaOp "ignoreCurrentCaller()"; // imposta currentMessage = null;
-        [ ?? moveWDuration(T) ]         // risponde al caller salvato
+        javaOp "ignoreCurrentCaller()";
+        [ ?? moveWDuration(T) ]
             replyToCaller -m moveMsgCmdObstacle: moveMsgCmdObstacle(moveWDuration(T))
     ] switchTo init 
     
-    /** TODO: Termina il movimento in avanti */
     State endMoveForward [ 
         forward robot_adapter -m robotAdapterCmd: robotCmd(h, 0);
-        // javaRun it.unibo.utils.movePlanUtil.getDuration();
-        // [ !? moveTimeInfo(TF, TD) ] replyToCaller -m moveMsgCmdDone: moveMsgCmdDone(w)
         replyToCaller -m moveMsgCmdDone: moveMsgCmdDone(w)
     ] switchTo init 
 
-    /** TODO */
     State handleStop [ 
         println("onecellforward: robot STOPPED: no reply to the caller")
     ]
     
-    /** TODO */
     State handleError [ 
         println("onecellforward ERROR")
     ]
 }
 
-/** TODO */
+
 QActor robot_advanced context ctxRobot {
     
     Rules {
@@ -264,50 +177,55 @@ QActor robot_advanced context ctxRobot {
         timeTurn(500).
     }
     
-    /** Stato iniziale del robot. */
-    State init initial [
-        
-    ] switchTo doWork
+    State init initial [] switchTo doWork
     
-    /** Stato nel quale il robot esegue i comandi. */
-    State doWork [
-        
-    ] transition
+    State doWork []
+    transition
         stopAfter 60000
         whenMsg robotCmd -> executeCommand
     
-    /** Stato di esecuzione dei comandi. */
     State executeCommand [
-        // salva il messaggio corrente: currentMessage è perso quando lo stato cambia
         javaOp "storeCurrentMessageForReply()";  // usato da replyToCaller
-
         onMsg robotCmd: robotCmd(a) -> {
-            [ !? timeTurn(T) ] forward robot_adapter -m robotAdapterCmd: robotCmd(a, T);
+            [ !? timeTurn(T) ] {
+                println("Moving left");
+                forward robot_adapter -m robotAdapterCmd: robotCmd(a, T)
+            } else {
+                println("NOT moving left")
+            };
             selfMsg waitMoveCompleted: waitMoveCompleted
         };
         onMsg robotCmd: robotCmd(d) -> {
-            [ !? timeTurn(T) ] forward robot_adapter -m robotAdapterCmd: robotCmd(d, T);
+            [ !? timeTurn(T) ] {
+                println("Moving right");
+                forward robot_adapter -m robotAdapterCmd: robotCmd(d, T)
+            } else {
+                println("NOT moving right")
+            };
             selfMsg waitMoveCompleted: waitMoveCompleted
         };
         onMsg robotCmd: robotCmd(w) -> {
-            // tentativo di movimento
-            [ !? timew(T) ] forward onecellforward -m moveMsgCmd : moveMsgCmd(T);
+            [ !? timew(T) ] {
+                println("Moving forward");
+                forward onecellforward -m moveMsgCmd : moveMsgCmd(T)
+            } else {
+                println("NOT moving forward")
+            };
             selfMsg waitMoveCompleted: waitMoveCompleted
         }
     ] transition
         whenTime 100 -> doWork
         whenMsg waitMoveCompleted -> waitMoveComletedAnswer
 
-    /** TODO */
     State waitMoveComletedAnswer [
-
+        println("Waiting")
     ] transition
         stopAfter 60000
         whenMsg moveMsgCmdDone -> receivedMoveCompletedAnswer,
         whenMsg moveMsgCmdObstacle -> receivedMoveCompletedAnswer
     
-    /** TODO */
     State receivedMoveCompletedAnswer [
+        println("Stopped waiting");
         onMsg moveMsgCmdDone: moveMsgCmdDone(X) ->
             replyToCaller -m moveMsgCmdDone: moveMsgCmdDone(X);
         onMsg moveMsgCmdObstacle: moveMsgCmdObstacle(moveWDuration(T)) ->
@@ -317,19 +235,14 @@ QActor robot_advanced context ctxRobot {
     ] switchTo doWork
 }
 
-/** Attore che modella la mente del robot discovery, separata dal robot fisico. */
+
 QActor robot_discovery_mind context ctxRobot {
     
     Rules {
         environment(notok).
-        
-        /** ledState(X) ; X = off|blinking */
         ledState(off).
-        
-        // PLANNER
-        numOfExplorations(3).   
-        curGoal(0,0).   
-        
+        numOfExplorations(3).
+        curGoal(0,0).
         continueForward(T) :-
             timew(T),
             inc(repeatForward, 1, R),
@@ -343,73 +256,52 @@ QActor robot_discovery_mind context ctxRobot {
             eval(le, V, MAX),
             replaceRule(curGoal(_, _), curGoal(V, V)).  
         continueExplore(V) :-
-            removeeRule(curGoal(_, _)).          
-         
+            removeeRule(curGoal(_, _)).                   
         // TODO **************************************************
         eval(eq, X, X).       // since we have syntax limitations
         doTheMove(M) :-  // moveDone does not exist: we can go on
             move(M1), !, // M1 is the first move to do
             eval(eq,M,M1), !,
             doTheFirstMove(M). 
-
         doTheFirstMove(w) :- retract( move(w) ),!.              
         doTheFirstMove(a) :- retract( move(a) ),!.
         doTheFirstMove(d) :- retract( move(d) ),!.
     }
     
-    /** Stato iniziale del robot, nel quale viene inizializzata l'IA. */
     State init initial [
         // Planner
         javaRun it.unibo.planning.planUtil.initAI()
     ] switchTo home
 
-    /**
-     * Lo stato home è lo stato di partenza della mind del robot.
-     *
-     * Attende per 60s di ricevere un comando o un evento:
-     * - riguardante l'ambiente,
-     * - per iniziare l'esplorazione.
-     */
     State home [
         onMsg robotHome: robotHome -> forward console -m robotHome: robotHome
     ] transition
         stopAfter 60000
         whenEvent environment: environment(E) do
             demo replaceRule(environment(X), environment(E)),
-        whenMsg [ !? environment(ok) ]
-            cmdExplore -> goToExploration    // R-explore
+        whenMsg cmdExplore -> checkTemperatureAndExplore                // R-explore & R-TempOk
         finally repeatPlan
+    
+    State checkTemperatureAndExplore [                                  // R-TempOk
+        [ !? environment(ok) ] selfMsg cmdExplore: cmdExplore
+    ] transition
+        whenTime 100 -> home
+        whenMsg cmdExplore -> goToExploration
 
-    /**
-     * Lo stato goToExploration è lo stato che precede l'inizio dell'esplorazione.
-     *
-     * La mind abilita il lampeggio del LED sul robot e inizia ad esplorare.
-     */
     State goToExploration [
         println("EXPLORING ...");
-        
-        // LED
         forward robot_adapter -m robotCmd: robotCmd(blinkStart);        // R-blinkLed (start)
         ReplaceRule ledState(off) with ledState(blinking);
-        
-        // Planner
         demo assign(curNumExplore, 0); 
         javaRun it.unibo.planning.planUtil.cleanQa();
         demo assign(nstep, 0)
-    ] transition
-        whenTime 100 -> exploration
+    ] switchTo exploreStep
 
-    // TODO remove?!
-    /**
-     * Lo stato exploration è lo stato più importante per la fase di discovery.
-     *
-     * Mentre il robot esplora, la mind gestisce eventuali comandi o borse vicine.
-     */
     State exploration [
         // TODO implement logic ******
         /* ********** DEBUG ********** */
         // forward robot_advanced -m robotCmd: robotCmd(a);
-        // forward robot_advanced -m robotCmd: robotCmd(w);
+        // forward robot_advanced -m robotCmd: robotCmd(w)//;
         // forward robot_advanced -m robotCmd: robotCmd(d);
         // forward robot_advanced -m robotCmd: robotCmd(d);
         // forward robot_advanced -m robotCmd: robotCmd(w);
@@ -421,21 +313,11 @@ QActor robot_discovery_mind context ctxRobot {
         whenMsg cmdStop -> goToIdle,                                    // R-stopExplore
         whenMsg robotNearBag -> goToHandleBag
 
-    /**
-     * Lo stato goToHandleBag è lo stato che precede la fase di gestione della borsa.
-     *
-     * Il robot si ferma e scatta una foto, poi procede con la gestione della borsa.
-     */
     State goToHandleBag [
         selfMsg handleBag: handleBag(halt);                             // R-stopAtBag
         selfMsg handleBag: handleBag(takePhoto)                         // R-takePhoto
     ] switchTo handleBag
 
-    /**
-     * Lo stato handleBag è lo stato che permette di gestire concretamente una borsa.
-     *
-     * Gestisce i messaggi di halt e di scatto della foto, dopodiché attende istruzioni.
-     */
     State handleBag [
         println("HANDLING BAG ...");
         onMsg handleBag: handleBag(halt) -> {                           // R-stopAtBag
@@ -453,11 +335,6 @@ QActor robot_discovery_mind context ctxRobot {
         whenMsg cmdGoHome -> returnHome,
         whenMsg cmdExplore -> goToExploration
 
-    /**
-     * Lo stato goToIdle è lo stato che precede lo stato di idle.
-     *
-     * In questo stato, il robot si ferma e spegne il LED.
-     */
     State goToIdle [
         forward robot_adapter -m robotCmd: robotCmd(h);
         forward robot_adapter -m robotCmd: robotCmd(blinkStop);         // R-blinkLed (stop)
@@ -465,28 +342,18 @@ QActor robot_discovery_mind context ctxRobot {
         println("The robot was STOPPED: no reply to the caller")
     ] switchTo idle
 
-    /**
-     * Lo stato idle attende istruzioni per tornare ad esplorare o tornare a casa.
-     */
-    State idle [
-
-    ] transition
+    State idle []
+    transition
         stopAfter 60000
         whenMsg cmdExplore -> exploration,                              // R-continueExplore
         whenMsg cmdGoHome -> returnHome                                 // R-backHome
 
-    /**
-     * Lo stato returnHome è lo stato in cui il robot torna a casa.
-     *
-     * Lo stato si ripete finché non è a casa, poi passa ad home.
-     */
     State returnHome [
         println("GOING HOME...")        // TODO implement logic
     ] transition
         stopAfter 60000
         whenMsg robotHome -> home
     
-    /** TODO: Azioni del Planner */
     State doActions [
         [ !? move(M) ]
             println(doActions_doingTheMove(M));   
@@ -502,16 +369,13 @@ QActor robot_discovery_mind context ctxRobot {
         whenMsg endAction -> backToHome // tutte le azioni fatte
         finally repeatPlan
 
-    /** TODO */
-    State waitMoveCompletedAnswer [
-
-    ] transition
+    State waitMoveCompletedAnswer []
+    transition
         stopAfter 60000
         whenMsg cmdStop -> goToIdle,   // primo caso valutato
         whenMsg moveMsgCmdDone -> handleCmdDone,
         whenMsg moveMsgCmdObstacle -> backToHome // TODO debug
 
-    /** TODO */
     State handleCmdDone [
         printCurrentMessage;
         onMsg moveMsgCmdDone: moveMsgCmdDone(X) -> 
@@ -521,7 +385,7 @@ QActor robot_discovery_mind context ctxRobot {
     ] switchTo doActions
     
     /** TODO */
-    State backToHome  [
+    State backToHome [
         [ !? curPos(0,0,D)  ]{
              println("AT HOME");    
              javaRun it.unibo.planning.planUtil.showMap() ; 
@@ -537,8 +401,7 @@ QActor robot_discovery_mind context ctxRobot {
         whenTime 100 -> doActions
         whenMsg endAction -> exploreStep
 
-    /** TODO */   
-    State exploreStep[
+    State exploreStep [
         println(state(exploreStep));
         [ !? curPos(X,Y,D)  ]
             println( exploreStep(X,Y,D) );
@@ -556,7 +419,7 @@ QActor robot_discovery_mind context ctxRobot {
     ] transition whenTime 1000 -> doActions
         whenMsg endAction -> exploreUncovered //: endAction do println("bye")
           
-    State exploreUncovered[
+    State exploreUncovered [
         [ !? curPos(X,Y,D)  ]
             println( exploreUncovered(X,Y,D) );
         
@@ -578,47 +441,36 @@ QActor robot_discovery_mind context ctxRobot {
     transition whenTime 100 -> doActions
         whenMsg endAction : endAction do println("bye")
 
-    State handleError[ 
+    State handleError [ 
         println("mind ERROR")
     ]
 }
 
-/** Attore che modella la mente del robot retriever, separata dal robot fisico. */
+
 QActor robot_retriever_mind context ctxRobot {
     
     Rules {
         environment(notok).
     }
-    
-    /**
-     * Lo stato home è lo stato iniziale della mind del robot.
-     *
-     * Attende di ricevere un comando o un evento:
-     * - riguardante l'ambiente,
-     * - per raggiungere la bomba.
-     */
-    State home initial [
-        
-    ] transition
+
+    State home initial []
+    transition
         stopAfter 60000
         whenEvent environment: environment(E) do
             demo replaceRule(environment(X), environment(E)),
-        whenMsg [ !? environment(ok) ] cmdReachBomb -> goToReachBomb    // R-reachBag
+        whenMsg cmdReachBomb -> checkTemperatureAndRetrieve         // R-reachBag
         finally repeatPlan
 
-    /**
-     * Lo stato goToReachBomb è lo stato che precede lo stato di viaggio verso la bomba.
-     */
-    State goToReachBomb [
-
+    State checkTemperatureAndRetrieve [                             // R-TempOk
+        [ !? environment(ok) ] selfMsg cmdReachBomb: cmdReachBomb
     ] transition
+        whenTime 100 -> home
+        whenMsg cmdReachBomb -> goToReachBomb
+
+    State goToReachBomb [] 
+    transition
         whenTime 1000 -> reachBomb
 
-    /**
-     * Lo stato reachBomb è lo stato in cui il robot viaggia verso la bomba.
-     *
-     * Lo stato si ripete finché non raggiunge la bomba e torna indietro, poi passa ad home.
-     */
     State reachBomb [
         println("RETRIVING BOMB ...")
     ] transition
@@ -626,31 +478,17 @@ QActor robot_retriever_mind context ctxRobot {
         whenMsg robotHome -> home
 }
 
-/** Attore console. */
+
 QActor console context ctxRobot {
 
-    /** Stato iniziale della console. */
     State init initial [
         println("Console init")
     ] transition
         whenTime 100 -> doWork
 
-    /**
-     * Stato principale della console.
-     *
-     * Attende messaggi dal robot e li gestisce.
-     */
     State doWork [
-        // TODO demo operations: ******************************
-        // delay 1000;
-        // emit temperature: temperature(18);
         // delay 3000;
-        // forward robot_discovery_mind -m cmdExplore: cmdExplore;
-        // delay 2000;
-        // forward robot_discovery_mind -m cmdStop: cmdStop
-        // ****************************************************
-        delay 3000;
-        forward robot_discovery_mind -m cmdExplore: cmdExplore // TODO debug
+        // forward robot_discovery_mind -m cmdExplore: cmdExplore // TODO debug
     ] transition
         stopAfter 60000
         whenEvent usercmd -> adaptCommand,
@@ -658,7 +496,6 @@ QActor console context ctxRobot {
         whenMsg bag -> handlePhoto
         finally repeatPlan
     
-    /** Lo stato adaptCommand permette di convertire comandi provenienti dalla WebGUI. */
     State adaptCommand resumeLastPlan [
         printCurrentEvent;
         onEvent usercmd: usercmd(robotgui(cmd(explore))) ->
@@ -673,11 +510,6 @@ QActor console context ctxRobot {
             selfMsg bagStatus: bagStatus(bag, args(nothing))
     ]
 
-    /**
-     * Lo stato handlePhoto gestisce la ricezione di una foto dal robot.
-     *
-     * Attende un messaggio di bagStatus per gestirlo.
-     */
     State handlePhoto [
         onMsg bag: bag(picture(X)) -> printCurrentMessage
     ] transition
@@ -686,12 +518,6 @@ QActor console context ctxRobot {
         whenEvent usercmd -> adaptCommand
         finally repeatPlan
 
-    /**
-     * Lo stato handleBagStatus permette di gestire se la borsa è una bomba o no.
-     *
-     * Se lo è, memorizza la foto, ordina al robot di tornare e segnala un alert.
-     * Se non lo è, ordina al robot di continuare l'esplorazione.
-     */
     State handleBagStatus [
         onMsg bagStatus: bagStatus(bomb, args(picture(X))) -> {
             // TODO implement save X                                    // R-storePhoto
@@ -704,23 +530,12 @@ QActor console context ctxRobot {
         whenTime 3000 -> doWork
         whenMsg alert -> handleAlert
 
-    /**
-     * Lo stato handleAlert permette di gestire uno stato di allerta.
-     *
-     * Aspetta che il robot sia tornato poi lo manda a raccogliere la bomba.
-     */
-    State handleAlert [
-
-    ] transition
+    State handleAlert [] 
+    transition
         whenTime 3000 -> handleAlert
         whenMsg robotHome: robotHome do
             forward robot_retriever_mind -m cmdReachBomb: cmdReachBomb  // R-waitForHome & R-reachBag
 
-    /**
-     * Lo stato updateView permette di gestire gli aggiornamenti di stato della vista.
-     *
-     * Una volta fatto, riprende lo stato precedente.
-     */
     State updateView resumeLastPlan [
         onMsg robotState: state(X) -> printCurrentMessage
     ]

@@ -97,12 +97,6 @@ public abstract class AbstractConsole extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_doWork",0);
 	     pr.incNumIter(); 	
 	    	String myselfName = "doWork";  
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(3000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "doWork";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdExplore","cmdExplore", guardVars ).toString();
-	    	sendMsg("cmdExplore","robot_discovery_mind", QActorContext.dispatch, temporaryStr ); 
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("adaptCommand"), stateTab.get("updateView"), stateTab.get("handlePhoto") }, 
