@@ -1,3 +1,4 @@
+src/**/.gitignore
 srcMore/**/.gitignore
 src-gen/**/.gitignore
 
