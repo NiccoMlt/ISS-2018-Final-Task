@@ -67,7 +67,9 @@ BASIC SUPPORT (test, akka)
   // https://mvnrepository.com/artifact/com.typesafe.akka/akka-actor_2.11
   compile group: 'com.typesafe.akka', name: 'akka-actor_2.11', version: '2.5.2'
   // https://mvnrepository.com/artifact/com.typesafe.akka/akka-remote_2.11
-  compile group: 'com.typesafe.akka', name: 'akka-remote_2.11', version: '2.5.1'
+  compile group: 'com.typesafe.akka', name: 'akka-remote_2.11', version: '2.5.2'
+  // https://mvnrepository.com/artifact/com.typesafe.akka/akka-testkit
+  testCompile group: 'com.typesafe.akka', name: 'akka-testkit_2.11', version: '2.5.2'
 
 /*
 UNIBO SUPPORTS
@@ -199,6 +201,7 @@ TESTING
 ---------------------------------------------------------
 */
 test {
+  maxParallelForks = 1
   testLogging {
     outputs.upToDateWhen { false }
     showStandardStreams = true

@@ -59,12 +59,12 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	stateTab.put("home",home);
 	    	stateTab.put("checkTemperatureAndExplore",checkTemperatureAndExplore);
 	    	stateTab.put("goToExploration",goToExploration);
-	    	stateTab.put("exploration",exploration);
 	    	stateTab.put("goToHandleBag",goToHandleBag);
 	    	stateTab.put("handleBag",handleBag);
+	    	stateTab.put("resumeExplorationAfterBag",resumeExplorationAfterBag);
 	    	stateTab.put("goToIdle",goToIdle);
+	    	stateTab.put("goToHome",goToHome);
 	    	stateTab.put("idle",idle);
-	    	stateTab.put("returnHome",returnHome);
 	    	stateTab.put("doActions",doActions);
 	    	stateTab.put("waitMoveCompletedAnswer",waitMoveCompletedAnswer);
 	    	stateTab.put("handleCmdDone",handleCmdDone);
@@ -184,7 +184,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String tStr2 = "ledState(blinking)";
 	    	 replaceRule( tStr1, tStr2 );  
 	    	 }
-	    	temporaryStr = "\"EXPLORING ...\"";
+	    	temporaryStr = "\"STATE[goToExploration] ...\"";
 	    	println( temporaryStr );  
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
@@ -204,31 +204,30 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    }
 	    };//goToExploration
 	    
-	    StateFun exploration = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("exploration",-1);
-	    	String myselfName = "exploration";  
-	    	temporaryStr = "\"EXPLORING ...\"";
-	    	println( temporaryStr );  
-	    	//bbb
-	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("goToIdle"), stateTab.get("goToHandleBag") }, 
-	          new String[]{"true","M","cmdStop", "true","M","robotNearBag" },
-	          60000, "handleToutBuiltIn" );//msgTransition
-	    }catch(Exception e_exploration){  
-	    	 println( getName() + " plan=exploration WARNING:" + e_exploration.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//exploration
-	    
 	    StateFun goToHandleBag = () -> {	
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("goToHandleBag",-1);
 	    	String myselfName = "goToHandleBag";  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"handleBag(X)","handleBag(halt)", guardVars ).toString();
-	    	sendMsg("handleBag",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"handleBag(X)","handleBag(takePhoto)", guardVars ).toString();
-	    	sendMsg("handleBag",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
+	    	temporaryStr = "\"STATE[goToHandleBag] ...\"";
+	    	println( temporaryStr );  
+	    	{
+	    	String tStr1 = "ledState(blinking)";
+	    	String tStr2 = "ledState(off)";
+	    	 replaceRule( tStr1, tStr2 );  
+	    	 }
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
+	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
+	    	temporaryStr = "\"TAKE PHOTO ...\"";
+	    	println( temporaryStr );  
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"bag(picture(X))","bag(picture(ofBag))", guardVars ).toString();
+	    	sendMsg("bag","console", QActorContext.dispatch, temporaryStr ); 
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?curPos(X,Y,D)" )) != null ){
+	    	temporaryStr = "handleFixedObstacleCases_1(X,Y,D)";
+	    	temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);
+	    	println( temporaryStr );  
+	    	}
+	    	it.unibo.planning.planUtil.markCellAsObstacle( myself  );
+	    	it.unibo.planning.planUtil.showMap( myself  );
 	    	//switchTo handleBag
 	        switchToPlanAsNextState(pr, myselfName, "robot_discovery_mind_"+myselfName, 
 	              "handleBag",false, false, null); 
@@ -242,67 +241,49 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("handleBag",-1);
 	    	String myselfName = "handleBag";  
-	    	temporaryStr = "\"HANDLING BAG ...\"";
-	    	println( temporaryStr );  
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("handleBag(halt)");
-	    	if( currentMessage != null && currentMessage.msgId().equals("handleBag") && 
-	    		pengine.unify(curT, Term.createTerm("handleBag(X)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		{//actionseq
-	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(h)", guardVars ).toString();
-	    		sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
-	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
-	    		sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
-	    		{
-	    		String tStr1 = "ledState(blinking)";
-	    		String tStr2 = "ledState(off)";
-	    		 replaceRule( tStr1, tStr2 );  
-	    		 }
-	    		};//actionseq
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("handleBag(takePhoto)");
-	    	if( currentMessage != null && currentMessage.msgId().equals("handleBag") && 
-	    		pengine.unify(curT, Term.createTerm("handleBag(X)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		{//actionseq
-	    		temporaryStr = "\"TAKE PHOTO ...\"";
-	    		println( temporaryStr );  
-	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"bag(picture(X))","bag(picture(X))", guardVars ).toString();
-	    		sendMsg("bag","console", QActorContext.dispatch, temporaryStr ); 
-	    		};//actionseq
-	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleBag"), stateTab.get("returnHome"), stateTab.get("goToExploration") }, 
-	          new String[]{"true","M","handleBag", "true","M","cmdGoHome", "true","M","cmdExplore" },
-	          1000, "handleBag" );//msgTransition
+	          new StateFun[]{stateTab.get("goToHome"), stateTab.get("resumeExplorationAfterBag") }, 
+	          new String[]{"true","M","cmdGoHome", "true","M","cmdExplore" },
+	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handleBag){  
 	    	 println( getName() + " plan=handleBag WARNING:" + e_handleBag.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//handleBag
 	    
+	    StateFun resumeExplorationAfterBag = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("resumeExplorationAfterBag",-1);
+	    	String myselfName = "resumeExplorationAfterBag";  
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?curGoal(N,N)" )) != null ){
+	    	it.unibo.planning.planUtil.setGoal( myself ,guardVars.get("N"), guardVars.get("N")  );
+	    	}
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?curGoal(N,N)" )) != null ){
+	    	it.unibo.planning.planUtil.doPlan( myself  );
+	    	}
+	    	//switchTo doActions
+	        switchToPlanAsNextState(pr, myselfName, "robot_discovery_mind_"+myselfName, 
+	              "doActions",false, false, null); 
+	    }catch(Exception e_resumeExplorationAfterBag){  
+	    	 println( getName() + " plan=resumeExplorationAfterBag WARNING:" + e_resumeExplorationAfterBag.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//resumeExplorationAfterBag
+	    
 	    StateFun goToIdle = () -> {	
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("goToIdle",-1);
 	    	String myselfName = "goToIdle";  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(h)", guardVars ).toString();
-	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
-	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	{
 	    	String tStr1 = "ledState(blinking)";
 	    	String tStr2 = "ledState(off)";
 	    	 replaceRule( tStr1, tStr2 );  
 	    	 }
-	    	temporaryStr = "\"The robot was STOPPED: no reply to the caller\"";
+	    	temporaryStr = "\"STATE[goToIdle] ...\"";
 	    	println( temporaryStr );  
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
+	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo idle
 	        switchToPlanAsNextState(pr, myselfName, "robot_discovery_mind_"+myselfName, 
 	              "idle",false, false, null); 
@@ -312,13 +293,30 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    }
 	    };//goToIdle
 	    
+	    StateFun goToHome = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("goToHome",-1);
+	    	String myselfName = "goToHome";  
+	    	temporaryStr = "\"STATE[goToHome] ...\"";
+	    	println( temporaryStr );  
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
+	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
+	    	//switchTo backToHome
+	        switchToPlanAsNextState(pr, myselfName, "robot_discovery_mind_"+myselfName, 
+	              "backToHome",false, false, null); 
+	    }catch(Exception e_goToHome){  
+	    	 println( getName() + " plan=goToHome WARNING:" + e_goToHome.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//goToHome
+	    
 	    StateFun idle = () -> {	
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("idle",-1);
 	    	String myselfName = "idle";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("exploration"), stateTab.get("returnHome") }, 
+	          new StateFun[]{stateTab.get("goToExploration"), stateTab.get("goToHome") }, 
 	          new String[]{"true","M","cmdExplore", "true","M","cmdGoHome" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_idle){  
@@ -326,23 +324,6 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//idle
-	    
-	    StateFun returnHome = () -> {	
-	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("returnHome",-1);
-	    	String myselfName = "returnHome";  
-	    	temporaryStr = "\"GOING HOME...\"";
-	    	println( temporaryStr );  
-	    	//bbb
-	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("home") }, 
-	          new String[]{"true","M","robotHome" },
-	          60000, "handleToutBuiltIn" );//msgTransition
-	    }catch(Exception e_returnHome){  
-	    	 println( getName() + " plan=returnHome WARNING:" + e_returnHome.getMessage() );
-	    	 QActorContext.terminateQActorSystem(this); 
-	    }
-	    };//returnHome
 	    
 	    StateFun doActions = () -> {	
 	    try{	
@@ -374,8 +355,8 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("goToIdle"), stateTab.get("waitMoveCompletedAnswer"), stateTab.get("backToHome") }, 
-	          new String[]{"true","M","cmdStop", "true","M","waitMoveCompleted", "true","M","endAction" },
+	          new StateFun[]{stateTab.get("goToIdle"), stateTab.get("goToExploration"), stateTab.get("goToHome"), stateTab.get("waitMoveCompletedAnswer"), stateTab.get("backToHome") }, 
+	          new String[]{"true","M","cmdStop", "true","M","cmdExplore", "true","M","cmdGoHome", "true","M","waitMoveCompleted", "true","M","endAction" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doActions){  
 	    	 println( getName() + " plan=doActions WARNING:" + e_doActions.getMessage() );
@@ -389,7 +370,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String myselfName = "waitMoveCompletedAnswer";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("goToIdle"), stateTab.get("handleCmdDone"), stateTab.get("backToHome") }, 
+	          new StateFun[]{stateTab.get("goToIdle"), stateTab.get("handleCmdDone"), stateTab.get("goToHandleBag") }, 
 	          new String[]{"true","M","cmdStop", "true","M","moveMsgCmdDone", "true","M","moveMsgCmdObstacle" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitMoveCompletedAnswer){  
@@ -433,6 +414,8 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String myselfName = "backToHome";  
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?curPos(0,0,D)" )) != null ){
 	    	{//actionseq
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
+	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	temporaryStr = "\"AT HOME\"";
 	    	println( temporaryStr );  
 	    	it.unibo.planning.planUtil.showMap( myself  );
@@ -481,8 +464,10 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	it.unibo.planning.planUtil.doPlan( myself  );
 	    	};//actionseq
 	    	}
-	    	else{ temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
+	    	else{ {//actionseq
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
 	    	sendMsg("endAction",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
+	    	};//actionseq
 	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
