@@ -8,6 +8,8 @@
 % arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
 % arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
 
+\subsection{Sprint Planning}\labelssec{sp1:planning}
+
 Essendo lo Sprint iniziale, è stata realizzata un'attenta analisi di tutti i requisiti forniti dal committente
 con uno sguardo generale su tutto il sistema, in modo da poter chiarire con quest'ultimo eventuali incomprensioni.
 
@@ -28,15 +30,15 @@ il passo successivo è individuare i requisiti prioritari da realizzare in quest
 
 Dopo aver delineato tutti i requisiti base, si è scelto di approfondire quelli maggiormente fondanti e di valore per il prodotto:
 
-\begin{description}[itemsep=1em]
+\begin{description}
   \item[\requirementref{R-startExplore}]
     tramite una console grafica l'utente dovrà poter inviare un comando di inizio esplorazione, il comando dovrà essere ricevuto dal robot, il quale dovrà dare inizio alla fase di esplorazione se il requisito successivo è verificato.
   \item[\requirementref{R-explore}]
     l'esplorazione per questo sprint iniziale sarà dummy, in modo da permettere all'utente di vedere il robot muoversi.
   \item[\requirementref{R-tempOk}]
     l'esplorazione dovrà partire soltanto se la temperatura è inferiore ad una certa soglia.
-    Da requisiti iniziali non è chiaro se il robot debba essere reattivo a cambi della temperatura durante la fase di esplorazione;
-    per il momento si assume di no.
+    % Da requisiti iniziali non è chiaro se il robot debba essere reattivo a cambi della temperatura durante la fase di esplorazione;
+    % per il momento si assume di no.
   \item[\requirementref{R-stopExplore}]
     in seguito ad un comando dell'utente l'esplorazione dovrà essere interrotta ed il robot rimarrà in attesa di sapere dall'utente se deve tornare a casa oppure proseguire l'esplorazione appena interrotta.
   \item[\requirementref{R-continueExplore}]
@@ -149,28 +151,28 @@ Procedendo con un approccio top-down, a seguito dello zoom-in sono stati identif
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1\textwidth]{res/sprint1/problem/robot_adapter}
+  \includegv[width=\textwidth]{res/sprint1/problem/robot_adapter}
   \caption{Robot Adapter}%
   \label{fig:sp1:prob:robotadapter}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1\textwidth]{res/sprint1/problem/robot_retriever_mind}
+  \includegv[width=\textwidth]{res/sprint1/problem/robot_retriever_mind}
   \caption{Robot Retrieval Mind}%
   \label{fig:sp1:prob:robotretrieval}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1.2\textwidth]{res/sprint1/problem/robot_discovery_mind}
+  \includegv[width=\textwidth]{res/sprint1/problem/robot_discovery_mind}
   \caption{Robot Discovery Mind}%
   \label{fig:sp1:prob:robotdiscovery}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=1\textwidth]{res/sprint1/problem/console}
+  \includegv[width=\textwidth]{res/sprint1/problem/console}
   \caption{Console}%
   \label{fig:sp1:prob:console}
 \end{figure}
@@ -233,3 +235,7 @@ Per la natura dei requisiti è stato possibile automatizzare i seguenti test per
 Per quanto riguarda gli altri requisiti, gli unici test che sono stati condotti sono di tipo qualitativo, osservando l'esecuzione di un sistema mock valutando i casi di utilizzo.
 
 In questo caso, il monitoring è stato effettuato sfruttuando l'interfaccia Web e i log sulla console.
+
+\subsection{Sprint Review}\labelssec{sp1:review}
+
+L'interazione con il committente è stata limitata a uno scambio di email su richiesta di quest'ultimo, in quanto non erano presenti particolari punti incerti.

@@ -1,0 +1,26 @@
+@startuml main-architecture-diagram
+
+rectangle "Robot" <<Entity>> {
+
+    rectangle "Robot Mind for Discovery" <<Mind>> {
+        component "Business Logic" as BL1
+    }
+
+    rectangle "Robot Mind for Retrieval" <<Mind>> {
+        component "Business Logic" as BL2
+    }
+
+    rectangle "Robot Advanced" <<Pysical>> {
+      component "Business Logic" as BL3
+    }
+
+    rectangle "Robot Advanced" <<Pysical>> {
+      component "Business Logic" as BL3
+    }
+
+    ' TODO
+}
+
+rectangle "World observer" <<Entity>> as orch
+
+@enduml
