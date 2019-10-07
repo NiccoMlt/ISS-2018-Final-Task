@@ -27,7 +27,9 @@ function startHttpServer() {
     app.use(express.static('./../../WebGLScene'))
     app.get('/', (req, res) => res.sendFile('index.html', { root: './../../WebGLScene' }) )
 
-    http.listen(8090)
+    const httpPort = 8090
+    http.listen(httpPort)
+    console.log("HTTP server ready on http://localhost:" + httpPort)
 }
 
 function initSocketIOServer(callbacks) {
@@ -35,7 +37,7 @@ function initSocketIOServer(callbacks) {
         socketCount++
         const key = socketCount
         sockets[key] = socket
-        
+
         callbacks.onWebpageReady()
         webpageReady = true
         console.log("webpage ready")

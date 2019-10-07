@@ -1,14 +1,22 @@
 %% Direttive TeXworks:
 % !TeX root = ./report.tex
 % !TEX encoding = UTF-8 Unicode
-% !TEX program = arara
-% !TEX TS-program = arara
 % !TeX spellcheck = it-IT
 
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: bibtex
 % arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
 % arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
 
 \documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
+
+\usepackage{a4wide}
+
+% \usepackage{geometry}
+% \geometry{
+%   a4paper,
+%   heightrounded    % integer number of lines
+% }
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% package sillabazione italiana e uso lettere accentate
@@ -16,18 +24,18 @@
 \usepackage{textcomp}           % serve per fornire supporto ai Text Companion fonts
 \usepackage[utf8]{inputenc}     % serve per impostare la codifica di input del font
 \usepackage[
-  english,            % utilizza l'inglese come lingua secondaria
-  italian             % utilizza l'italiano come lingua primaria
+  english,              % utilizza l'inglese come lingua secondaria
+  italian               % utilizza l'italiano come lingua primaria
 ]{%
-  babel,                      % serve per scrivere Indice, Capitolo, etc in Italiano
-  varioref                    % introduce il comando \vref da usarsi nello stesso modo del comune \ref per i riferimenti
+  babel,                        % serve per scrivere Indice, Capitolo, etc in Italiano
+  varioref                      % introduce il comando \vref da usarsi nello stesso modo del comune \ref per i riferimenti
 }
 \usepackage{lmodern}            % carica una variante Latin Modern prodotto dal GUST
 \usepackage[%
-    strict,             % rende tutti gli warning degli errori
-    autostyle,          % imposta lo stile in base al linguaggio specificato in babel
-    english=american,   % imposta lo stile per l'inglese
-    italian=guillemets  % imposta lo stile per l'italiano
+  strict,               % rende tutti gli warning degli errori
+  autostyle,            % imposta lo stile in base al linguaggio specificato in babel
+  english=american,     % imposta lo stile per l'inglese
+  italian=guillemets    % imposta lo stile per l'italiano
 ]{csquotes}                     % serve a impostare lo stile delle virgolette
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -49,7 +57,7 @@
 \AtBeginEnvironment{foreigndisplayquote}{\smaller}
 
 \usepackage{indentfirst}        % serve per avere l'indentazione nel primo paragrafo
-\usepackage{url}
+\usepackage{xurl}
 \usepackage{setspace}           % serve a fornire comandi di interlinea standard
 \usepackage{xspace}
 
@@ -60,6 +68,7 @@
 
 \makeatother
 
+\usepackage{natbib}
 \usepackage{ifpdf}
 \usepackage{xcolor}             % serve per la gestione dei colori nel testo
 
@@ -78,8 +87,8 @@
 %%%%%%%%%%%%%%%
 \usepackage{float}
 \usepackage{graphviz}
+\usepackage{tikz}
 
-\usepackage{listings}
 \usepackage{listingsutf8}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -186,9 +195,12 @@
 \newcommand{\xunibo}{Alma~Mater~Studiorum~--~University~of~Bologna}
 
 \usepackage{enumitem}
+\setlist[itemize]{itemsep=1em,topsep=1em,itemindent=0.5\parindent}
+\setlist[enumerate]{itemsep=1em,topsep=1em,itemindent=0.5\parindent}
+\setlist[description]{itemsep=1em,topsep=1em,itemindent=0.25\parindent}
 
-\setcounter{secnumdepth}{2}   % Numera fino alla sottosezione nel corpo del testo
-\setcounter{tocdepth}{3}      % Numera fino alla sotto-sottosezione nell'indice
+\setcounter{secnumdepth}{2}     % Numera fino alla sottosezione nel corpo del testo
+\setcounter{tocdepth}{3}        % Numera fino alla sotto-sottosezione nell'indice
 
 \usepackage[a-1b]{pdfx}         % permette di generare PDF/A; importa anche hyperref
 
@@ -214,8 +226,8 @@
 }
 
 \usepackage[%
-  italian,            % definizione delle lingue da usare
-  nameinlink          % inserisce i link nei riferimenti
+  italian,              % definizione delle lingue da usare
+  nameinlink            % inserisce i link nei riferimenti
 ]{cleveref}                     % permette di usare riferimenti migliori dei \ref e dei varioref
 
 \begin{document}
@@ -258,6 +270,9 @@
 
 \section{Sprint 1}\labelsec{sprint1}
 \input{src/sprint-01.tex}
+
+\section{Sprint 2}\labelsec{sprint2}
+\input{src/sprint-02.tex}
 
 %===========================================================================
 % \subsection{Casi d'uso}\labelssec{use_cases}
@@ -313,7 +328,7 @@
 
 % \appendix
 
-% \bibliographystyle{abbrv}
-% \bibliography{biblio}
+\bibliographystyle{abbrv}
+\bibliography{biblio}
 
 \end{document}

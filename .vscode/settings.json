@@ -1,10 +1,10 @@
 {
+  "files.associations": {"*.czrc": "json"},
   "latex-workshop.chktex.delay": 1000,
   "latex-workshop.chktex.enabled": true,
   "latex-workshop.chktex.run": "onType",
   "latex-workshop.hover.command.enabled": true,
   "latex-workshop.hover.preview.enabled": true,
-  "latex-workshop.hover.preview.ref.enabled": true,
   "latex-workshop.hover.ref.enabled": true,
   "latex-workshop.intellisense.citation.label": "title",
   "latex-workshop.intellisense.package.enabled": true,
@@ -14,21 +14,6 @@
       "name": "arara",
       "tools": [
         "arara"
-      ]
-    },
-    {
-      "name": "latexmk 🔃",
-      "tools": [
-        "latexmk"
-      ]
-    },
-    {
-      "name": "pdflatex ➞ bibtex ➞ pdflatex × 2",
-      "tools": [
-        "pdflatex",
-        "bibtex",
-        "pdflatex",
-        "pdflatex"
       ]
     }
   ],
@@ -40,38 +25,6 @@
         "--language=it",
         "--log",
         "--verbose",
-        "%DOCFILE%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "latexmk",
-      "command": "latexmk",
-      "args": [
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "-pdf",
-        "-outdir=%OUTDIR%",
-        "%DOC%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "pdflatex",
-      "command": "pdflatex",
-      "args": [
-        "-synctex=1",
-        "-interaction=nonstopmode",
-        "-file-line-error",
-        "%DOC%"
-      ],
-      "env": {}
-    },
-    {
-      "name": "bibtex",
-      "command": "bibtex",
-      "args": [
         "%DOCFILE%"
       ],
       "env": {}

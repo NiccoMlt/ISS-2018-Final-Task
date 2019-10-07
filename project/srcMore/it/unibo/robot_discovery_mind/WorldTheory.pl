@@ -151,6 +151,17 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %------------------------------------------------- 
 environment( notok).
 ledState( off).
+numOfExplorations( 30).
+curGoal( 0,0).
+continueForward( T):-timew( T),inc( repeatForward,1,R),getVal( nstep,N),output( continueForward( R,N,T)),eval( lt,R,N).
+continueExplore( V):-numOfExplorations( MAX),inc( curNumExplore,1,V),output( continueExplore( V,MAX)),eval( le,V,MAX),replaceRule( curGoal( _,_),curGoal( V,V)).
+continueExplore( V):-removeeRule( curGoal( _,_)).
+eval( eq,X,X).
+doTheMove( M):-move( M1), ! ,eval( eq,M,M1), ! ,doTheFirstMove( M).
+doTheFirstMove( w):-retract( move( w)), ! .
+doTheFirstMove( a):-retract( move( a)), ! .
+doTheFirstMove( d):-retract( move( d)), ! .
+foundBomb:-bomb( X,Y).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

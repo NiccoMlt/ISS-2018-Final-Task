@@ -1,10 +1,10 @@
 %% Direttive TeXworks:
 % !TeX root = ../report.tex
 % !TEX encoding = UTF-8 Unicode
-% !TEX program = arara
-% !TEX TS-program = arara
 % !TeX spellcheck = it-IT
 
+% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: bibtex
 % arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
 % arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
 
@@ -14,8 +14,8 @@ Dall'analisi dei requisiti forniti dal committente è possibile definire i segue
   \item
     il sistema è distribuito e composto da tre componenti principali:
     \begin{description}
-      \item[\textbf{Robot \requirementref{discovery}}] Si intende un componente che esplori (\requirementref{R-explore}) autonomamente l'ambiente seguendo specifici comandi dell'operatore;
-      \item[\textbf{Robot \requirementref{retriever}}] Si intende un componente che raggiunga la bomba scoperta e la porti a casa;
+      \item[\textbf{Robot \requirementref{discovery}}] Si intende un componente che esplori autonomamente l'ambiente seguendo specifici comandi dell'operatore (\requirementref{R-explore});
+      \item[\textbf{Robot \requirementref{retriever}}] Si intende un componente che raggiunga la bomba scoperta e la porti al punto di partenza;
       \item[\textbf{Componente \requirementref{console}}] Il componente utilizzato da remoto dall'operatore attraverso un PC od uno smartphone;
     \end{description}
 
@@ -52,7 +52,8 @@ Dall'analisi dei requisiti forniti dal committente è possibile definire i segue
     \begin{itemize}
       \item allertare l'operatore (\requirementref{R-alert});
       \item salvare la foto (\requirementref{R-storePhoto}) ricevuta con dati di contesto;
-      \item mandare il robot a casa (\requirementref{R-backHomeSinceBomb}) o farlo continuare (\requirementref{R-continueExploreAfterPhoto}).
+      \item mandare il robot a casa (\requirementref{R-backHomeSinceBomb}) \ldots{}
+      \item \ldots{} o farlo continuare (\requirementref{R-continueExploreAfterPhoto}).
     \end{itemize}
 
   \item
@@ -94,7 +95,7 @@ Robot Discovery è un drr robot che ha il compito di raggiungere la borsa indivi
 
 \subsection{Dettaglio sui requisiti della fase di esplorazione}\labelssec{explore}
 
-\begin{description}[itemsep=1em]
+\begin{description}
   \item[\requirementref{R-explore}]\labelsssec{R-explore}
 
   Durante la fase di esplorazione il robot deve muoversi nella stanza, raccogliendo informazioni per creare una rappresentazione del territorio comprendente ostacoli e posizioni degli ordigni.
@@ -112,6 +113,7 @@ Robot Discovery è un drr robot che ha il compito di raggiungere la borsa indivi
   \item[\requirementref{R-stopExplore}]\labelsssec{R-stopExplore}
 
   L'esplorazione deve stopparsi in caso l'utente lo richieda.
+
   Emerge quindi la necessità da parte del robot di essere reattivo ai comandi ricevuti.
 
   \item[\requirementref{R-backHome}]\labelsssec{R-backHome}
@@ -162,7 +164,7 @@ Robot Discovery è un drr robot che ha il compito di raggiungere la borsa indivi
 
 \subsection{Dettaglio sui requisiti della fase di recupero}\labelssec{retrieve}
 
-\begin{description}[itemsep=1em]
+\begin{description}
 
   \item[\requirementref{R-waitForHome}]\labelsssec{R-waitForHome}
 

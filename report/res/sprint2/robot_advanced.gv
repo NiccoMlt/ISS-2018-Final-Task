@@ -1,0 +1,27 @@
+/*
+*
+* A GraphViz DOT FSM description 
+* Please use a GraphViz visualizer (like http://www.webgraphviz.com)
+*  
+*/
+
+digraph finite_state_machine {
+	rankdir=LR
+	size="8,5"
+	
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	doWork [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	waitMoveComletedAnswer [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	receivedMoveCompletedAnswer [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	executeCommand [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	
+	receivedMoveCompletedAnswer -> doWork [ label = "switch" ][ color = black ][ fontcolor = black ]
+	waitMoveComletedAnswer -> receivedMoveCompletedAnswer [ label = "moveMsgCmdDone" ][ color = black ][ fontcolor = black ]
+	waitMoveComletedAnswer -> receivedMoveCompletedAnswer [ label = "moveMsgCmdObstacle" ][ color = black ][ fontcolor = black ]
+	doWork -> executeCommand [ label = "robotCmd" ][ color = black ][ fontcolor = black ]
+	executeCommand -> waitMoveComletedAnswer [ label = "waitMoveCompleted" ][ color = black ][ fontcolor = black ]
+	doWork -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	init -> doWork [ label = "switch" ][ color = black ][ fontcolor = black ]
+	executeCommand -> doWork [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
+	waitMoveComletedAnswer -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+}

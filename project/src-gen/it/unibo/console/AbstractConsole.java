@@ -81,11 +81,9 @@ public abstract class AbstractConsole extends QActor {
 	    	String myselfName = "init";  
 	    	temporaryStr = "\"Console init\"";
 	    	println( temporaryStr );  
-	    	//bbb
-	     msgTransition( pr,myselfName,"console_"+myselfName,false,
-	          new StateFun[]{}, 
-	          new String[]{},
-	          100, "doWork" );//msgTransition
+	    	//switchTo doWork
+	        switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
+	              "doWork",false, false, null); 
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -97,24 +95,6 @@ public abstract class AbstractConsole extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_doWork",0);
 	     pr.incNumIter(); 	
 	    	String myselfName = "doWork";  
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(1000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "doWork";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine, "temperature(X)","temperature(18)", guardVars ).toString();
-	    	emit( "temperature", temporaryStr );
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(3000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "doWork";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdExplore","cmdExplore", guardVars ).toString();
-	    	sendMsg("cmdExplore","robot_discovery_mind", QActorContext.dispatch, temporaryStr ); 
-	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(2000,"" , "");
-	    	if( aar.getInterrupted() ) curPlanInExec   = "doWork";
-	    	if( ! aar.getGoon() ) return ;
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdStop","cmdStop", guardVars ).toString();
-	    	sendMsg("cmdStop","robot_discovery_mind", QActorContext.dispatch, temporaryStr ); 
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("adaptCommand"), stateTab.get("updateView"), stateTab.get("handlePhoto") }, 
@@ -216,7 +196,7 @@ public abstract class AbstractConsole extends QActor {
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("handleBagStatus"), stateTab.get("adaptCommand") }, 
 	          new String[]{"true","M","bagStatus", "true","E","usercmd" },
-	          3000, "handlePhoto" );//msgTransition
+	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handlePhoto){  
 	    	 println( getName() + " plan=handlePhoto WARNING:" + e_handlePhoto.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

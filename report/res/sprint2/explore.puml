@@ -1,0 +1,55 @@
+@startuml explore
+title: Sprint 2: Esplorazione - Interazioni fra QActor
+
+actor User
+' participant "World Observer" as wo
+participant "Robot Discovery Mind" as rdm
+participant "Robot Advanced" as radv
+participant "Robot Adapter" as radpt
+participant "One Cell Forward" as ocf
+
+== environment: environment(notok) ==
+
+User --> rdm: cmdExplore
+activate rdm
+
+rdm -> rdm: checkTemperatureAndExplore
+
+== environment: environment(ok) ==
+
+rdm --> radpt: robotCmd: robotCmd(blinkStart)
+activate radpt
+rdm <-- radpt: moveMsgCmdDone: moveMsgCmdDone(blinkStart)
+deactivate radpt
+
+rdm -> rdm: doPlan()
+
+alt !? move(M)
+  loop until map is explored
+    rdm --> radv: robotCmd: robotCmd(M)
+    activate radv
+    alt
+      activate radpt
+      hnote over radpt: one of the following messages \nactivates the adapter.
+    else robotCmd: robotCmd(a)
+      radv --> radpt: robotAdapterCmd: robotCmd(a,T)
+    else robotCmd: robotCmd(d)
+      radv --> radpt: robotAdapterCmd: robotCmd(d,T)
+    else robotCmd: robotCmd(w)
+      radv --> ocf: moveMsgCmd : moveMsgCmd(w)
+      activate ocf
+      ocf --> radpt: robotAdapterCmd: robotCmd(w,T)
+      deactivate ocf
+    end
+    radpt --> radv: moveMsgCmdDone: moveMsgCmdDone(M)
+    deactivate radpt
+    radv --> rdm: moveMsgCmdDone: moveMsgCmdDone(M)
+    deactivate radv
+  end
+  rdm -> rdm: endAction
+else
+  rdm -> rdm: endAction
+end
+deactivate rdm
+
+@enduml

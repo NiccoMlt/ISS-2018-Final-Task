@@ -1,1 +1,2 @@
+plan(1,checkTemperatureAndRetrieve, sentence( environment( ok),notHere SendDispatch,'','' ))
 plan(1,reachBomb, sentence(true,move(print("RETRIVING BOMB ...")),'','' ))

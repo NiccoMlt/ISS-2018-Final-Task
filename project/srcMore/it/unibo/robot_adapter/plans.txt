@@ -1,4 +1,4 @@
 plan(1,initRobots, sentence(-  robotType( T,setuparg( A)) ,notHere SendDispatch,'','' ))
-plan(1,executeCommand, sentence(true,msgswitch(robotCmdPriority, cmd( X) , not here StateMoveNormal),'','' ))
-plan(2,executeCommand, sentence(true,eventswitch(robotCmd, Â»cmd( X), not here StateMoveNormal ),'','' ))
+plan(1,executeCommand, sentence(true,msgswitch(robotCmd, robotCmd( X) , not here StateMoveNormal),'','' ))
+plan(2,executeCommand, sentence(true,msgswitch(robotAdapterCmd, robotCmd( X,T) , not here StateMoveNormal),'','' ))
 plan(3,executeCommand, sentence(true,move(resumeplan),'','' ))
