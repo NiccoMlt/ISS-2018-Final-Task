@@ -161,6 +161,7 @@ doTheMove( M):-move( M1), ! ,eval( eq,M,M1), ! ,doTheFirstMove( M).
 doTheFirstMove( w):-retract( move( w)), ! .
 doTheFirstMove( a):-retract( move( a)), ! .
 doTheFirstMove( d):-retract( move( d)), ! .
+foundBomb:-bomb( X,Y).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

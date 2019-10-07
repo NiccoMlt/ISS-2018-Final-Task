@@ -102,10 +102,11 @@ public class robots {
 
     public static void doMove(QActor qa, String cmd, String duration) { // Args MUST be String
         try {
-            executors.values().forEach(l -> l.forEach(e -> e.doMove(qa, cmd)));
+            executors.values().forEach(execs -> execs.forEach(executor -> executor.doMove(qa, cmd)));
             Thread.sleep(Integer.parseInt(duration));
+            executors.values().forEach(execs -> execs.forEach(executor -> executor.doMove(qa, "h")));
             sendCommandCompleted(qa, cmd);
-        } catch (Exception e) {
+        } catch (final Exception e) {
             System.out.println( "movePlanUtil ERROR:" + e.getMessage() );
         }
 
@@ -115,7 +116,7 @@ public class robots {
         switch (cmd) {
             case "a":
             case "d":
-                String temporaryStr = "moveMsgCmdDone(CMD)".replace("CMD", cmd);
+                final String temporaryStr = "moveMsgCmdDone(CMD)".replace("CMD", cmd);
                 qa.sendMsg("moveMsgCmdDone","robot_advanced", QActorContext.dispatch, temporaryStr);
                 break;
             default:

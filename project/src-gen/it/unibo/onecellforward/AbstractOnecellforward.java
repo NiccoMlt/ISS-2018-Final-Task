@@ -192,8 +192,6 @@ public abstract class AbstractOnecellforward extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("endMoveForward",-1);
 	    	String myselfName = "endMoveForward";  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M,T)","robotCmd(h,0)", guardVars ).toString();
-	    	sendMsg("robotAdapterCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	temporaryStr = "moveMsgCmdDone(w)";
 	    	replyToCaller("moveMsgCmdDone", temporaryStr);
 	    	//switchTo init

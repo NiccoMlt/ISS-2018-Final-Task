@@ -21,17 +21,13 @@ import it.unibo.qactors.akka.QActor;
  * It provides operations that can be called from a qa model
  * 
  * GOAL: provide an utility to find a sequence of moves (doPlan) with reference
- * to a map model (RoomMap) in which a cell with content
- *      0 : means that the cell has not been yet covered by the robot
- *      1 : means that the cell has been covered
- *      X : means that the cell contains an obstacle
+ * to a map model (RoomMap) in which a cell with content 0 : means that the cell
+ * has not been yet covered by the robot 1 : means that the cell has been
+ * covered X : means that the cell contains an obstacle
  * 
  * The sequence of moves provided by doPlan is a list of the form [w,a,...] etc.
  * However, doPlan stores also the sequence as a sequence of Prolog facts in the
- * qa knowledge base in the form:
- *      move(w).
- *      move(a).
- *      ...
+ * qa knowledge base in the form: move(w). move(a). ...
  */
 
 public class planUtil {
@@ -225,7 +221,27 @@ public class planUtil {
         case DOWN:
             RoomMap.getRoomMap().put(x, y + 1, new Box(true, false, false));
         }
+    }
 
+    public static void markCellAsBomb(QActor qa) {
+        int x = initialState.getX();
+        int y = initialState.getY();
+        Direction dir = initialState.getDirection();
+        switch (dir) {
+        case UP:
+            y = y - 1;
+            break;
+        case LEFT:
+            x = x - 1;
+            break;
+        case RIGHT:
+            x = x + 1;
+            break;
+        case DOWN:
+            y = y + 1;
+        }
+        System.out.println("markCellAsBomb x=" + x + " y=" + y);
+        qa.addRule("bomb(" + x + "," + y + ")");
     }
 
     /*

@@ -10,6 +10,14 @@
 
 \documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
 
+\usepackage{a4wide}
+
+% \usepackage{geometry}
+% \geometry{
+%   a4paper,
+%   heightrounded    % integer number of lines
+% }
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% package sillabazione italiana e uso lettere accentate
 \usepackage[T1]{fontenc}        % serve per impostare la codifica di output del font
@@ -79,6 +87,7 @@
 %%%%%%%%%%%%%%%
 \usepackage{float}
 \usepackage{graphviz}
+\usepackage{tikz}
 
 \usepackage{listingsutf8}
 
@@ -186,9 +195,9 @@
 \newcommand{\xunibo}{Alma~Mater~Studiorum~--~University~of~Bologna}
 
 \usepackage{enumitem}
-\setlist[itemize]{itemsep=1em}
-\setlist[enumerate]{itemsep=1em}
-\setlist[description]{itemsep=1em,topsep=1em}
+\setlist[itemize]{itemsep=1em,topsep=1em,itemindent=0.5\parindent}
+\setlist[enumerate]{itemsep=1em,topsep=1em,itemindent=0.5\parindent}
+\setlist[description]{itemsep=1em,topsep=1em,itemindent=0.25\parindent}
 
 \setcounter{secnumdepth}{2}     % Numera fino alla sottosezione nel corpo del testo
 \setcounter{tocdepth}{3}        % Numera fino alla sotto-sottosezione nell'indice

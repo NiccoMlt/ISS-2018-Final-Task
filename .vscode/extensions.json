@@ -2,6 +2,7 @@
     "recommendations": [
         "EditorConfig.EditorConfig",
         "James-Yu.latex-workshop",
+        "joaompinto.vscode-graphviz",
         "KnisterPeter.vscode-commitizen",
         "platformio.platformio-ide"
     ]

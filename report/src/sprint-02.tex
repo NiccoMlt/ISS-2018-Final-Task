@@ -94,12 +94,119 @@ Per questa particolare scelta, l'approccio \textit{bottom-up} utilizzato nasce a
 
 \subsection{Architettura logica in output all'analisi del problema}\labelssec{sp2:arch_logica_prob}
 
-% Continuando con un approccio top-down, le entità e le loro interazioni possono essere riassunte nello schema in \Cref{fig:sp2:prob:arch}
+Continuando con un approccio top-down, le nuove entità e i loro comportamenti sono rappresentati dagli schemi seguenti:
 
-% \begin{figure}
-%   \caption{Entità che interagiscono nello Sprint 2}\label{fig:sp2:prob:arch}
+\begin{figure}[H]
+  \centering
+  \includegv[width=\textwidth]{res/sprint2/onecellforward}
+  \caption{One Cell Forward}%
+  \label{fig:sp2:ocf}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegv[width=\textwidth]{res/sprint2/robot_adapter}
+  \caption{Robot Adapter}%
+  \label{fig:sp2:r_adpt}
+\end{figure}
+
+\begin{figure}[H]
+  \centering
+  \includegv[width=\textwidth]{res/sprint2/robot_advanced}
+  \caption{Robot Advanced}%
+  \label{fig:sp2:r_adv}
+\end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \includegv[width=\textwidth]{res/sprint2/robot_discovery_mind}
+%   \caption{Mind del Robot Discovery}%
+%   \label{fig:sp2:rdm}
 % \end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \includegv[width=\textwidth]{res/sprint2/robot_retriever_mind}
+%   \caption{Mind del Robot Retriever}%
+%   \label{fig:sp2:rrm}
+% \end{figure}
+
+% \begin{figure}[H]
+%   \centering
+%   \includegv[width=0.5\textwidth]{res/sprint2/world_observer}
+%   \caption{World Observer}%
+%   \label{fig:sp2:wo}
+% \end{figure}
+
+A livello di interazioni, come detto nelle \nameCrefs{ssec:sp2:arch_logica_prob} precedenti, il sistema mantiene le interazioni precedenti ed aggiunge quelle relative all'esplorazione;
+di conseguenza, di seguito in \Cref{fig:sp2:explore} si rappresenta l'interazione tra gli attori coinvolti:
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=\textwidth]{res/sprint2/explore}
+  \caption{Schema UML che riassume le interazioni tra \texttt{QActor} per l'esplorazione}%
+  \label{fig:sp2:explore}
+\end{figure}
+
+\newpage
 
 \subsection[Rappresentazione formale]{Rappresentazione formale in output alla fase di analisi del problema}\labelssec{sp2:qa}
 
+Data la dimensione del file di metamodello \texttt{robot.qa}, di seguito sono rappresentati in blocchi separati parti il codice di metamodello dei singoli attori maggiormente coinvolti:
+
+% WORLD OBSERVER
+% \lstinputlisting[%
+%   firstline=61,%
+%   lastline=80,%
+%   language=qa%
+% ]{res/sprint2/robot.qa}
+
+% ROBOT ADAPTER
+\lstinputlisting[%
+  firstline=83,%
+  lastline=116,%
+  language=qa%
+]{res/sprint2/robot.qa}
+
+% ROBOT ADVANCED
+\lstinputlisting[%
+  firstline=118,%
+  lastline=176,%
+  language=qa%
+]{res/sprint2/robot.qa}
+
+% ONE CELL FORWARD
+\lstinputlisting[%
+  firstline=178,%
+  lastline=228,%
+  language=qa%
+]{res/sprint2/robot.qa}
+
+% DISCOVERY MIND
+% \lstinputlisting[%
+%   firstline=230,%
+%   lastline=421,%
+%   language=qa%
+% ]{res/sprint2/robot.qa}
+
+% RETRIEVER MIND
+% \lstinputlisting[%
+%   firstline=423,%
+%   lastline=452,%
+%   language=qa%
+% ]{res/sprint2/robot.qa}
+
+% CONSOLE
+% \lstinputlisting[%
+%   firstline=454,%
+%   lastline=511,%
+%   language=qa%
+% ]{res/sprint2/robot.qa}
+
 \subsection{Progettazione e Test planning}\labelssec{sp2:project}
+
+In questa fase si è definito un piano di lavoro per la realizzazione concreta delle soluzioni individuate durante la fase di analisi:
+in particolare, poiché il punto focale di questo sprint era l'esplorazione e il planning, si è realizzata l'integrazione delle soluzioni fornite dalla \textit{software house} all'interno del codice realizzato per questo progetto.
+
+Non è stato ritenuto necessario definire \textit{unit test} per quanto importato dalla \textit{codebase} della \textit{software house}, in quanto è codice fornito come già testato;
+per quanto riguarda il testing dell'integrazione, si è deciso di effettuare un testing empirico sfruttando il robot virtuale già citato in precedenza.
