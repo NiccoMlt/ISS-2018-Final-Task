@@ -26,7 +26,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "";
+	//protected String mqttServer = "tcp://broker.hivemq.com:1883";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -251,6 +251,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	}
 	    	it.unibo.planning.planUtil.markCellAsObstacle( myself  );
 	    	it.unibo.planning.planUtil.showMap( myself  );
+	    	it.unibo.systemstate.systemStateUtil.notifyUpdateState( myself  );
 	    	//switchTo handleBag
 	        switchToPlanAsNextState(pr, myselfName, "robot_discovery_mind_"+myselfName, 
 	              "handleBag",false, false, null); 
@@ -442,6 +443,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    		}
 	    	}
 	    	it.unibo.planning.planUtil.showMap( myself  );
+	    	it.unibo.systemstate.systemStateUtil.notifyUpdateState( myself  );
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
 	          new StateFun[]{stateTab.get("goToIdle") }, 
@@ -464,6 +466,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	temporaryStr = "\"AT HOME\"";
 	    	println( temporaryStr );  
 	    	it.unibo.planning.planUtil.showMap( myself  );
+	    	it.unibo.systemstate.systemStateUtil.notifyUpdateState( myself  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
 	    	sendMsg("endAction",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?foundBomb" )) != null ){
@@ -541,6 +544,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	println( temporaryStr );  
 	    	}
 	    	it.unibo.planning.planUtil.showMap( myself  );
+	    	it.unibo.systemstate.systemStateUtil.notifyUpdateState( myself  );
 	    	it.unibo.planning.planUtil.findNextCellUncovered( myself  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?uncovered(X,Y)" )) != null ){
 	    	temporaryStr = "uncovered(X,Y)";

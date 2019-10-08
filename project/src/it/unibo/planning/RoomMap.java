@@ -170,6 +170,29 @@ public class RoomMap {
         }
         return builder.toString();
     }
+    
+    public String[][] toMatrix() {
+        String[][] matrix = new String[roomMap.size()][roomMap.get(0).size()];
+        int i = 0, j;
+        for (ArrayList<Box> a : roomMap) {
+            j = 0;
+            for (Box b : a) {
+                if (b == null)
+                    break;
+                if (b.isRobot())
+                    matrix[i][j]="r";
+                else if (b.isObstacle())
+                    matrix[i][j]="x";
+                else if (b.isDirty())
+                    matrix[i][j]="0";
+                else
+                    matrix[i][j]="1";
+                j++;
+            }
+            i++;
+        }
+        return matrix;
+    }
 
     public int getDimX() {
         int result = 0;

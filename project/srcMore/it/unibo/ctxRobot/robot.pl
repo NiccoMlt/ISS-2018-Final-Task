@@ -1,7 +1,7 @@
 %====================================================================================
 % Context ctxRobot  SYSTEM-configuration: file it.unibo.ctxRobot.robot.pl 
 %====================================================================================
-pubsubserveraddr("").
+pubsubserveraddr("tcp://broker.hivemq.com:1883").
 pubsubsystopic("unibo/qasys").
 %%% -------------------------------------------
 context(ctxrobot, "localhost",  "TCP", "8079" ).  		 
