@@ -1,0 +1,21 @@
+<div class="d-flex flex-wrap justify-content-around align-content-around">
+  <mat-card class="col-md-12">
+    <mat-card-header>
+      <mat-card-title>Status</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <span>
+        <b>Temperature:</b> {{world.temperature}}C
+      </span>
+    </mat-card-content>
+  </mat-card>
+
+  <mat-card class="col-md-12">
+    <mat-card-header>
+      <mat-card-title>Map</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      <app-world-map [map]="world.map" [bomb]="world.bombPosition"></app-world-map>
+    </mat-card-content>
+  </mat-card>
+</div>

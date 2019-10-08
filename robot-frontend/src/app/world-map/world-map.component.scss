@@ -1,0 +1,47 @@
+.mat-table {
+  display: block;
+}
+
+.mat-row,
+.mat-header-row {
+  display: flex;
+  align-items: center;
+}
+
+.mat-cell,
+.mat-header-cell {
+  border-width: 1px;
+  border-style: solid;
+  flex: 1;
+  overflow: hidden;
+  word-wrap: break-word;
+  min-height: 2em;
+}
+
+.map-unknown {
+  background-color: rgb(68, 68, 68);
+}
+
+.map-visited {
+  background-color: gray;
+}
+
+.map-obstacle {
+  background-color: darkorange;
+}
+
+.map-bomb {
+  background-color: darkred;
+}
+
+.map-robot {
+  background-color: rgb(28, 96, 117);
+}
+
+.legend {
+  margin-top: 1em;
+}
+
+.legend > div > div > div {
+  text-align: center;
+}
