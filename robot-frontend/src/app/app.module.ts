@@ -1,11 +1,18 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
-import {NgbModule} from '@ng-bootstrap/ng-bootstrap';
-import { MatButtonModule, MatGridListModule, MatTableModule, MatCardModule, MatInputModule, MatMenuModule, MatIconModule, MatToolbarModule } from '@angular/material';
+import {
+  MatButtonModule,
+  MatCardModule,
+  MatGridListModule,
+  MatIconModule,
+  MatInputModule,
+  MatMenuModule,
+  MatTableModule,
+  MatToolbarModule
+} from '@angular/material';
 import { NgModule } from '@angular/core';
 import { reducers } from './store/reducers';
 import { environment } from '../environments/environment'; // Angular CLI environemnt
-
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { WorldComponent } from './world/world.component';
@@ -31,7 +38,6 @@ import { RemoterobotService } from './remoterobot.service';
     BrowserAnimationsModule,
     AppRoutingModule,
     HttpClientModule,
-    NgbModule,
     MatGridListModule,
     MatTableModule,
     MatButtonModule,
@@ -43,10 +49,11 @@ import { RemoterobotService } from './remoterobot.service';
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({
       maxAge: 25, // Retains last 25 states
-      logOnly: environment.production, // Restrict extension to log-only mode
-    }),
+      logOnly: environment.production // Restrict extension to log-only mode
+    })
   ],
   providers: [WebsocketService, RemoterobotService],
   bootstrap: [AppComponent]
 })
-export class AppModule { }
+export class AppModule {
+}

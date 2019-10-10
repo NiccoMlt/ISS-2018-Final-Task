@@ -5,9 +5,9 @@
 @include mat-core();
 
 // Define an alternate dark theme.
-$dark-primary: mat-palette($mat-green, 500, 500, 900);
-$dark-accent:  mat-palette($mat-amber, A200, A100, A400);
-$dark-warn:    mat-palette($mat-deep-orange);
+$dark-primary: mat-palette($mat-purple, 500, 500, 900);
+$dark-accent:  mat-palette($mat-yellow, A200, A100, A400);
+$dark-warn:    mat-palette($mat-red);
 $dark-theme:   mat-dark-theme($dark-primary, $dark-accent, $dark-warn);
 
 @include angular-material-theme($dark-theme);
