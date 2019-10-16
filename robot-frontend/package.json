@@ -5,6 +5,7 @@
     "ng": "ng",
     "commit": "git cz",
     "start": "ng serve",
+    "server": "node server.js",
     "build": "ng build",
     "test": "ng test",
     "lint": "ng lint",

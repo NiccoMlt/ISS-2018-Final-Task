@@ -4,6 +4,6 @@ exports.parseQAmessage = function( msg ){
     return msg.substring(start,end);
 }
 
-exports.QAmessageBuild = function( cmd ){
-    return "msg(frontendUserCmd,event,js,none,frontendUserCmd(" + cmd.substring(1,cmd.length-1) + "),1)"
+exports.QAmessageBuild = function( id, cmd ){
+    return "msg(" + id + ",event,js,none," + id + "(" + cmd.substring(1,cmd.length-1) + "),1)"
 }

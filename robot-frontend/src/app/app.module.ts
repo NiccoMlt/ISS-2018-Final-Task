@@ -12,7 +12,7 @@ import {
 } from '@angular/material';
 import { NgModule } from '@angular/core';
 import { reducers } from './store/reducers';
-import { environment } from '../environments/environment'; // Angular CLI environemnt
+import { environment } from '../environments/environment';
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
 import { WorldComponent } from './world/world.component';
@@ -24,6 +24,9 @@ import { WorldMapComponent } from './world-map/world-map.component';
 import { HttpClientModule } from '@angular/common/http';
 import { WebsocketService } from './websocket.service';
 import { RemoterobotService } from './remoterobot.service';
+import { TemperatureComponent } from './temperature/temperature.component';
+import { FormsModule } from '@angular/forms';
+import { TemperatureService } from './temperature.service';
 
 @NgModule({
   declarations: [
@@ -31,20 +34,22 @@ import { RemoterobotService } from './remoterobot.service';
     WorldComponent,
     RobotComponent,
     StateComponent,
+    TemperatureComponent,
     WorldMapComponent
   ],
   imports: [
+    AppRoutingModule,
     BrowserModule,
     BrowserAnimationsModule,
-    AppRoutingModule,
+    FormsModule,
     HttpClientModule,
-    MatGridListModule,
-    MatTableModule,
     MatButtonModule,
     MatCardModule,
+    MatGridListModule,
+    MatIconModule,
     MatInputModule,
     MatMenuModule,
-    MatIconModule,
+    MatTableModule,
     MatToolbarModule,
     StoreModule.forRoot(reducers),
     StoreDevtoolsModule.instrument({
@@ -52,7 +57,11 @@ import { RemoterobotService } from './remoterobot.service';
       logOnly: environment.production // Restrict extension to log-only mode
     })
   ],
-  providers: [WebsocketService, RemoterobotService],
+  providers: [
+    RemoterobotService,
+    TemperatureService,
+    WebsocketService
+  ],
   bootstrap: [AppComponent]
 })
 export class AppModule {

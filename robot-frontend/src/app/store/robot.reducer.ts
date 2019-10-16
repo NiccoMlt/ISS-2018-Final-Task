@@ -10,10 +10,6 @@ export const initialState: SystemState = {
       ['1', '1', '0'],
       ['1', '1', 'x'],
     ],
-    bombPosition: {
-        x: 2,
-        y: 2
-    },
   },
   robot: {
     position: {

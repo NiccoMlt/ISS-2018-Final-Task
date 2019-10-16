@@ -1,22 +1,28 @@
-const express = require('express');
-const http = require('http');
-const path = require('path');
+const portNumber = readPortNumberFromArguments();
 
-// Server side socket
-require('./express/index');
-
-const app = express();
-
-const port = process.env.PORT || 3001
+// Express configuration
+const server = require('./express/index');
+server.config();
 
 // Angular renderer
-app.use(express.static(__dirname + '/dist/robot-frontend'));
+server.app.use(server.express.static(__dirname + '/dist/robot-frontend'));
+server.app.get('/*', (req, res) => res.sendFile(server.path.join(__dirname)));
 
-app.get('/*', (req,res) => res.sendFile(path.join(__dirname)));
+// Server launch
+server.launch(portNumber);
 
-const server = http.createServer(app);
+// ------------------------------------------------------
+// Other support methods
+// ------------------------------------------------------
+function readPortNumberFromArguments() {
+  const port = Number(process.argv[2])
 
-server.listen(port, () => {
-  console.log('Running on port ' + port + ' ...');
-  console.log('EXPRESS - Waiting for client to connect to web-socket ...');
-});
+  if (!port) return undefined;
+
+  if (port < 0 || port >= 65536) {
+    console.error("This script expects a valid port number (>= 0 and < 65536) as argument.")
+    process.exit()
+  }
+
+  return port
+}

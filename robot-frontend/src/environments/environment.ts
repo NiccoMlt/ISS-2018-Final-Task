@@ -4,7 +4,8 @@
 
 export const environment = {
   production: false,
-  backend_ws: 'ws://localhost:3000/'
+  backend_ws: 'ws://localhost:3000/',
+  backend_http: 'http://localhost:8080'
 };
 
 /*

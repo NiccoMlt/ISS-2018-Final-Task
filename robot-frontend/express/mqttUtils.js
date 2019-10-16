@@ -1,8 +1,10 @@
+const config = require('./config');
 const mqtt = require ('mqtt');
-const topicPublisher = "unibo/frontendUserCmd";
+const topicPublisherCommand = "unibo/frontendUserCmd";
+const topicPublisherEnvironment = "unibo/environment";
 const topicSubscriber = "unibo/frontendRobotState";
 
-var client   = mqtt.connect('mqtt://broker.hivemq.com');
+var client = mqtt.connect(config.mqtt_address);
 
 var webSocket = require('./webSocketUtils');
 var qaUtils = require('./qaUtils');
@@ -21,7 +23,12 @@ client.on('message', function (topic, message){
 	webSocket.send(state);
 });
 
-exports.publish = function( msg ){
+exports.publishCommand = function( msg ){
   console.log('EXPRESS - mqtt publish ' + client);
-	client.publish(topicPublisher, msg);
+	client.publish(topicPublisherCommand, msg);
+}
+
+exports.publishEnvironment = function( msg ){
+  console.log('EXPRESS - mqtt publish ' + client);
+	client.publish(topicPublisherEnvironment, msg);
 }

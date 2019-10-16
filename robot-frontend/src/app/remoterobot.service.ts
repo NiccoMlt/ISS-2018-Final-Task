@@ -26,7 +26,8 @@ export class RemoterobotService {
         return response.data;
       });
 
-    this.messages.subscribe(msg => {
+    this.messages.subscribe(encoded => {
+      const msg = atob(encoded);
       console.log(msg);
       console.log(JSON.parse(msg));
       this.store.dispatch(new UpdateState(JSON.parse(msg)));

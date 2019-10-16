@@ -10,7 +10,6 @@ export interface SystemState {
 export interface WorldState {
   temperature: string;
   map: string[][];
-  bombPosition: Position;
 }
 
 export interface RobotState {
@@ -18,7 +17,6 @@ export interface RobotState {
   direction: string;
   info: string;
 }
-
 
 export interface Action {
   name: string;

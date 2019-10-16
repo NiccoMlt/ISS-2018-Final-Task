@@ -1,7 +1,9 @@
 <div class="mat-table">
-  <div class="mat-row" *ngFor="let row of map; let r = index;">
-    <div class="mat-cell" *ngFor="let cell of row; let c = index;"
-    [ngClass]="cell==0 ? 'map-unknown' : ( cell==1 ? 'map-visited' : ( cell=='x' ? (r==bomb.y && c==bomb.x ? 'map-bomb' : 'map-obstacle') : ( cell=='r' ? 'map-robot' : 'map-error')))"></div>
+  <div *ngFor="let row of map; let r = index;" class="mat-row">
+    <div
+      *ngFor="let cell of row; let c = index;"
+      [ngClass]="cell==0 ? 'map-unknown' : ( cell==1 ? 'map-visited' : ( cell=='x' ? 'map-obstacle' : ( cell=='r' ? 'map-robot' : ( cell=='b' ? 'map-bomb' : 'map-error'))))"
+      class="mat-cell"></div>
   </div>
 </div>
 

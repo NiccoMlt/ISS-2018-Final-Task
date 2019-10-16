@@ -1,4 +1,5 @@
 import { Component, Input } from '@angular/core';
+import { Position } from '../store/robot.state';
 
 @Component({
   selector: 'app-world-map',
