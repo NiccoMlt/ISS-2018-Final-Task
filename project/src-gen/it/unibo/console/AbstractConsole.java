@@ -79,10 +79,12 @@ public abstract class AbstractConsole extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(500,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = "\"Console init\"";
 	    	println( temporaryStr );  
-	    	//ConnectToPublish
-	    	connectToSend( this.getName(), "tcp://broker.hivemq.com:1883", "unibo/frontendRobotState");
 	    	//ConnectToSubscribe
 	    	connectAndSubscribe( this.getName(), "tcp://broker.hivemq.com:1883", "unibo/frontendUserCmd");
 	    	//switchTo doWork
@@ -102,7 +104,7 @@ public abstract class AbstractConsole extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("adaptCommand"), stateTab.get("updateView"), stateTab.get("handlePhoto") }, 
-	          new String[]{"true","E","frontendUserCmd", "true","M","robotState", "true","M","bag" },
+	          new String[]{"true","E","frontendUserCmd", "true","M","stateUpdate", "true","M","bag" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
 	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );
@@ -250,7 +252,8 @@ public abstract class AbstractConsole extends QActor {
 	    
 	    StateFun handleAlert = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleAlert",-1);
+	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_handleAlert",0);
+	     pr.incNumIter(); 	
 	    	String myselfName = "handleAlert";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
@@ -270,10 +273,10 @@ public abstract class AbstractConsole extends QActor {
 	             println( getName() + " plan=handleAlert WARNING:" + e.getMessage() );
 	             //QActorContext.terminateQActorSystem(this); 
 	          }
-	          }
-	          }, 
-	          new String[]{"true","M","robotHome" },
-	          3000, "handleAlert" );//msgTransition
+	          },
+	           stateTab.get("updateView") }, 
+	          new String[]{"true","M","robotHome", "true","M","stateUpdate" },
+	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handleAlert){  
 	    	 println( getName() + " plan=handleAlert WARNING:" + e_handleAlert.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -286,24 +289,21 @@ public abstract class AbstractConsole extends QActor {
 	    	String myselfName = "updateView";  
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("state(X)");
-	    	if( currentMessage != null && currentMessage.msgId().equals("robotState") && 
-	    		pengine.unify(curT, Term.createTerm("state(X)")) && 
+	    	curT = Term.createTerm("state(T,P)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("stateUpdate") && 
+	    		pengine.unify(curT, Term.createTerm("state(T,P)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		printCurrentMessage(false);
-	    	}
-	    	//onMsg 
-	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("state(X)");
-	    	if( currentMessage != null && currentMessage.msgId().equals("robotState") && 
-	    		pengine.unify(curT, Term.createTerm("state(X)")) && 
-	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		String parg = "frontendRobotState(X)";
-	    		/* PublishEventMove */
-	    		parg =  updateVars( Term.createTerm("state(X)"), Term.createTerm("state(X)"), 
-	    			    		  Term.createTerm(currentMessage.msgContent()), parg);
-	    		if( parg != null ) sendMsgMqtt(  "unibo/frontendRobotState", "frontendRobotState", "none", parg );
+	    		{/* JavaLikeMove */ 
+	    		String arg1 = "T" ;
+	    		arg1 =  updateVars( Term.createTerm("state(T,P)"), Term.createTerm("state(T,P)"), 
+	    			                Term.createTerm(currentMessage.msgContent()),  arg1 );	                
+	    		//end arg1
+	    		String arg2 = "P" ;
+	    		arg2 =  updateVars( Term.createTerm("state(T,P)"), Term.createTerm("state(T,P)"), 
+	    			                Term.createTerm(currentMessage.msgContent()),  arg2 );	                
+	    		//end arg2
+	    		it.unibo.utils.updateStateOnConsole.receivedUpdateState(this,arg1,arg2 );
+	    		}
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"console_"+myselfName,false,true);
 	    }catch(Exception e_updateView){  

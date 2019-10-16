@@ -34,7 +34,7 @@ public abstract class AbstractWorld_observer extends QActor {
 		public AbstractWorld_observer(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
 			super(actorId, myCtx,  
 			"./srcMore/it/unibo/world_observer/WorldTheory.pl",
-			setTheEnv( outEnvView )  , "doObserve");
+			setTheEnv( outEnvView )  , "init");
 			this.planFilePath = "./srcMore/it/unibo/world_observer/plans.txt";
 	  	}
 		@Override
@@ -43,7 +43,7 @@ public abstract class AbstractWorld_observer extends QActor {
 			mysupport = (IMsgQueue) QActorUtils.getQActor( name ); 
 			initStateTable(); 
 	 		initSensorSystem();
-	 		history.push(stateTab.get( "doObserve" ));
+	 		history.push(stateTab.get( "init" ));
 	  	 	autoSendStateExecMsg();
 	  		//QActorContext.terminateQActorSystem(this);//todo
 		} 	
@@ -55,7 +55,9 @@ public abstract class AbstractWorld_observer extends QActor {
 	    //genAkkaMshHandleStructure
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
+	    	stateTab.put("init",init);
 	    	stateTab.put("doObserve",doObserve);
+	    	stateTab.put("evaluateTemperature",evaluateTemperature);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
 	    	try{	
@@ -68,6 +70,21 @@ public abstract class AbstractWorld_observer extends QActor {
 	    		QActorContext.terminateQActorSystem(this); 
 	    	}
 	    };//handleToutBuiltIn
+	    
+	    StateFun init = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
+	    	String myselfName = "init";  
+	    	//ConnectToSubscribe
+	    	connectAndSubscribe( this.getName(), "tcp://broker.hivemq.com:1883", "unibo/environment");
+	    	//switchTo doObserve
+	        switchToPlanAsNextState(pr, myselfName, "world_observer_"+myselfName, 
+	              "doObserve",false, false, null); 
+	    }catch(Exception e_init){  
+	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//init
 	    
 	    StateFun doObserve = () -> {	
 	    try{	
@@ -83,27 +100,7 @@ public abstract class AbstractWorld_observer extends QActor {
 	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"world_observer_"+myselfName,false,
-	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
-	          try{
-	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
-	            //ActionSwitch for a message or event
-	             if( currentEvent.getMsg().startsWith("temperature") ){
-	            	/* replaceRule */
-	            	String parg1="temperature(Z)"; 
-	            	String parg2="temperature(X)"; 
-	            	parg1 = updateVars( Term.createTerm("temperature(X)"),  Term.createTerm("temperature(X)"), 
-	            		    		  			Term.createTerm(currentEvent.getMsg()), parg1);
-	            	parg2 = updateVars( Term.createTerm("temperature(X)"),  Term.createTerm("temperature(X)"), 
-	            		    		  			Term.createTerm(currentEvent.getMsg()), parg2);
-	            	replaceRule(parg1,parg2);
-	             }
-	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
-	          }catch(Exception e ){  
-	             println( getName() + " plan=doObserve WARNING:" + e.getMessage() );
-	             //QActorContext.terminateQActorSystem(this); 
-	          }
-	          }
-	          }, 
+	          new StateFun[]{stateTab.get("evaluateTemperature") }, 
 	          new String[]{"true","E","temperature" },
 	          1000, "doObserve" );//msgTransition
 	    }catch(Exception e_doObserve){  
@@ -111,6 +108,46 @@ public abstract class AbstractWorld_observer extends QActor {
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//doObserve
+	    
+	    StateFun evaluateTemperature = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("evaluateTemperature",-1);
+	    	String myselfName = "evaluateTemperature";  
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("temperature(X)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("temperature") && 
+	    		pengine.unify(curT, Term.createTerm("temperature(X)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			/* replaceRule */
+	    			String parg1="temperature(_)"; 
+	    			String parg2="temperature(X)"; 
+	    			parg1 = updateVars( Term.createTerm("temperature(X)"),  Term.createTerm("temperature(X)"), 
+	    				    		  			Term.createTerm(currentEvent.getMsg()), parg1);
+	    			parg2 = updateVars( Term.createTerm("temperature(X)"),  Term.createTerm("temperature(X)"), 
+	    				    		  			Term.createTerm(currentEvent.getMsg()), parg2);
+	    			replaceRule(parg1,parg2);
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("temperature(X)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("temperature") && 
+	    		pengine.unify(curT, Term.createTerm("temperature(X)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg="state(temperature,X)";
+	    			/* SendDispatch */
+	    			parg = updateVars(Term.createTerm("temperature(X)"),  Term.createTerm("temperature(X)"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	    			if( parg != null ) sendMsg("stateUpdate","console", QActorContext.dispatch, parg ); 
+	    	}
+	    	//switchTo doObserve
+	        switchToPlanAsNextState(pr, myselfName, "world_observer_"+myselfName, 
+	              "doObserve",false, false, null); 
+	    }catch(Exception e_evaluateTemperature){  
+	    	 println( getName() + " plan=evaluateTemperature WARNING:" + e_evaluateTemperature.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//evaluateTemperature
 	    
 	    protected void initSensorSystem(){
 	    	//doing nothing in a QActor

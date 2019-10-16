@@ -9,9 +9,13 @@ digraph finite_state_machine {
 	rankdir=LR
 	size="8,5"
 	
-	doObserve [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	evaluateTemperature [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	doObserve [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
 	doObserve -> doObserve [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
-	doObserve -> action [ label = "temperature" ][ color = red ][ fontcolor = red ][ dir = both ]
+	doObserve -> evaluateTemperature [ label = "temperature" ][ color = black ][ fontcolor = black ]
+	evaluateTemperature -> doObserve [ label = "switch" ][ color = black ][ fontcolor = black ]
 	doObserve -> doObserve [ label = "timeout(1000)" ][ color = green ][ fontcolor = green ]
+	init -> doObserve [ label = "switch" ][ color = black ][ fontcolor = black ]
 }

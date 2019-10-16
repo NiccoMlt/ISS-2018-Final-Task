@@ -107,6 +107,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_home",0);
 	     pr.incNumIter(); 	
 	    	String myselfName = "home";  
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"home"  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?foundBomb" )) != null ){
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotHome","robotHome", guardVars ).toString();
 	    	sendMsg("robotHome","console", QActorContext.dispatch, temporaryStr ); 
@@ -197,8 +198,9 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String tStr2 = "ledState(blinking)";
 	    	 replaceRule( tStr1, tStr2 );  
 	    	 }
-	    	temporaryStr = "\"STATE[goToExploration] ...\"";
+	    	temporaryStr = "\"DISCOVERY_MIND[[goToExploration] ...\"";
 	    	println( temporaryStr );  
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"exploring"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo exploreStep
@@ -214,8 +216,9 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("resumeExploration",-1);
 	    	String myselfName = "resumeExploration";  
-	    	temporaryStr = "\"STATE[resumeExploration] ...\"";
+	    	temporaryStr = "\"DISCOVERY_MIND[resumeExploration] ...\"";
 	    	println( temporaryStr );  
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"exploring"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo doActions
@@ -231,8 +234,9 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("goToHandleBag",-1);
 	    	String myselfName = "goToHandleBag";  
-	    	temporaryStr = "\"STATE[goToHandleBag] ...\"";
+	    	temporaryStr = "\"DISCOVERY_MIND[goToHandleBag] ...\"";
 	    	println( temporaryStr );  
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"obstacle"  );
 	    	{
 	    	String tStr1 = "ledState(blinking)";
 	    	String tStr2 = "ledState(off)";
@@ -251,7 +255,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	}
 	    	it.unibo.planning.planUtil.markCellAsObstacle( myself  );
 	    	it.unibo.planning.planUtil.showMap( myself  );
-	    	it.unibo.systemstate.systemStateUtil.notifyUpdateState( myself  );
+	    	it.unibo.utils.updateStateOnConsole.updateMap( myself  );
 	    	//switchTo handleBag
 	        switchToPlanAsNextState(pr, myselfName, "robot_discovery_mind_"+myselfName, 
 	              "handleBag",false, false, null); 
@@ -265,7 +269,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("handleBag",-1);
 	    	String myselfName = "handleBag";  
-	    	temporaryStr = "\"STATE[handleBag] waiting for console command ...\"";
+	    	temporaryStr = "\"DISCOVERY_MIND[handleBag] waiting for console command ...\"";
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
@@ -282,8 +286,9 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("resumeExplorationAfterBag",-1);
 	    	String myselfName = "resumeExplorationAfterBag";  
-	    	temporaryStr = "\"STATE[resumeExplorationAfterBag] ...\"";
+	    	temporaryStr = "\"DISCOVERY_MIND[resumeExplorationAfterBag] ...\"";
 	    	println( temporaryStr );  
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"exploring"  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?curGoal(N,N)" )) != null ){
 	    	it.unibo.planning.planUtil.setGoal( myself ,guardVars.get("N"), guardVars.get("N")  );
 	    	}
@@ -303,7 +308,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("backHomeAfterBomb",-1);
 	    	String myselfName = "backHomeAfterBomb";  
-	    	temporaryStr = "\"STATE[backHomeAfterBomb] ...\"";
+	    	temporaryStr = "\"DISCOVERY_MIND[backHomeAfterBomb] ...\"";
 	    	println( temporaryStr );  
 	    	it.unibo.planning.planUtil.markCellAsBomb( myself  );
 	    	//switchTo goToHome
@@ -324,8 +329,9 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String tStr2 = "ledState(off)";
 	    	 replaceRule( tStr1, tStr2 );  
 	    	 }
-	    	temporaryStr = "\"STATE[goToIdle] ...\"";
+	    	temporaryStr = "\"DISCOVERY_MIND[goToIdle] ...\"";
 	    	println( temporaryStr );  
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"idle"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo idle
@@ -356,8 +362,9 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("goToHome",-1);
 	    	String myselfName = "goToHome";  
-	    	temporaryStr = "\"STATE[goToHome] ...\"";
+	    	temporaryStr = "\"DISCOVERY_MIND[goToHome] ...\"";
 	    	println( temporaryStr );  
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"home"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo backToHome
@@ -443,7 +450,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    		}
 	    	}
 	    	it.unibo.planning.planUtil.showMap( myself  );
-	    	it.unibo.systemstate.systemStateUtil.notifyUpdateState( myself  );
+	    	it.unibo.utils.updateStateOnConsole.updateMap( myself  );
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
 	          new StateFun[]{stateTab.get("goToIdle") }, 
@@ -466,7 +473,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	temporaryStr = "\"AT HOME\"";
 	    	println( temporaryStr );  
 	    	it.unibo.planning.planUtil.showMap( myself  );
-	    	it.unibo.systemstate.systemStateUtil.notifyUpdateState( myself  );
+	    	it.unibo.utils.updateStateOnConsole.updateMap( myself  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
 	    	sendMsg("endAction",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?foundBomb" )) != null ){
@@ -544,7 +551,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	println( temporaryStr );  
 	    	}
 	    	it.unibo.planning.planUtil.showMap( myself  );
-	    	it.unibo.systemstate.systemStateUtil.notifyUpdateState( myself  );
+	    	it.unibo.utils.updateStateOnConsole.updateMap( myself  );
 	    	it.unibo.planning.planUtil.findNextCellUncovered( myself  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?uncovered(X,Y)" )) != null ){
 	    	temporaryStr = "uncovered(X,Y)";

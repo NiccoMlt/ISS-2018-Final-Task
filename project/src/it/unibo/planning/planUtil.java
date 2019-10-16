@@ -45,6 +45,10 @@ public class planUtil {
         search = new BreadthFirstSearch(new GraphSearch());
     }
 
+    public static RobotState getRobotState(final QActor qa) {
+        return new RobotState(initialState.getX(), initialState.getY(), initialState.getDirection());
+    }
+
     public static void setGoalInit(QActor qa) {
         goal = new Functions();
     }
@@ -241,6 +245,7 @@ public class planUtil {
             y = y + 1;
         }
         System.out.println("markCellAsBomb x=" + x + " y=" + y);
+        RoomMap.getRoomMap().put(x, y, new Box(true, false, false));
         qa.addRule("bomb(" + x + "," + y + ")");
     }
 
