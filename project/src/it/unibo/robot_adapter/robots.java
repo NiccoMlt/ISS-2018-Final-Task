@@ -75,7 +75,7 @@ public class robots {
      * @param qa the actor
      */
     public static void terminate(final QActor qa) {
-        qa.println("allRobots terminating");
+        qa.println("all robots terminating");
         for (final Type key : executors.keySet()) {
             for (int i = executors.get(key).size() - 1; i >= 0; i--) {
                 executors.get(key).get(i).terminate(qa);
@@ -111,7 +111,7 @@ public class robots {
         }
 
     }
-    
+
     private static void sendCommandCompleted(QActor qa, String cmd) throws Exception {
         switch (cmd) {
             case "a":

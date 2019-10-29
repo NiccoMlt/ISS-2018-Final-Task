@@ -26,7 +26,7 @@ public abstract class AbstractRobot_advanced extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://broker.hivemq.com:1883";
+	//protected String mqttServer = "tcp://127.0.0.1:1883";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;

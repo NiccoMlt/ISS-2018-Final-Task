@@ -26,7 +26,7 @@ public abstract class AbstractConsole extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://broker.hivemq.com:1883";
+	//protected String mqttServer = "tcp://127.0.0.1:1883";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -86,7 +86,7 @@ public abstract class AbstractConsole extends QActor {
 	    	temporaryStr = "\"Console init\"";
 	    	println( temporaryStr );  
 	    	//ConnectToSubscribe
-	    	connectAndSubscribe( this.getName(), "tcp://broker.hivemq.com:1883", "unibo/frontendUserCmd");
+	    	connectAndSubscribe( this.getName(), "tcp://127.0.0.1:1883", "unibo/frontendUserCmd");
 	    	//switchTo doWork
 	        switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
 	              "doWork",false, false, null); 

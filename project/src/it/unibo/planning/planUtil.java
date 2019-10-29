@@ -19,23 +19,27 @@ import it.unibo.qactors.akka.QActor;
 /**
  * This utility has been defined after the work of the student Federico Stella.
  * It provides operations that can be called from a qa model
- * 
+ *
  * GOAL: provide an utility to find a sequence of moves (doPlan) with reference
- * to a map model (RoomMap) in which a cell with content 0 : means that the cell
- * has not been yet covered by the robot 1 : means that the cell has been
- * covered X : means that the cell contains an obstacle
- * 
+ * to a map model (RoomMap) in which a cell with content
+ *  0 : means that the cell has not been yet covered by the robot
+ *  1 : means that the cell has been covered
+ *  X : means that the cell contains an obstacle
+ *
  * The sequence of moves provided by doPlan is a list of the form [w,a,...] etc.
  * However, doPlan stores also the sequence as a sequence of Prolog facts in the
- * qa knowledge base in the form: move(w). move(a). ...
+ * qa knowledge base in the form:
+ *  move(w).
+ *  move(a).
+ *  ...
  */
-
 public class planUtil {
     private static RobotState initialState;
 
     /*
-     * ------------------------------------------------ PLANNING
-     * ------------------------------------------------
+     * *********************************************************
+     * PLANNING
+     * *********************************************************
      */
     private static BreadthFirstSearch search;
     public static GoalTest goal;
@@ -181,8 +185,10 @@ public class planUtil {
         int x1 = initialState.getX();
         int y1 = initialState.getY();
         // update the kb
-        if (qa != null)
+        // System.out.println("planUtil: doMove move=" +  move + " newdir=" + newdir + " x1=" + x1 + " y1="+y1  );
+        if (qa != null) {
             qa.solveGoal("replaceRule( curPos(_,_,_), curPos(" + x1 + "," + y1 + "," + newdir + "))");
+        }
     }
 
     public static void findNextCellUncovered(QActor qa) {
@@ -192,6 +198,7 @@ public class planUtil {
         for (int i = 0; i < dimMapx; i++) {
             for (int j = 0; j < dimMapy; j++) {
                 b = RoomMap.getRoomMap().isDirty(i, j);
+                // System.out.println("isDirty " + i +","+ j + "="+b);
                 if (b && !(i == 0 && j == 0)) {
                     if (qa != null)
                         qa.addRule("uncovered(" + i + "," + j + ")");
@@ -252,7 +259,7 @@ public class planUtil {
     /*
      * Extend the current map with a new row and a new column
      */
-    public static void extendSpaceToexplore(QActor qa) {
+    public static void extendSpaceToexplore(final QActor qa) {
         Direction dir = initialState.getDirection();
         int dimMapx = RoomMap.getRoomMap().getDimX();
         int dimMapy = RoomMap.getRoomMap().getDimY();
@@ -266,8 +273,9 @@ public class planUtil {
         }
         dimMapx = RoomMap.getRoomMap().getDimX();
         dimMapy = RoomMap.getRoomMap().getDimY();
-        System.out.println("planUtil: extendSpaceToexplore dir=" + dir + " x=" + x + " y=" + y + " dimMapX=" + dimMapx
-                + " dimMapY=" + dimMapy);
+        System.out.println("planUtil: extendSpaceToexplore dir="
+            + dir + " x=" + x + " y=" + y
+            + " dimMapX=" + dimMapx + " dimMapY=" + dimMapy);
         RoomMap.getRoomMap().put(dimMapx - 1, dimMapy - 1, new Box(false, true, false));
         showMap(qa);
 

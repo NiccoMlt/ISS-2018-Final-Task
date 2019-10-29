@@ -26,7 +26,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://broker.hivemq.com:1883";
+	//protected String mqttServer = "tcp://127.0.0.1:1883";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -474,8 +474,6 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	println( temporaryStr );  
 	    	it.unibo.planning.planUtil.showMap( myself  );
 	    	it.unibo.utils.updateStateOnConsole.updateMap( myself  );
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
-	    	sendMsg("endAction",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?foundBomb" )) != null ){
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotHomeAfterBomb","robotHomeAfterBomb", guardVars ).toString();
 	    	sendMsg("robotHomeAfterBomb",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
@@ -566,7 +564,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	}
 	    	else{ temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
 	    	sendMsg("endAction",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
-	    	}debugStep();
+	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
 	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
@@ -575,10 +573,8 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	            //ActionSwitch for a message or event
 	             if( currentMessage.msgContent().startsWith("endAction") ){
 	            	String parg = "\"bye\"";
-	            	/* Print */
-	            	parg =  updateVars( Term.createTerm("endAction"), 
-	            	                 Term.createTerm("endAction"), 
-	            		    		 Term.createTerm(currentMessage.msgContent()), parg);
+	            	parg = updateVars(  Term.createTerm("endAction"), Term.createTerm("endAction"), 
+	            		    		  					Term.createTerm(currentMessage.msgContent()), parg);
 	            	if( parg != null ) println( parg );
 	             }
 	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
