@@ -8,12 +8,12 @@ This project is a configurable 3D web-based application built with Three.js. The
 
 To use this project you need to download all the required modules from npm, to do that run this commands from the root folder of the project
 
-```
+```bash
 cd server
 npm install
 ```
 
-```
+```bash
 cd WebGLScene
 npm install
 ```
@@ -24,7 +24,7 @@ Or, if you are on Windows, just double click the `install.bat` file.
 
 To start the server run this command, from the root folder of the project
 
-```
+```bash
 cd server
 cd src
 node main portNumber
@@ -36,7 +36,7 @@ The webpage will be available at `http://localhost:8080/`
 
 ## The scene
 
-![scene description](https://raw.githubusercontent.com/PierfrancescoSoffritti/ConfigurableThreejsApp/master/pictures/scene_description.jpg)
+![scene description](./pictures/scene_description.jpg)
 
 As mentioned before the scene is built with Three.js (WebGL) and runs into your browser.
 
@@ -56,16 +56,16 @@ As mentioned before the scene is built with Three.js (WebGL) and runs into your 
 
 In order to adapt the scene for different use cases, users don't need any knowledge of Javascript or Three.js, instead they can edit a simple configuration file that is used to set up the scene.
 
-The configuration file can be found here [`.\WebGLScene\sceneConfig.js`](https://github.com/PierfrancescoSoffritti/ConfigurableThreejsApp/blob/master/WebGLScene/sceneConfig.js). It is a node module, it contains a Javascript object saved into a variable. This Javascript object contains all the information needed to create the scene.
+The configuration file can be found here [`.\WebGLScene\sceneConfig.js`](./WebGLScene/sceneConfig.js). It is a node module, it contains a Javascript object saved into a variable. This Javascript object contains all the information needed to create the scene.
 
-In particulare: it contains one object for every scene componenet.
+In particular: it contains one object for every scene component.
 
 #### Floor
 The floor object has only one property: a size object.
 
 - The size defines the dimension of the floor on the x and y axes.
 
-```
+```js
 floor: {
     size: { x: 40, y: 40 }
 }
@@ -79,7 +79,7 @@ The player object has two properties: position and speed.
 - The position can only be expressed with values between 0 and 1 and is relative to the floor. (0,0) is the top left corner of the floor, (1, 1) is the bottom right corner.
 - The speed determines how fast the player object moves on the floor, it's not bounded (I suggest keeping it between 0 and 1 though).
 
-```
+```js
 player: {
     position: { x: 0.5, y: 0.8 },
     speed: 0.2
@@ -94,7 +94,7 @@ Each sonar has three properties: name, position and senseAxis.
 - The position can only be expressed with values between 0 and 1 and is relative to the floor. (0,0) is the top left corner of the floor, (1, 1) is the bottom right corner.
 - senseAxis determines in which direction this sonar will sense the player. It can be only x, y, or both.
 
-```
+```js
 sonars: [
     {
         name: "sonar-1",
@@ -114,7 +114,7 @@ Each moving obstacle has five properties: name, position, directionAxis, speed a
 - speed determines how fast the obstacle moves.
 - range determines the range of the periodic movement.
 
-```
+```js
 movingObstacles: [
     {
         name: "moving-obstacle-1",
@@ -132,9 +132,9 @@ Each static obstacle has three properties: name, centerPosition and size.
 
 - The name is a string.
 - The centerPosition can only be expressed with values between 0 and 1 and is relative to the floor. (0,0) is the top left corner of the floor, (1, 1) is the bottom right corner.
-- The size can only be expressed with values between 0 and 1 and is relative to the floor. If x = 1 the static obstacle will have the same x dimension of the floor. 
+- The size can only be expressed with values between 0 and 1 and is relative to the floor. If x = 1 the static obstacle will have the same x dimension of the floor.
 
-```
+```js
 staticObstacles: [
     {
         name: "static-obstacle-1",
@@ -146,7 +146,7 @@ staticObstacles: [
 
 #### Complete configuration object
 
-```
+```js
 const config = {
     floor: {
         size: { x: 40, y: 40 }
@@ -221,12 +221,3 @@ Messages from the client to the server.
 - turnLeft - `{ "type": "turnLeft", "arg": 300 }`: This message is used to rotate the player. The player will always make a 90° rotation. `arg` is the amount of time the 90° rotation will require.
 
 - alarm - `{ "type": "alarm" }`: This message will stop the player's movement. Rotations aren't stoppable.
-
-## Client examples
-Two examples of client are provided in this repo, in the [ClientExamples](https://github.com/PierfrancescoSoffritti/ConfigurableThreejsApp/tree/master/ClientExamples) folder.
-
-- Android client, it can be used as a reference to write Java/Kotlin/.. clients. The app is written in Kotlin, translating the [IO module](https://github.com/PierfrancescoSoffritti/ConfigurableThreejsApp/tree/master/ClientExamples/AndroidClient/app/src/main/java/com/pierfrancescosoffritti/configurablethreejsapp/testclient/io) to other object oriented langues should be trivial. The apk of the app can be downloaded [here](https://github.com/PierfrancescoSoffritti/ConfigurableThreejsApp/raw/master/ClientExamples/AndroidClient/app.apk).
-
-<img src="https://raw.githubusercontent.com/PierfrancescoSoffritti/ConfigurableThreejsApp/master/pictures/androidapp.png" height="500">
-
-- Node.js client, it can be used as a reference to write other Node.js clients. This client requires two arguments: ip and port of the server.
