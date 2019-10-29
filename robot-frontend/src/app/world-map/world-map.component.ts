@@ -9,7 +9,6 @@ import { Position } from '../store/robot.state';
 export class WorldMapComponent {
 
   @Input() map: string[][];
-  @Input() bomb: Position;
 
   constructor() { }
 

@@ -5,8 +5,7 @@ import * as fromRoot from '../store/reducers';
 
 @Component({
   selector: 'app-world',
-  templateUrl: './world.component.html',
-  styleUrls: ['./world.component.scss']
+  templateUrl: './world.component.html'
 })
 export class WorldComponent {
 

@@ -1,3 +1,4 @@
+// const util = require('util');
 const config = require('./config');
 const mqtt = require ('mqtt');
 const topicPublisherCommand = "unibo/frontendUserCmd";
@@ -23,12 +24,14 @@ client.on('message', function (topic, message){
 	webSocket.send(state);
 });
 
+exports.wss = webSocket;
+
 exports.publishCommand = function( msg ){
-  console.log('EXPRESS - mqtt publish ' + client);
+  console.log('EXPRESS - mqtt publish with ' + /*util.inspect(*/JSON.stringify(client.options)/*)*/);
 	client.publish(topicPublisherCommand, msg);
 }
 
 exports.publishEnvironment = function( msg ){
-  console.log('EXPRESS - mqtt publish ' + client);
+  console.log('EXPRESS - mqtt publish with ' + /*util.inspect(*/JSON.stringify(client.options)/*)*/);
 	client.publish(topicPublisherEnvironment, msg);
 }

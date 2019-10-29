@@ -23,11 +23,11 @@ export class StateComponent {
   getColor(action: Action): string {
     switch (action.type) {
       case 'safe':
-        return 'primary';
+        return 'accent';
       case 'warning':
         return 'warn';
       default:
-        return '';
+        return 'primary';
     }
   }
 

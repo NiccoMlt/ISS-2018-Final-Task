@@ -5,8 +5,7 @@ import * as fromRoot from '../store/reducers';
 
 @Component({
   selector: 'app-robot',
-  templateUrl: './robot.component.html',
-  styleUrls: ['./robot.component.scss']
+  templateUrl: './robot.component.html'
 })
 export class RobotComponent {
 

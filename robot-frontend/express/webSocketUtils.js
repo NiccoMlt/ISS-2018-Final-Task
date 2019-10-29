@@ -1,5 +1,6 @@
 const WebSocket = require('ws');
-const wss = new WebSocket.Server({ port: 3000 });
+const wssPort = 3000;
+const wss = new WebSocket.Server({ port: wssPort });
 
 var mqtt = require('./mqttUtils');
 var qaUtils = require('./qaUtils');
@@ -17,6 +18,7 @@ wss.on('connection', function (ws) {
   });
 });
 
+exports.port = wssPort;
 exports.send = function(msg){
     if (webs != undefined) {
       console.log('EXPRESS - webSocket send');

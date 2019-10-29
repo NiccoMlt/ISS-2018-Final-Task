@@ -3,21 +3,20 @@
     <!-- ROBOT -->
     <mat-toolbar color="primary">
       <mat-toolbar-row>
-        <span>LSS - Robot console</span>
+        <span>ISS 2018 - Robot console</span>
       </mat-toolbar-row>
     </mat-toolbar>
 
     <div class="d-flex flex-wrap justify-content-around align-content-around">
-      <mat-card class="col-md-12">
+      <mat-card class="col-md-11 col-sm-12">
         <mat-card-header>
           <mat-card-title>Temperature</mat-card-title>
-          <mat-card-subtitle>Temperature update</mat-card-subtitle>
         </mat-card-header>
         <mat-card-content>
           <app-temperature></app-temperature>
         </mat-card-content>
       </mat-card>
-      <mat-card class="col-md-6 col-sm-12">
+      <mat-card class="col-md-5 col-sm-12">
         <mat-card-header>
           <mat-card-title>World</mat-card-title>
           <mat-card-subtitle>World actual situation</mat-card-subtitle>
@@ -29,9 +28,13 @@
       <mat-card class="col-md-5 col-sm-12">
         <mat-card-header>
           <mat-card-title>System</mat-card-title>
-          <mat-card-subtitle>System actual configuration and console</mat-card-subtitle>
+          <mat-card-subtitle
+            >System actual configuration and console</mat-card-subtitle
+          >
         </mat-card-header>
-        <mat-card-content class="d-flex flex-wrap flex-column justify-content-around align-content-around">
+        <mat-card-content
+          class="d-flex flex-wrap flex-column justify-content-around align-content-around"
+        >
           <app-robot class="col-md-12"></app-robot>
           <app-state class="col-md-12"></app-state>
         </mat-card-content>
