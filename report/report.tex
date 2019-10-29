@@ -1,12 +1,14 @@
 %% Direttive TeXworks:
 % !TeX root = ./report.tex
-% !TEX encoding = UTF-8 Unicode
-% !TeX spellcheck = it-IT
+% !TeX encoding = UTF-8 Unicode
+% !TeX spellcheck = it_IT
+% !TeX program = arara
+% !TeX options = --log --verbose --language=it "%DOC%"
 
-% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex:      { interaction: batchmode, shell: yes }
 % arara: bibtex
-% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
-% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex:      { interaction: batchmode, shell: yes }
+% arara: pdflatex:      { interaction: nonstopmode, synctex: yes, shell: yes }
 
 \documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
 
@@ -85,6 +87,9 @@
   \DeclareGraphicsExtensions{.eps, .jpg, .png} % chktex 26
 \fi
 %%%%%%%%%%%%%%%
+\usepackage{svg}
+\graphicspath{{res}}
+\svgpath{{res}}
 \usepackage{float}
 \usepackage{graphviz}
 \usepackage{tikz}
@@ -273,6 +278,9 @@
 
 \section{Sprint 2}\labelsec{sprint2}
 \input{src/sprint-02.tex}
+
+\section{Sprint 3}\labelsec{sprint3}
+\input{src/sprint-03.tex}
 
 %===========================================================================
 % \subsection{Casi d'uso}\labelssec{use_cases}
