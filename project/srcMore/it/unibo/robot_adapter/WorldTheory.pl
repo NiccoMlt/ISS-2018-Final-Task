@@ -149,7 +149,7 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %-------------------------------------------------
 %  User static rules about robot_adapter
 %------------------------------------------------- 
-robotType( "robotVirtual",setuparg( "localhost")).
+robotType( "robotDemo",setuparg( "")).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),
