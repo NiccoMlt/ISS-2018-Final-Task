@@ -5,9 +5,9 @@
 % !TeX program = arara
 % !TeX options = --log --verbose --language=it "%DOC%"
 
-% arara: pdflatex:      { interaction: batchmode, shell: yes }
+% arara: pdflatex:      { interaction: nonstopmode, shell: yes }
 % arara: bibtex
-% arara: pdflatex:      { interaction: batchmode, shell: yes }
+% arara: pdflatex:      { interaction: nonstopmode, shell: yes }
 % arara: pdflatex:      { interaction: nonstopmode, synctex: yes, shell: yes }
 
 \documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
@@ -87,13 +87,16 @@
   \DeclareGraphicsExtensions{.eps, .jpg, .png} % chktex 26
 \fi
 %%%%%%%%%%%%%%%
+% \graphicspath{{res}}
 % \usepackage{svg}
-\graphicspath{{res}}
 % \svgpath{{res}}
+\usepackage{subcaption}       % serve per ottenere sottofigure
+\usepackage{caption}          % permette di controllare la formattazione delle didascalie
 \usepackage{float}
-\usepackage{graphviz}
-\usepackage{tikz}
+% \usepackage{graphviz}
+% \usepackage{tikz}
 
+\usepackage[savemem]{listings}
 \usepackage{listingsutf8}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}

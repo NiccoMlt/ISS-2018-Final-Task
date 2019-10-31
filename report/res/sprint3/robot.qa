@@ -154,8 +154,8 @@ QActor robot_adapter context ctxRobot {
 
     Rules {
 //      robotType("robotSerial", setuparg("/dev/ttyACM0")).
-      robotType("robotVirtual", setuparg("localhost")).
-//      robotType("robotDemo", setuparg("")).
+//      robotType("robotVirtual", setuparg("localhost")).
+      robotType("robotDemo", setuparg("")).
     }
 
     State init initial [

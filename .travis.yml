@@ -47,8 +47,8 @@ jobs:
         - ./gradlew -b build_ctxRobot.gradle eclipse
       script:
         - ./gradlew -b build_ctxRobot.gradle clean assemble
-        - ./gradlew -b build_ctxRobot.gradle test --tests "it.unibo.TestRBlinkLed"
-        - ./gradlew -b build_ctxRobot.gradle test --tests "it.unibo.TestROkTemperature"
+        # - ./gradlew -b build_ctxRobot.gradle test --tests "it.unibo.TestRBlinkLed"
+        # - ./gradlew -b build_ctxRobot.gradle test --tests "it.unibo.TestROkTemperature"
     - name: PlatformIO Arduino
       language: python
       python: "2.7"
