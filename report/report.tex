@@ -71,22 +71,11 @@
 \makeatother
 
 \usepackage{natbib}
-\usepackage{ifpdf}
 \usepackage{xcolor}             % serve per la gestione dei colori nel testo
 
-%%%%%%%%%%%%%%%
-\ifpdf{}
-  \usepackage[pdftex]{graphicx} % serve per includere immagini e grafici
-\else
-  \usepackage{graphicx}         % serve per includere immagini e grafici
-\fi
-%%%%%%%%%%%%%%%
-\ifpdf{}
-  \DeclareGraphicsExtensions{.pdf, .jpg, .tif, .png} % chktex 26
-\else
-  \DeclareGraphicsExtensions{.eps, .jpg, .png} % chktex 26
-\fi
-%%%%%%%%%%%%%%%
+\usepackage{graphicx}         % serve per includere immagini e grafici
+\DeclareGraphicsExtensions{.eps, .pdf, .jpg, .tif, .png} % chktex 26
+
 % \graphicspath{{res}}
 % \usepackage{svg}
 % \svgpath{{res}}
