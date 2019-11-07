@@ -17,16 +17,21 @@ jobs:
             - sourceline: "deb http://miktex.org/download/ubuntu xenial universe"
               key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
             - sourceline: "ppa:inkscape.dev/stable"
-      before_install:
+      install:
         - sudo miktexsetup --shared=yes finish
         - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
+        - sudo mpm --admin --install=oberdiek
+        - sudo mpm --admin --install=ifpdf
         - cd ./report
         - arara --version
         - dot -V
-      install:
-        - arara --log --verbose report.tex
       script:
+        - arara --log --verbose report.tex
         - chktex report.tex
+      after_failure:
+        - cat /home/travis/.miktex/texmfs/data/miktex/log/pdflatex.log
+        - cat ./arara.log
+        - cat ./report.log
       deploy:
         provider: releases
         token:
