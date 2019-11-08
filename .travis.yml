@@ -29,6 +29,7 @@ jobs:
         - chktex report.tex
       after_failure:
         - cat /home/travis/.miktex/texmfs/data/miktex/log/pdflatex.log
+        - cat /home/travis/.miktex/texmfs/data/miktex/log/epstopdf.log
         - cat ./arara.log
         - cat ./report.log
       deploy:
