@@ -26,7 +26,7 @@ public abstract class AbstractConsole extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "";
+	//protected String mqttServer = "tcp://127.0.0.1:1883";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -79,8 +79,14 @@ public abstract class AbstractConsole extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(500,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
+	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = "\"Console init\"";
 	    	println( temporaryStr );  
+	    	//ConnectToSubscribe
+	    	connectAndSubscribe( this.getName(), "tcp://127.0.0.1:1883", "unibo/frontendUserCmd");
 	    	//switchTo doWork
 	        switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
 	              "doWork",false, false, null); 
@@ -98,7 +104,7 @@ public abstract class AbstractConsole extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("adaptCommand"), stateTab.get("updateView"), stateTab.get("handlePhoto") }, 
-	          new String[]{"true","E","usercmd", "true","E","robotState", "true","M","bag" },
+	          new String[]{"true","E","frontendUserCmd", "true","M","stateUpdate", "true","M","bag" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
 	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );
@@ -113,61 +119,61 @@ public abstract class AbstractConsole extends QActor {
 	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(cmd(explore)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(X)")) && 
+	    	curT = Term.createTerm("frontendUserCmd(cmd(explore))");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("frontendUserCmd") && 
+	    		pengine.unify(curT, Term.createTerm("frontendUserCmd(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
 	    			String parg="cmdExplore";
 	    			/* SendDispatch */
-	    			parg = updateVars(Term.createTerm("usercmd(X)"),  Term.createTerm("usercmd(robotgui(cmd(explore)))"), 
+	    			parg = updateVars(Term.createTerm("frontendUserCmd(X)"),  Term.createTerm("frontendUserCmd(cmd(explore))"), 
 	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
 	    			if( parg != null ) sendMsg("cmdExplore","robot_discovery_mind", QActorContext.dispatch, parg ); 
 	    	}
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(cmd(halt)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(X)")) && 
+	    	curT = Term.createTerm("frontendUserCmd(cmd(halt))");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("frontendUserCmd") && 
+	    		pengine.unify(curT, Term.createTerm("frontendUserCmd(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
 	    			String parg="cmdStop";
 	    			/* SendDispatch */
-	    			parg = updateVars(Term.createTerm("usercmd(X)"),  Term.createTerm("usercmd(robotgui(cmd(halt)))"), 
+	    			parg = updateVars(Term.createTerm("frontendUserCmd(X)"),  Term.createTerm("frontendUserCmd(cmd(halt))"), 
 	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
 	    			if( parg != null ) sendMsg("cmdStop","robot_discovery_mind", QActorContext.dispatch, parg ); 
 	    	}
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(cmd(home)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(X)")) && 
+	    	curT = Term.createTerm("frontendUserCmd(cmd(home))");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("frontendUserCmd") && 
+	    		pengine.unify(curT, Term.createTerm("frontendUserCmd(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
 	    			String parg="cmdGoHome";
 	    			/* SendDispatch */
-	    			parg = updateVars(Term.createTerm("usercmd(X)"),  Term.createTerm("usercmd(robotgui(cmd(home)))"), 
+	    			parg = updateVars(Term.createTerm("frontendUserCmd(X)"),  Term.createTerm("frontendUserCmd(cmd(home))"), 
 	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
 	    			if( parg != null ) sendMsg("cmdGoHome","robot_discovery_mind", QActorContext.dispatch, parg ); 
 	    	}
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(bagStatus(bomb)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(X)")) && 
+	    	curT = Term.createTerm("frontendUserCmd(bagStatus(bomb))");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("frontendUserCmd") && 
+	    		pengine.unify(curT, Term.createTerm("frontendUserCmd(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
 	    			String parg="bagStatus(bomb,args(picture(nothing)))";
 	    			/* SendDispatch */
-	    			parg = updateVars(Term.createTerm("usercmd(X)"),  Term.createTerm("usercmd(robotgui(bagStatus(bomb)))"), 
+	    			parg = updateVars(Term.createTerm("frontendUserCmd(X)"),  Term.createTerm("frontendUserCmd(bagStatus(bomb))"), 
 	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
 	    			if( parg != null ) sendMsg("bagStatus",getNameNoCtrl(), QActorContext.dispatch, parg ); 
 	    	}
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("usercmd(robotgui(bagStatus(bag)))");
-	    	if( currentEvent != null && currentEvent.getEventId().equals("usercmd") && 
-	    		pengine.unify(curT, Term.createTerm("usercmd(X)")) && 
+	    	curT = Term.createTerm("frontendUserCmd(bagStatus(bag))");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("frontendUserCmd") && 
+	    		pengine.unify(curT, Term.createTerm("frontendUserCmd(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
 	    			String parg="bagStatus(bag,args(nothing))";
 	    			/* SendDispatch */
-	    			parg = updateVars(Term.createTerm("usercmd(X)"),  Term.createTerm("usercmd(robotgui(bagStatus(bag)))"), 
+	    			parg = updateVars(Term.createTerm("frontendUserCmd(X)"),  Term.createTerm("frontendUserCmd(bagStatus(bag))"), 
 	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
 	    			if( parg != null ) sendMsg("bagStatus",getNameNoCtrl(), QActorContext.dispatch, parg ); 
 	    	}
@@ -195,7 +201,7 @@ public abstract class AbstractConsole extends QActor {
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("handleBagStatus"), stateTab.get("adaptCommand") }, 
-	          new String[]{"true","M","bagStatus", "true","E","usercmd" },
+	          new String[]{"true","M","bagStatus", "true","E","frontendUserCmd" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handlePhoto){  
 	    	 println( getName() + " plan=handlePhoto WARNING:" + e_handlePhoto.getMessage() );
@@ -246,7 +252,8 @@ public abstract class AbstractConsole extends QActor {
 	    
 	    StateFun handleAlert = () -> {	
 	    try{	
-	     PlanRepeat pr = PlanRepeat.setUp("handleAlert",-1);
+	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_handleAlert",0);
+	     pr.incNumIter(); 	
 	    	String myselfName = "handleAlert";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
@@ -266,10 +273,10 @@ public abstract class AbstractConsole extends QActor {
 	             println( getName() + " plan=handleAlert WARNING:" + e.getMessage() );
 	             //QActorContext.terminateQActorSystem(this); 
 	          }
-	          }
-	          }, 
-	          new String[]{"true","M","robotHome" },
-	          3000, "handleAlert" );//msgTransition
+	          },
+	           stateTab.get("updateView") }, 
+	          new String[]{"true","M","robotHome", "true","M","stateUpdate" },
+	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handleAlert){  
 	    	 println( getName() + " plan=handleAlert WARNING:" + e_handleAlert.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -282,12 +289,21 @@ public abstract class AbstractConsole extends QActor {
 	    	String myselfName = "updateView";  
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("state(X)");
-	    	if( currentMessage != null && currentMessage.msgId().equals("robotState") && 
-	    		pengine.unify(curT, Term.createTerm("state(position(X,Y),movement(M))")) && 
+	    	curT = Term.createTerm("state(T,P)");
+	    	if( currentMessage != null && currentMessage.msgId().equals("stateUpdate") && 
+	    		pengine.unify(curT, Term.createTerm("state(T,P)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		printCurrentMessage(false);
+	    		{/* JavaLikeMove */ 
+	    		String arg1 = "T" ;
+	    		arg1 =  updateVars( Term.createTerm("state(T,P)"), Term.createTerm("state(T,P)"), 
+	    			                Term.createTerm(currentMessage.msgContent()),  arg1 );	                
+	    		//end arg1
+	    		String arg2 = "P" ;
+	    		arg2 =  updateVars( Term.createTerm("state(T,P)"), Term.createTerm("state(T,P)"), 
+	    			                Term.createTerm(currentMessage.msgContent()),  arg2 );	                
+	    		//end arg2
+	    		it.unibo.utils.updateStateOnConsole.receivedUpdateState(this,arg1,arg2 );
+	    		}
 	    	}
 	    	repeatPlanNoTransition(pr,myselfName,"console_"+myselfName,false,true);
 	    }catch(Exception e_updateView){  

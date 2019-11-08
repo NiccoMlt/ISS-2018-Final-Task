@@ -31,17 +31,21 @@ Dispatch robotCmd: robotCmd(M)
  * Robot-one-cell-forward
  * *********************************************************
  */
+
 Dispatch collisionDispatch: obstacle(TARGET)
 Dispatch obstacleNear: obstacleNear
 Dispatch moveMsgCmd: moveMsgCmd(TF)
-Dispatch moveMsgCmdDone: moveMsgCmdDone(X) // X = cmd
-Dispatch moveMsgCmdObstacle: moveMsgCmdObstacle(X) // X = cmd
+/** X = cmd */
+Dispatch moveMsgCmdDone: moveMsgCmdDone(X)
+/** X = cmd */
+Dispatch moveMsgCmdObstacle: moveMsgCmdObstacle(X)
 
 /*
  * *********************************************************
  * Robot-advanced
  * *********************************************************
  */
+
 Dispatch waitMoveCompleted: waitMoveCompleted
 
 /*
@@ -49,6 +53,7 @@ Dispatch waitMoveCompleted: waitMoveCompleted
  * Planner
  * *********************************************************
  */
+
 Dispatch endAction: endAction
 
 /*
@@ -56,12 +61,11 @@ Dispatch endAction: endAction
  * Robot position
  * *********************************************************
  */
+
  /** X = distance */
 Event robotSonar: robotSonar(distance(X))
 /** From robot virtual sonar obstacle; X = name */
 Event robotSonarObstacle: obstacle(X)
-/** sonar fisico */
-// Event robotSonarWall: sonar(SONAR, TARGET, DISTANCE)
 
 /*
  * *********************************************************
@@ -85,20 +89,25 @@ Dispatch bag: bag(picture(X))                                           // R-sen
  * Messaggi & Eventi Console
  * *********************************************************
  */
+
 Dispatch alert: alert                                                   // R-alert
 /** X = bomb|bag ; Y = arguments */
 Dispatch bagStatus: bagStatus(X, args(Y))
+/** T = type ; P = payload ; T = temperature|map|robotMovement|robotState */
+Dispatch stateUpdate: state(T, P)
 
 /** (X, Y) = coordinates ; M = w|a|s|d|h */
-Event robotState: state(position(X, Y), movement(M))                    // R-consoleUpdate
 Dispatch robotHome: robotHome
 Dispatch robotHomeAfterBomb: robotHomeAfterBomb
 
-/** X = robotgui(CMD) CMD = s(low) ; from robot GUI */
-Event usercmd: usercmd(X)
+/** from GUI to CONSOLE;  X = command */
+Event frontendUserCmd: frontendUserCmd(X)
+/** from CONSOLE to GUI; X = state */
+Event frontendRobotState: frontendRobotState(X)
 
-/** Contesto locale del robot. Console web a localhost:8080 */
-Context ctxRobot ip [ host="localhost" port=8079 ] -httpserver
+pubSubServer "tcp://127.0.0.1:1883"
+
+Context ctxRobot ip [ host="localhost" port=8079 ]
 
 // Handler sonar virtuale TODO (manca per il fisico)
 EventHandler collisionevh for robotSonarObstacle -print  {
@@ -117,17 +126,27 @@ QActor world_observer context ctxRobot {
         evaluateEnvironment :- evaluateTemp.
     }
 
+    State init initial [
+        connectAsSubscriber "unibo/environment"
+    ] switchTo doObserve
+
     /** Lo stato doObserve è lo stato nel quale viene verificata la temperatura. */
-    State doObserve initial [
+    State doObserve [
         [ !? evaluateEnvironment ]
             emit environment: environment(ok)
         else
             emit environment: environment(notok)
     ] transition
         whenTime 1000 -> doObserve
-        whenEvent temperature: temperature(X) do
-            ReplaceRule temperature(Z) with temperature(X)              // R-TempOk
+        whenEvent temperature -> evaluateTemperature                    // R-TempOk
         finally repeatPlan
+
+    State evaluateTemperature [
+        onEvent temperature: temperature(X) ->
+            ReplaceRule temperature(_) with temperature(X);
+        onEvent temperature: temperature(X) ->
+            forward console -m stateUpdate: state(temperature, X)
+    ] switchTo doObserve
 }
 
 /** Attore che modella un robot. */
@@ -139,8 +158,9 @@ QActor robot_adapter context ctxRobot {
 //      robotType("robotDemo", setuparg("")).
     }
 
-    State init initial []
-    transition
+    State init initial [
+        println("Robot adapter init")
+    ] transition
         whenTime 100 -> initRobots
 
     /** Stato di inizializzazione degli Executor del Robot Adapter. */
@@ -299,7 +319,7 @@ QActor robot_discovery_mind context ctxRobot {
         ledState(off).
 
         // PLANNER
-        numOfExplorations(30).
+        numOfExplorations(3).
         curGoal(0, 0).
 
         continueForward(T) :-
@@ -343,6 +363,7 @@ QActor robot_discovery_mind context ctxRobot {
      * - per iniziare l'esplorazione.
      */
     State home [
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("home");
         [ !? foundBomb ]
             forward console -m robotHome: robotHome
     ] transition
@@ -378,12 +399,14 @@ QActor robot_discovery_mind context ctxRobot {
      */
     State goToExploration [
         ReplaceRule ledState(off) with ledState(blinking);
-        println("STATE[goToExploration] ...");
+        println("DISCOVERY_MIND[[goToExploration] ...");
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("exploring");
         forward robot_adapter -m robotCmd: robotCmd(blinkStart)         // R-blinkLed (start)
     ] switchTo exploreStep
 
     State resumeExploration [
-        println("STATE[resumeExploration] ...");
+        println("DISCOVERY_MIND[resumeExploration] ...");
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("exploring");
         forward robot_adapter -m robotCmd: robotCmd(blinkStart)         // R-blinkLed (start)
     ] switchTo doActions
 
@@ -393,7 +416,8 @@ QActor robot_discovery_mind context ctxRobot {
      * Il robot si ferma e scatta una foto, poi procede con la gestione della borsa.
      */
     State goToHandleBag [
-        println("STATE[goToHandleBag] ...");
+        println("DISCOVERY_MIND[goToHandleBag] ...");
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("obstacle");
         // Handle obstacle
         ReplaceRule ledState(blinking) with ledState(off);              // R-blinkLed (stop)
         forward robot_adapter -m robotCmd: robotCmd(blinkStop);         // R-blinkLed (stop)
@@ -403,7 +427,8 @@ QActor robot_discovery_mind context ctxRobot {
             println( handleFixedObstacleCases_1(X, Y, D));
         // Update map
         javaRun it.unibo.planning.planUtil.markCellAsObstacle();
-        javaRun it.unibo.planning.planUtil.showMap()
+        javaRun it.unibo.planning.planUtil.showMap();
+        javaRun it.unibo.utils.updateStateOnConsole.updateMap()
     ] switchTo handleBag
 
     /**
@@ -412,7 +437,7 @@ QActor robot_discovery_mind context ctxRobot {
      * Gestisce i messaggi di halt e di scatto della foto, dopodiché attende istruzioni.
      */
     State handleBag [                                                   // R-stopAtBag
-        println("STATE[handleBag] waiting for console command ...")
+        println("DISCOVERY_MIND[handleBag] waiting for console command ...")
     ]
     transition
         stopAfter 60000
@@ -420,7 +445,8 @@ QActor robot_discovery_mind context ctxRobot {
         whenMsg cmdExplore -> resumeExplorationAfterBag                 // R-continueExplore
 
     State resumeExplorationAfterBag [
-        println("STATE[resumeExplorationAfterBag] ...");
+        println("DISCOVERY_MIND[resumeExplorationAfterBag] ...");
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("exploring");
         // Update plan to continue exploration
         [ !? curGoal(N,N)  ]
             javaRun it.unibo.planning.planUtil.setGoal(N,N) ;
@@ -429,7 +455,7 @@ QActor robot_discovery_mind context ctxRobot {
     ] switchTo doActions
 
     State backHomeAfterBomb [
-        println("STATE[backHomeAfterBomb] ...");
+        println("DISCOVERY_MIND[backHomeAfterBomb] ...");
         // Update map
         javaRun it.unibo.planning.planUtil.markCellAsBomb()
     ] switchTo goToHome
@@ -441,7 +467,8 @@ QActor robot_discovery_mind context ctxRobot {
      */
     State goToIdle [
         ReplaceRule ledState(blinking) with ledState(off);
-        println("STATE[goToIdle] ...");
+        println("DISCOVERY_MIND[goToIdle] ...");
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("idle");
         forward robot_adapter -m robotCmd: robotCmd(blinkStop)          // R-blinkLed (stop)
     ] switchTo idle
 
@@ -456,7 +483,8 @@ QActor robot_discovery_mind context ctxRobot {
         whenMsg cmdGoHome -> goToHome                                   // R-backHome
 
     State goToHome [
-        println("STATE[goToHome] ...");
+        println("DISCOVERY_MIND[goToHome] ...");
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("home");
         forward robot_adapter -m robotCmd: robotCmd(blinkStart)         // R-blinkLed (start)
     ] switchTo backToHome
 
@@ -493,7 +521,8 @@ QActor robot_discovery_mind context ctxRobot {
         printCurrentMessage;
         onMsg moveMsgCmdDone: moveMsgCmdDone(X) ->
             javaRun it.unibo.planning.planUtil.doMove(X); //update the map
-        javaRun it.unibo.planning.planUtil.showMap()
+        javaRun it.unibo.planning.planUtil.showMap();
+        javaRun it.unibo.utils.updateStateOnConsole.updateMap()
     ] transition
         whenTime 100 -> doActions
         whenMsg cmdStop -> goToIdle
@@ -503,7 +532,7 @@ QActor robot_discovery_mind context ctxRobot {
             forward robot_adapter -m robotCmd: robotCmd(blinkStop);                 // R-blinkLed (stop)
             println("AT HOME");
             javaRun it.unibo.planning.planUtil.showMap();
-            selfMsg endAction: endAction;
+            javaRun it.unibo.utils.updateStateOnConsole.updateMap();
             [ !? foundBomb ]
                 selfMsg robotHomeAfterBomb: robotHomeAfterBomb
             else
@@ -533,22 +562,23 @@ QActor robot_discovery_mind context ctxRobot {
         }
     ]
     transition whenTime 1000 -> doActions
-        whenMsg endAction -> exploreUncovered //: endAction do println("bye")
+        whenMsg endAction -> exploreUncovered
 
     State exploreUncovered[
         [ !? curPos(X,Y,D) ]
-            println( exploreUncovered(X,Y,D) );
-        javaRun it.unibo.planning.planUtil.showMap() ;
+            println( exploreUncovered(X, Y, D) );
+        javaRun it.unibo.planning.planUtil.showMap();
+        javaRun it.unibo.utils.updateStateOnConsole.updateMap();
         javaRun it.unibo.planning.planUtil.findNextCellUncovered( );
         [ !? uncovered(X,Y )]
-            println( uncovered(X,Y ) );
+            println( uncovered(X, Y) );
         [ !? uncovered(X,Y )]
             javaRun it.unibo.planning.planUtil.setGoal(X,Y);
         [ ?? uncovered(X,Y )]
             javaRun it.unibo.planning.planUtil.doPlan()
         else
             selfMsg endAction: endAction
-        ;javaOp "debugStep()"
+        // ;javaOp "debugStep()"
     ] transition
         whenTime 100 -> doActions
         whenMsg endAction: endAction do println("bye")
@@ -611,7 +641,9 @@ QActor console context ctxRobot {
 
     /** Stato iniziale della console. */
     State init initial [
-        println("Console init")
+        delay 500;
+        println("Console init");
+        connectAsSubscriber "unibo/frontendUserCmd"
     ] switchTo doWork
 
     /**
@@ -619,35 +651,26 @@ QActor console context ctxRobot {
      *
      * Attende messaggi dal robot e li gestisce.
      */
-    State doWork [
-        // TODO demo operations: ******************************
-//        delay 1000;
-//        emit temperature: temperature(18);
-//        delay 3000;
-//        forward robot_discovery_mind -m cmdExplore: cmdExplore;
-//        delay 2000;
-//        forward robot_discovery_mind -m cmdStop: cmdStop
-        // ****************************************************
-//        delay 3000;forward robot_discovery_mind -m cmdExplore: cmdExplore // TODO debug
-    ] transition
+    State doWork []
+    transition
         stopAfter 60000
-        whenEvent usercmd -> adaptCommand,
-        whenEvent robotState -> updateView,                             // R-consoleUpdate
+        whenEvent frontendUserCmd -> adaptCommand,
+        whenMsg stateUpdate -> updateView,                            // R-consoleUpdate
         whenMsg bag -> handlePhoto
         finally repeatPlan
 
     /** Lo stato adaptCommand permette di convertire comandi provenienti dalla WebGUI. */
     State adaptCommand resumeLastPlan [
         printCurrentEvent;
-        onEvent usercmd: usercmd(robotgui(cmd(explore))) ->
+        onEvent frontendUserCmd: frontendUserCmd(cmd(explore)) ->
             forward robot_discovery_mind -m cmdExplore: cmdExplore;
-        onEvent usercmd: usercmd(robotgui(cmd(halt))) ->
+        onEvent frontendUserCmd: frontendUserCmd(cmd(halt)) ->
             forward robot_discovery_mind -m cmdStop: cmdStop;
-        onEvent usercmd: usercmd(robotgui(cmd(home))) ->
+        onEvent frontendUserCmd: frontendUserCmd(cmd(home)) ->
             forward robot_discovery_mind -m cmdGoHome: cmdGoHome;
-        onEvent usercmd: usercmd(robotgui(bagStatus(bomb))) ->
+        onEvent frontendUserCmd: frontendUserCmd(bagStatus(bomb)) ->
             selfMsg bagStatus: bagStatus(bomb, args(picture(nothing)));
-        onEvent usercmd: usercmd(robotgui(bagStatus(bag))) ->
+        onEvent frontendUserCmd: frontendUserCmd(bagStatus(bag)) ->
             selfMsg bagStatus: bagStatus(bag, args(nothing))
     ]
 
@@ -661,7 +684,7 @@ QActor console context ctxRobot {
     ] transition
         stopAfter 60000
         whenMsg bagStatus -> handleBagStatus,
-        whenEvent usercmd -> adaptCommand
+        whenEvent frontendUserCmd -> adaptCommand
         finally repeatPlan
 
     /**
@@ -689,9 +712,11 @@ QActor console context ctxRobot {
      */
     State handleAlert []
     transition
-        whenTime 3000 -> handleAlert
+        stopAfter 60000
         whenMsg robotHome: robotHome do
-            forward robot_retriever_mind -m cmdReachBomb: cmdReachBomb  // R-waitForHome & R-reachBag
+            forward robot_retriever_mind -m cmdReachBomb: cmdReachBomb,  // R-waitForHome & R-reachBag
+        whenMsg stateUpdate -> updateView
+        finally repeatPlan
 
     /**
      * Lo stato updateView permette di gestire gli aggiornamenti di stato della vista.
@@ -699,6 +724,7 @@ QActor console context ctxRobot {
      * Una volta fatto, riprende lo stato precedente.
      */
     State updateView resumeLastPlan [
-        onMsg robotState: state(X) -> printCurrentMessage
+        // onMsg stateUpdate: state(T,P) -> printCurrentEvent;
+        onMsg stateUpdate: state(T,P) -> javaRun it.unibo.utils.updateStateOnConsole.receivedUpdateState(T, P)
     ]
 }

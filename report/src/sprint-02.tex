@@ -3,11 +3,6 @@
 % !TEX encoding = UTF-8 Unicode
 % !TeX spellcheck = it-IT
 
-% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
-% arara: bibtex
-% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
-% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
-
 \subsection{Sprint Planning}\labelssec{sp2:planning}
 
 Durante lo Sprint precedente descritto nella \Cref{sec:sprint1}, è stato realizzato un sistema locale di massima, che implementasse i requisiti principali del sistema richiesto.
@@ -98,42 +93,48 @@ Continuando con un approccio top-down, le nuove entità e i loro comportamenti s
 
 \begin{figure}[H]
   \centering
-  \includegv[width=\textwidth]{res/sprint2/onecellforward}
+  % \includegv[width=\textwidth]{res/sprint2/onecellforward}
+  \includegraphics[width=\textwidth]{res/sprint2/onecellforward}
   \caption{One Cell Forward}%
   \label{fig:sp2:ocf}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=\textwidth]{res/sprint2/robot_adapter}
+  % \includegv[width=\textwidth]{res/sprint2/robot_adapter}
+  \includegraphics[width=\textwidth]{res/sprint2/robot_adapter}
   \caption{Robot Adapter}%
   \label{fig:sp2:r_adpt}
 \end{figure}
 
 \begin{figure}[H]
   \centering
-  \includegv[width=\textwidth]{res/sprint2/robot_advanced}
+  % \includegv[width=\textwidth]{res/sprint2/robot_advanced}
+  \includegraphics[width=\textwidth]{res/sprint2/robot_advanced}
   \caption{Robot Advanced}%
   \label{fig:sp2:r_adv}
 \end{figure}
 
 % \begin{figure}[H]
 %   \centering
-%   \includegv[width=\textwidth]{res/sprint2/robot_discovery_mind}
+%   % \includegv[width=\textwidth]{res/sprint2/robot_discovery_mind}
+%   \includegraphics[width=\textwidth]{res/sprint2/robot_discovery_mind}
 %   \caption{Mind del Robot Discovery}%
 %   \label{fig:sp2:rdm}
 % \end{figure}
 
 % \begin{figure}[H]
 %   \centering
-%   \includegv[width=\textwidth]{res/sprint2/robot_retriever_mind}
+%   % \includegv[width=\textwidth]{res/sprint2/robot_retriever_mind}
+%   \includegraphics[width=\textwidth]{res/sprint2/robot_retriever_mind}
 %   \caption{Mind del Robot Retriever}%
 %   \label{fig:sp2:rrm}
 % \end{figure}
 
 % \begin{figure}[H]
 %   \centering
-%   \includegv[width=0.5\textwidth]{res/sprint2/world_observer}
+%   % \includegv[width=0.5\textwidth]{res/sprint2/world_observer}
+%   \includegraphics[width=0.5\textwidth]{res/sprint2/world_observer}
 %   \caption{World Observer}%
 %   \label{fig:sp2:wo}
 % \end{figure}
@@ -210,3 +211,7 @@ in particolare, poiché il punto focale di questo sprint era l'esplorazione e il
 
 Non è stato ritenuto necessario definire \textit{unit test} per quanto importato dalla \textit{codebase} della \textit{software house}, in quanto è codice fornito come già testato;
 per quanto riguarda il testing dell'integrazione, si è deciso di effettuare un testing empirico sfruttando il robot virtuale già citato in precedenza.
+
+\subsection{Sprint Review}\labelssec{sp2:review}
+
+Come per lo \nameref{sec:sprint1}, l'interazione con il committente è stata limitata a uno scambio di email, in quanto non erano presenti elementi interessanti da discutere.

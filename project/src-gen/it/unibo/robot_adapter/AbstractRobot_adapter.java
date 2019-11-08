@@ -26,7 +26,7 @@ public abstract class AbstractRobot_adapter extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "";
+	//protected String mqttServer = "tcp://127.0.0.1:1883";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -76,6 +76,8 @@ public abstract class AbstractRobot_adapter extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
+	    	temporaryStr = "\"Robot adapter init\"";
+	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_adapter_"+myselfName,false,
 	          new StateFun[]{}, 

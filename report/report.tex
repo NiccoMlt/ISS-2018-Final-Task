@@ -1,12 +1,14 @@
 %% Direttive TeXworks:
 % !TeX root = ./report.tex
-% !TEX encoding = UTF-8 Unicode
-% !TeX spellcheck = it-IT
+% !TeX encoding = UTF-8 Unicode
+% !TeX spellcheck = it_IT
+% !TeX program = arara
+% !TeX options = --log --verbose --language=it "%DOC%"
 
-% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex:      { interaction: nonstopmode, shell: yes }
 % arara: bibtex
-% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
-% arara: pdflatex: { synctex: yes, shell: yes, interaction: nonstopmode }
+% arara: pdflatex:      { interaction: nonstopmode, shell: yes }
+% arara: pdflatex:      { interaction: nonstopmode, synctex: yes, shell: yes }
 
 \documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
 
@@ -69,26 +71,21 @@
 \makeatother
 
 \usepackage{natbib}
-\usepackage{ifpdf}
 \usepackage{xcolor}             % serve per la gestione dei colori nel testo
 
-%%%%%%%%%%%%%%%
-\ifpdf{}
-  \usepackage[pdftex]{graphicx} % serve per includere immagini e grafici
-\else
-  \usepackage{graphicx}         % serve per includere immagini e grafici
-\fi
-%%%%%%%%%%%%%%%
-\ifpdf{}
-  \DeclareGraphicsExtensions{.pdf, .jpg, .tif, .png} % chktex 26
-\else
-  \DeclareGraphicsExtensions{.eps, .jpg, .png} % chktex 26
-\fi
-%%%%%%%%%%%%%%%
-\usepackage{float}
-\usepackage{graphviz}
-\usepackage{tikz}
+\usepackage{graphicx}         % serve per includere immagini e grafici
+\DeclareGraphicsExtensions{.eps, .pdf, .jpg, .tif, .png} % chktex 26
 
+% \graphicspath{{res}}
+% \usepackage{svg}
+% \svgpath{{res}}
+\usepackage{subcaption}       % serve per ottenere sottofigure
+\usepackage{caption}          % permette di controllare la formattazione delle didascalie
+\usepackage{float}
+% \usepackage{graphviz}
+% \usepackage{tikz}
+
+\usepackage[savemem]{listings}
 \usepackage{listingsutf8}
 
 \definecolor{dkgreen}{rgb}{0,0.6,0}
@@ -273,6 +270,9 @@
 
 \section{Sprint 2}\labelsec{sprint2}
 \input{src/sprint-02.tex}
+
+\section{Sprint 3}\labelsec{sprint3}
+\input{src/sprint-03.tex}
 
 %===========================================================================
 % \subsection{Casi d'uso}\labelssec{use_cases}

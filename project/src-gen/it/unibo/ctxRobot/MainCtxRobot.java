@@ -8,7 +8,7 @@ public class MainCtxRobot  {
 //MAIN
 public static QActorContext initTheContext() throws Exception{
 	IOutputEnvView outEnvView = SituatedSysKb.standardOutEnvView;
-	String webDir = "./srcMore/it/unibo/ctxRobot";
+	String webDir = null;
 	return QActorContext.initQActorSystem(
 		"ctxrobot", "./srcMore/it/unibo/ctxRobot/robot.pl", 
 		"./srcMore/it/unibo/ctxRobot/sysRules.pl", outEnvView,webDir,false);

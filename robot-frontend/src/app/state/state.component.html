@@ -1,0 +1,17 @@
+<mat-card class="mat-elevation-z3">
+  <mat-card-header>
+    <mat-card-title>Console</mat-card-title>
+  </mat-card-header>
+  <mat-card-content>
+    <p>
+      The robot current state is: {{state.name}}
+    </p>
+  </mat-card-content>
+  <mat-card-actions  class="actions-row">
+    <button mat-raised-button *ngFor="let action of state.actions"
+      color="{{getColor(action)}}"
+      (click)="execute(action)">
+      <b>{{action.name}}</b>
+    </button>
+  </mat-card-actions>
+</mat-card>

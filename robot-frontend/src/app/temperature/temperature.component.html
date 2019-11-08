@@ -1,0 +1,15 @@
+<form>
+    <mat-form-field appearance="standard">
+        <input
+          type="number"
+          matInput
+          placeholder="Temperature update"
+          [(ngModel)]="temperature"
+          ng-required
+        />
+        <mat-icon matSuffix>whatshot</mat-icon>
+      </mat-form-field>
+      <button mat-raised-button color="primary" (click)="updateTemperature()">
+        Update
+      </button>
+</form>

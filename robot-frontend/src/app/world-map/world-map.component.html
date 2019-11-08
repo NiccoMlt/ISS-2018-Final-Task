@@ -1,0 +1,29 @@
+<div class="mat-table">
+  <div *ngFor="let row of map; let r = index;" class="mat-row">
+    <div
+      *ngFor="let cell of row; let c = index;"
+      [ngClass]="cell==0 ? 'map-unknown' : ( cell==1 ? 'map-visited' : ( cell=='x' ? 'map-obstacle' : ( cell=='r' ? 'map-robot' : ( cell=='b' ? 'map-bomb' : 'map-error'))))"
+      class="mat-cell"></div>
+  </div>
+</div>
+
+<div class="legend col-6">
+  <h4>Legend:</h4>
+  <div class="mat-table">
+    <div class="mat-row">
+      <div class="mat-cell map-unknown">Cell to be explored</div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-cell map-visited">Cell explored</div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-cell map-obstacle">Obstacle</div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-cell map-bomb">Bomb</div>
+    </div>
+    <div class="mat-row">
+      <div class="mat-cell map-robot">Robot</div>
+    </div>
+  </div>
+</div>

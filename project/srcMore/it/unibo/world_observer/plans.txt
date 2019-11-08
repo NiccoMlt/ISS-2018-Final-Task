@@ -1,1 +1,4 @@
+plan(1,init, sentence(true,not here StateMoveNormal,'','' ))
 plan(1,doObserve, sentence( evaluateEnvironment,raise( environment , environment( ok) )'),'','' ))
+plan(1,evaluateTemperature, sentence(true,eventswitch(temperature, Â»temperature( X), not here  GuardMove ),'','' ))
+plan(2,evaluateTemperature, sentence(true,eventswitch(temperature, Â»temperature( X), forward(console, stateUpdate,state( temperature,X)) ),'','' ))

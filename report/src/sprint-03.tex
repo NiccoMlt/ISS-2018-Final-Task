@@ -1,0 +1,182 @@
+\subsection{Sprint Planning}\labelssec{sp3:planning}
+
+Se precedentemente sono stati realizzati la struttura base del sistema e la logica di esplorazione,
+in questo Sprint l'obiettivo è realizzare un frontend web completo per il sistema.
+
+In particolare, alla fine di questo Sprint si vuole avere un sistema che mantenga aggiornato l'utente sullo stato del robot e dell'ambiente,
+lasciandogli la possibilità di interagire con esso attraverso controlli dedicati.
+
+\subsection{Analisi dei requisiti}\labelssec{sp3:req_analysis}
+
+Dopo aver definito l'obiettivo di massima di questo Sprint, si è proceduto con l'individuazione dei requisiti specifici da realizzare:
+
+\begin{description}
+  \item[\requirementref{R-consoleUpdate}]
+    Il requisito principale dal quale si sviluppa questo Sprint è proprio quello riguardante la comunicazione delle informazioni dal robot alla console.
+    In particolare, è fondamentale decidere il mezzo di comunicazione tra console e robot e quali siano le esigenze del flusso di comunicazione;
+    inoltre, i requisiti non specificano nemmeno la frequenza di aggiornamento della console, dunque nella fase successiva andrà tenuto in considerazione anche questo aspetto.
+
+  \item[\requirementref{R-alert}]
+    Arrivati a questo punto, il robot può incontrare ostacoli e deve avere modo di comunicarlo all'utente;
+    per il momento, può essere sufficiente mostrare all'utente una comunicazione dell'ostacolo e la possibilità di sciegliere tra bomba e borsa,
+    mentre l'invio e la gestione della foto possonoe essere delegati ad uno Sprint successivo.
+
+  \item[\requirementref{R-backHomeSinceBomb}]
+    In caso la valigia contenga un ordigno, l'interfaccia deve ordinare al robot Discovery di tornare immediatamente alla posizione iniziale.
+
+  \item[\requirementref{R-continueExploreAfterPhoto}]
+    Se la valigia non contiene una bomba, allora al robot viene comandato di continuare l'esplorazione, aggiornando contestualmente la mappa.
+\end{description}
+
+\subsection{Analisi del problema}\labelssec{sp3:prob_analysis}
+
+A seguito dell'analisi dei requisiti, sono state fatte diverse considerazioni sui problemi emersi;
+di seguito si descrive nel dettaglio ciascuna di queste.
+
+\subsubsection{Console}\labelsssec{sp3:console}
+
+Per rispettare il requisito \requirementref{R-consoleUpdate}, si è mostrato necessario studiare un sistema per inviare alla console la situazione attuale del mondo (comprensiva di mappa e posizione del robot).
+Dato che i componenti a dover utilizzare questa mappa sono due (\requirementref{discovery} e \requirementref{retriever}), è stato considerato logico sfruttare questa conoscenza della console per memorizzare una copia dello stato dell'intero sistema.
+
+I requisiti richiedono che la console venga aggiornata periodicamente (\requirementref{R-consoleUpdate}), ma non specificano in quale modo e ogni quanto tempo;
+Vi sarebbero diversi approcci possibili:
+
+\begin{itemize}
+  \item
+    per esempio, del robot conosciamo la posizione e la direzione, potremmo perciò supporre che fino a quando non riceviamo ulteriori aggiornamenti dal robot stesso questo continui a muoversi nella stessa direzione.
+  \item
+    un approccio alternativo consiste nel semplice invio della nuova conoscenza parziale dello stato alla console ad ogni modifica di questo stato.
+\end{itemize}
+
+Si è scelto di adottare il secondo approccio, in quanto il primo presuppone che la console sia a conoscenza della velocità di movimento del robot per poter aggiornare periodicamente l'informazione visualizzata, cosa di cui però non è a conoscenza.
+
+Inoltre la console deve valutare con quale frequenza inoltrare questa conoscenza dello stato all'interfaccia grafica.
+Per le stesse valutazioni appena fatte, ad ogni modifica dello stato l'interfaccia viene a sua volta notificata del cambiamento.
+
+\subsubsection{Interfaccia e comunicazione}\labelsssec{sp3:link}
+
+Quando si parla di ``interfaccia web'', si presuppone l'esistenza di un server che si occupa di inviare al browser il codice del frontend;
+inoltre, il codice frontend eseguito dal browser dell'utente costituisce di fatto un client verso il sistema.
+
+Se negli Sprint precedenti veniva utilizzata l'interfaccia web messa a disposizione dal framework QA (il quale dunque si occupava di istanziare il server e la comunicazione), voler realizzare qualcosa di più articolato richiede l'introduzione di ulteriori specifiche in merito a ciò.
+
+Dovendo realizzare un client per il sistema eseguibile in un browser, è stata ritenuta adeguata la realizzazione di una \textbf{SPA} (\textit{Single Page Application}) che potesse migliorare la \textit{user experience} dell'utente.
+Inoltre, le SPA sono progettate per essere compilate in file statici, semplificando notevolmente l'implementazione del \textbf{server};
+per la realizzazione di quest'ultimo, si è scelto di appoggiarsi a codice già presente nella software house, realizzata con il framework \textbf{Express} e il linguaggio JavaScript ES5.
+
+\begin{figure}[H]
+  \centering
+  \includegraphics[width=0.5\textwidth]{res/express.png}%
+  \label{fig:sp3:express}
+\end{figure}
+
+Per quanto riguarda il mezzo di comunicazione, si è ritenuto che il cliente voglia usare più interfacce in contemporanea per vedere lo stato del robot:
+di conseguenza, l'impiego di un protocollo di tipo \textit{publish}/\textit{subscribe} è stato ritenuto adeguato per le seguenti ragioni:
+
+\begin{itemize}
+  \item
+    esso garantisce molta \textbf{elasticità} sulla posizione dell'interfaccia rispetto al resto del sistema (considerando una loro possibile configuraione distribuita);
+  \item
+    l'utilizzo di un canale condiviso permette di avere \textbf{più interfacce grafiche} contemporaneamente, anche realizzate con tecnologie differenti.
+  \item
+    il traffico può essere bidirezionale:
+    \begin{itemize}
+        \item
+          dall'interfaccia alla console vengono inviati i \textbf{comandi} da eseguire;
+        \item
+          dalla console all'interfaccia vengono inviate le informazioni sullo \textbf{stato}.
+    \end{itemize}
+\end{itemize}
+
+La scelta del protocollo specifico è stata presa già in questa fase, in quanto guidata da quelle prese negli Sprint precedenti:
+come detto anche nella~\Cref{ssec:sp1:project}, il framework QA fornito dalla software house e che si è scelto di adottare è integrato nativamente con il protocollo \textbf{MQTT},
+dunque viene naturale considerare quest'ultimo protocollo per lo scambio di informazioni tra il robot e la console.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.5\textwidth]{res/mqttorg.png}%
+    \label{subfig:sp3:mqtt}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.5\textwidth]{res/mosquitto.png}%
+    \label{subfig:sp3:mosquitto}
+  \end{subfigure}%
+  \label{fig:sp3:mqtt}
+\end{figure}
+
+Inoltre, la software house mette già a disposizione un adattatore per JavaScript per il protocollo MQTT, che può essere adottato sul server per connettersi con il broker MQTT per comunicare con il sistema.
+
+\subsection[Rappresentazione formale]{Rappresentazione formale in output alla fase di analisi del problema}\labelssec{sp3:qa}
+
+Ancora una volta a causa di vincoli di spazio, di seguito sono riportate esclusivamente le modifiche più rilevanti alla specifica di metamodello QA in uscita alle fasi di analisi.
+
+% WORLD OBSERVER
+\lstinputlisting[%
+  firstline=118,%
+  lastline=150,%
+  language=qa%
+]{res/sprint3/robot.qa}
+
+Come è possibile vedere, ora il componente \texttt{world\_observer} è connesso come subscriber al broker MQTT e comunica tramite messaggi alla console le variazioni della temperatura.
+
+% CONSOLE
+\lstinputlisting[%
+  firstline=640,%
+  lastline=730,%
+  language=qa%
+]{res/sprint3/robot.qa}
+
+Anche il componente \texttt{console} è connesso via MQTT e interpreta i nuovi comandi \texttt{frontendUserCmd} ricevuti come eventi dall'interfaccia web, inoltrandoli come messaggi diretti alle relative \texttt{mind}.
+Inoltre, delega la gestione dello stato a un \textit{singleton} in Java.
+
+\subsection{Progettazione}\labelssec{sp3:project}
+
+In questa fase si è definito un piano di lavoro per la realizzazione concreta delle soluzioni individuate durante la fase di analisi.
+
+\subsubsection{Angular}\labelsssec{sp3:angular}
+
+Per quanto riguarda la realizzazione del frontend, nelle precedenti fasi di analisi si era scelto di realizzare una SPA ma non era stato specificato il framework, in quanto un dettaglio irrilevante in quella fase del progetto;
+ebbene, durante la stesura del progetto e del piano di lavoro, si è ritenuto adeguato l'uso del moderno framework Angular.
+
+\begin{figure}
+  \centering
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.8\textwidth]{res/angular.png}%
+    \label{subfig:sp3:ng}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[b]{0.45\textwidth}
+    \centering
+    \includegraphics[width=0.68\textwidth]{res/ngrx.png}%
+    \label{subfig:sp3:ngrx}
+  \end{subfigure}%
+  \label{fig:sp3:angular}
+\end{figure}
+
+Angular è l'evoluzione del framework AngularJS realizzato da Google, uno dei precursori del pattern SPA\@;
+esso impiega il linguaggio TypeScript (superset di JavaScript) insieme a HTML e SCSS per realizzare applicazioni pensate per i pattern di progettazione \textbf{MVC} e MVVM\@.
+
+Molto utile per quanto riguarda le esigenze di reattività, si è deciso di sfruttare \textbf{ngrx} per implementare il concetto di \textit{Store reattivo} con l'aiuto di \textbf{RxJS}:
+viene definita una base di dati reattiva che consente l'\textbf{aggiornamento automatico} della GUI delle sole parti modificate del modello (seguendo il \textbf{pattern MVC}), oltre alle possibili azioni in uscita da tale stato (quelle che vanno ad attivare i relativi bottoni).
+
+\subsubsection{WebSocket}\labelsssec{sp3:ws}
+
+L'interfaccia, come già espresso, è suddivisa in una parte lato server ed una parte lato client;
+per permettere all'interfaccia mostrata all'utente di interagire con il sistema, è necessario far comunicare queste due parti tra di loro.
+Durante la fase di analisi anche la scelta di questo protocollo è stata considerata un dettaglio implemenetativo, in parte legato alla scelta del framework descritta nella \Cref{sssec:sp3:angular}.
+
+Per tale comunicazione si è scelto di adottare le \textbf{WebSocket}:
+canali di comunicazione bidirezionali che usano socket HTTP e che sono molto ben supportate dalla libreria RxJS fornita insiema al framework Angular.
+Il loro utilizzo permette di aggiornare dinamicamente l'interfaccia grafica ad ogni modifica dello stato del sistema, senza che sia l'utente a dover periodicamente richiedere tale informazione con una tecnica di polling.
+
+\subsection{Sprint Review}\labelssec{sp2:review}
+
+In questo caso, si sono verificate problematiche relativamente al movimento del robot nello spazio;
+in particolare, durante alcune esecuzioni, il robot non riceve in tempo il comando di stop che termina il movimento atomico in avanti a causa di ritardi causati dal protocollo MQTT utilizzato.
+
+Negli Sprint successivi è necessario valutare come risolvere questa problematica.

@@ -6,7 +6,11 @@ public class RobotState {
     private Direction direction;
 
     public RobotState(int x, int y, Direction direction) {
-        if (x < 0 || y < 0 || (direction != Direction.UP && direction != Direction.RIGHT && direction != Direction.DOWN
+        if (x < 0
+            || y < 0
+            || (direction != Direction.UP
+                && direction != Direction.RIGHT
+                && direction != Direction.DOWN
                 && direction != Direction.LEFT))
             throw new IllegalArgumentException();
         this.x = x;
