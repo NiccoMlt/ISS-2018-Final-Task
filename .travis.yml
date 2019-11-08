@@ -13,6 +13,7 @@ jobs:
             - icc-profiles
             - miktex
             - inkscape
+            - ghostscript
           sources:
             - sourceline: "deb http://miktex.org/download/ubuntu xenial universe"
               key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
