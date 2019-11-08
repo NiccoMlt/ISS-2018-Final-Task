@@ -1,38 +1,44 @@
+version: ~> 1.0
 os: linux
 dist: xenial
 language: shell
 jobs:
   include:
     - name: report - arara
-      language: java
-      jdk: openjdk8
+      language: shell
       addons:
         apt:
           packages:
-            - graphviz
-            - icc-profiles
-            - miktex
-            - inkscape
-            - ghostscript
+            - graphviz        # Graphviz is used to handle DOT and GV files
+            - gnuplot         # Gnuplot is used to handle TikZ figures
+            - icc-profiles    # color profiles are needed to generate PDF/A
+            - miktex          # MikTeX is the chosen LaTeX distribution
+            - openjdk-8-jre-headless  # arara requires Java
+            - inkscape        # Inkscape is used to handle SVG files
+            - ghostscript     # Ghostscript is used to handle EPS files
+            - python-pygments # Pygments is used to handle source code syntax highlight with minted
           sources:
-            - sourceline: "deb http://miktex.org/download/ubuntu xenial universe"
+            - sourceline: "deb [arch=amd64] http://miktex.org/download/ubuntu xenial universe"
               key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
             - sourceline: "ppa:inkscape.dev/stable"
       install:
         - sudo miktexsetup --shared=yes finish
         - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
-        - sudo mpm --admin --install=oberdiek
+        - sudo mpm --admin --package-level=basic --find-upgrades --upgrade
         - cd ./report
-        - arara --version
-        - dot -V
+        - arara --version     # fetch arara from MikTeX and print version
+        - gs --version        # print Ghostscript version
+        - dot -V              # print Graphviz version
+        - pygmentize -V       # print Pygments version
+        - inkscape --version  # print Inkscape version
       script:
         - arara --log --verbose report.tex
         - chktex report.tex
       after_failure:
-        - cat /home/travis/.miktex/texmfs/data/miktex/log/pdflatex.log
-        - cat /home/travis/.miktex/texmfs/data/miktex/log/epstopdf.log
-        - cat ./arara.log
-        - cat ./report.log
+        - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/pdflatex.log
+        - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/epstopdf.log
+        - cat arara.log
+        - cat report.log
       deploy:
         provider: releases
         token:
