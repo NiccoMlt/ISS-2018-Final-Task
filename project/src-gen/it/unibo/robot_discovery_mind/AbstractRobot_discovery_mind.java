@@ -198,7 +198,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String tStr2 = "ledState(blinking)";
 	    	 replaceRule( tStr1, tStr2 );  
 	    	 }
-	    	temporaryStr = "\"DISCOVERY_MIND[[goToExploration] ...\"";
+	    	temporaryStr = "\"DISCOVERY_MIND[goToExploration] ...\"";
 	    	println( temporaryStr );  
 	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-exploring"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
@@ -244,10 +244,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	 }
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
-	    	temporaryStr = "\"TAKE PHOTO ...\"";
-	    	println( temporaryStr );  
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"bag(picture(X))","bag(picture(ofBag))", guardVars ).toString();
-	    	sendMsg("bag","console", QActorContext.dispatch, temporaryStr ); 
+	    	it.unibo.utils.photoUtil.takePhotoAndSendToConsole( myself  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?curPos(X,Y,D)" )) != null ){
 	    	temporaryStr = "handleFixedObstacleCases_1(X,Y,D)";
 	    	temporaryStr = QActorUtils.substituteVars(guardVars,temporaryStr);

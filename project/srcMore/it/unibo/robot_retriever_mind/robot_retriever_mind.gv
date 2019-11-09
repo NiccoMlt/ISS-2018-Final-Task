@@ -9,7 +9,7 @@ digraph finite_state_machine {
 	rankdir=LR
 	size="8,5"
 	
-	home [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
 	goToHome [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	backToHome [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	doActions [ color = black ][ fontcolor = black ][ penwidth = 3 ]
@@ -19,6 +19,7 @@ digraph finite_state_machine {
 	waitMoveCompletedAnswer [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	goToReachBomb [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	handleCmdDone [ color = black ][ fontcolor = black ][ penwidth = 3 ]
+	home [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	handleError [ color = blue ][ fontcolor = blue ][ penwidth = 3 ]
 	terminate [ color = blue ][ fontcolor = blue ][ penwidth = 3 ]
 	
@@ -29,9 +30,12 @@ digraph finite_state_machine {
 	checkTemperatureAndRetrieve -> home [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
 	home -> action [ label = "environment" ][ color = red ][ fontcolor = red ][ dir = both ]
 	handleCmdDone -> goToIdle [ label = "cmdStop" ][ color = black ][ fontcolor = black ]
+	goToIdle -> goToHome [ label = "endAction" ][ color = black ][ fontcolor = black ]
 	checkTemperatureAndRetrieve -> goToReachBomb [ label = "cmdReachBomb" ][ color = black ][ fontcolor = black ]
 	backToHome -> home [ label = "cmdGoHome" ][ color = black ][ fontcolor = black ]
+	home -> action [ label = "map" ][ color = red ][ fontcolor = red ][ dir = both ]
 	backToHome -> terminate [ label = "endAction" ][ color = black ][ fontcolor = black ]
+	init -> home [ label = "switch" ][ color = black ][ fontcolor = black ]
 	doActions -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
 	backToHome -> home [ label = "robotHomeAfterBomb" ][ color = black ][ fontcolor = black ]
 	idle -> goToReachBomb [ label = "cmdReachBomb" ][ color = black ][ fontcolor = black ]
@@ -40,8 +44,8 @@ digraph finite_state_machine {
 	idle -> goToHome [ label = "cmdGoHome" ][ color = black ][ fontcolor = black ]
 	home -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
 	waitMoveCompletedAnswer -> handleCmdDone [ label = "moveMsgCmdDone" ][ color = black ][ fontcolor = black ]
-	goToIdle -> idle [ label = "switch" ][ color = black ][ fontcolor = black ]
 	doActions -> waitMoveCompletedAnswer [ label = "waitMoveCompleted" ][ color = black ][ fontcolor = black ]
+	goToIdle -> idle [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
 	waitMoveCompletedAnswer -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
 	home -> home [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 	home -> checkTemperatureAndRetrieve [ label = "cmdReachBomb" ][ color = black ][ fontcolor = black ]

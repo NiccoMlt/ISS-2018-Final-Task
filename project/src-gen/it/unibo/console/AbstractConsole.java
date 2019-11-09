@@ -61,6 +61,7 @@ public abstract class AbstractConsole extends QActor {
 	    	stateTab.put("handlePhoto",handlePhoto);
 	    	stateTab.put("handleBagStatus",handleBagStatus);
 	    	stateTab.put("handleAlert",handleAlert);
+	    	stateTab.put("startRetrieval",startRetrieval);
 	    	stateTab.put("updateView",updateView);
 	    }
 	    StateFun handleToutBuiltIn = () -> {	
@@ -80,7 +81,7 @@ public abstract class AbstractConsole extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
 	    	//delay  ( no more reactive within a plan)
-	    	aar = delayReactive(500,"" , "");
+	    	aar = delayReactive(2000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
 	    	temporaryStr = "\"Console init\"";
@@ -171,7 +172,7 @@ public abstract class AbstractConsole extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("frontendUserCmd") && 
 	    		pengine.unify(curT, Term.createTerm("frontendUserCmd(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="bagStatus(bomb,args(picture(nothing)))";
+	    			String parg="bagStatus(bomb)";
 	    			/* SendDispatch */
 	    			parg = updateVars(Term.createTerm("frontendUserCmd(X)"),  Term.createTerm("frontendUserCmd(bagStatus(bomb))"), 
 	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
@@ -183,7 +184,7 @@ public abstract class AbstractConsole extends QActor {
 	    	if( currentEvent != null && currentEvent.getEventId().equals("frontendUserCmd") && 
 	    		pengine.unify(curT, Term.createTerm("frontendUserCmd(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
-	    			String parg="bagStatus(bag,args(nothing))";
+	    			String parg="bagStatus(bag)";
 	    			/* SendDispatch */
 	    			parg = updateVars(Term.createTerm("frontendUserCmd(X)"),  Term.createTerm("frontendUserCmd(bagStatus(bag))"), 
 	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
@@ -207,13 +208,31 @@ public abstract class AbstractConsole extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("bag") && 
 	    		pengine.unify(curT, Term.createTerm("bag(picture(X))")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		//println("WARNING: variable substitution not yet fully implemented " ); 
-	    		printCurrentMessage(false);
+	    		String parg="stateUpdate(picture,X)";
+	    		/* SendDispatch */
+	    		parg = updateVars(Term.createTerm("bag(picture(X))"),  Term.createTerm("bag(picture(X))"), 
+	    			    		  					Term.createTerm(currentMessage.msgContent()), parg);
+	    		if( parg != null ) sendMsg("stateUpdate",getNameNoCtrl(), QActorContext.dispatch, parg ); 
+	    	}
+	    	//onMsg 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("bag(picture(X))");
+	    	if( currentMessage != null && currentMessage.msgId().equals("bag") && 
+	    		pengine.unify(curT, Term.createTerm("bag(picture(X))")) && 
+	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
+	    		/* replaceRule */
+	    		String parg1="picture(_)"; 
+	    		String parg2="picture(X)"; 
+	    		parg1 = updateVars( Term.createTerm("bag(picture(X))"),  Term.createTerm("bag(picture(X))"), 
+	    			    		  			Term.createTerm(currentMessage.msgContent()), parg1);
+	    		parg2 = updateVars( Term.createTerm("bag(picture(X))"),  Term.createTerm("bag(picture(X))"), 
+	    			    		  			Term.createTerm(currentMessage.msgContent()), parg2);
+	    		replaceRule(parg1,parg2);
 	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleBagStatus"), stateTab.get("adaptCommand") }, 
-	          new String[]{"true","M","bagStatus", "true","E","frontendUserCmd" },
+	          new StateFun[]{stateTab.get("handleBagStatus"), stateTab.get("adaptCommand"), stateTab.get("updateView") }, 
+	          new String[]{"true","M","bagStatus", "true","E","frontendUserCmd", "true","M","stateUpdate" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handlePhoto){  
 	    	 println( getName() + " plan=handlePhoto WARNING:" + e_handlePhoto.getMessage() );
@@ -227,12 +246,17 @@ public abstract class AbstractConsole extends QActor {
 	    	String myselfName = "handleBagStatus";  
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("bagStatus(bomb,args(picture(X)))");
+	    	curT = Term.createTerm("bagStatus(bomb)");
 	    	if( currentMessage != null && currentMessage.msgId().equals("bagStatus") && 
-	    		pengine.unify(curT, Term.createTerm("bagStatus(X,args(Y))")) && 
+	    		pengine.unify(curT, Term.createTerm("bagStatus(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
+	    		{
+	    		String tStr1 = "picture(X)";
+	    		String tStr2 = "pictureBomb(X)";
+	    		 replaceRule( tStr1, tStr2 );  
+	    		 }
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdGoHome","cmdGoHome", guardVars ).toString();
 	    		sendMsg("cmdGoHome","robot_discovery_mind", QActorContext.dispatch, temporaryStr ); 
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"alert","alert", guardVars ).toString();
@@ -241,13 +265,13 @@ public abstract class AbstractConsole extends QActor {
 	    	}
 	    	//onMsg 
 	    	setCurrentMsgFromStore(); 
-	    	curT = Term.createTerm("bagStatus(bag,Y)");
+	    	curT = Term.createTerm("bagStatus(bag)");
 	    	if( currentMessage != null && currentMessage.msgId().equals("bagStatus") && 
-	    		pengine.unify(curT, Term.createTerm("bagStatus(X,args(Y))")) && 
+	    		pengine.unify(curT, Term.createTerm("bagStatus(X)")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		String parg="cmdExplore";
 	    		/* SendDispatch */
-	    		parg = updateVars(Term.createTerm("bagStatus(X,args(Y))"),  Term.createTerm("bagStatus(bag,Y)"), 
+	    		parg = updateVars(Term.createTerm("bagStatus(X)"),  Term.createTerm("bagStatus(bag)"), 
 	    			    		  					Term.createTerm(currentMessage.msgContent()), parg);
 	    		if( parg != null ) sendMsg("cmdExplore","robot_discovery_mind", QActorContext.dispatch, parg ); 
 	    	}
@@ -269,7 +293,7 @@ public abstract class AbstractConsole extends QActor {
 	    	String myselfName = "handleAlert";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
-	          new StateFun[]{stateTab.get("doWork"), stateTab.get("updateView") }, 
+	          new StateFun[]{stateTab.get("startRetrieval"), stateTab.get("updateView") }, 
 	          new String[]{"true","M","robotHome", "true","M","stateUpdate" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handleAlert){  
@@ -277,6 +301,23 @@ public abstract class AbstractConsole extends QActor {
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//handleAlert
+	    
+	    StateFun startRetrieval = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("startRetrieval",-1);
+	    	String myselfName = "startRetrieval";  
+	    	it.unibo.utils.updateStateOnRobot.sendMap( myself  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"retriever-home"  );
+	    	//bbb
+	     msgTransition( pr,myselfName,"console_"+myselfName,false,
+	          new StateFun[]{}, 
+	          new String[]{},
+	          1000, "doWork" );//msgTransition
+	    }catch(Exception e_startRetrieval){  
+	    	 println( getName() + " plan=startRetrieval WARNING:" + e_startRetrieval.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//startRetrieval
 	    
 	    StateFun updateView = () -> {	
 	    try{	

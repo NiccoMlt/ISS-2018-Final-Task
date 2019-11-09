@@ -7,7 +7,7 @@ import com.google.gson.Gson;
 
 public class jsonUtil {
 
-    private static final String PREFIX = "string";
+    public static final String PREFIX = "string";
     
     public static <T> String encode(final T obj) {
         try {

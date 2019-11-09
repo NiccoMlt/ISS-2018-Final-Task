@@ -36,7 +36,6 @@ public class updateStateOnConsole {
 			e1.printStackTrace();
 		}
 
-		qa.solveGoal("bomb(X,Y)");
 		String map = jsonUtil.encodeForProlog(matrix);
 		try {
 			qa.sendMsg("stateUpdate", "console", QActorContext.dispatch,
@@ -78,6 +77,9 @@ public class updateStateOnConsole {
         case "retriever-idle":
             actions.add(ACTION_HOME);
             actions.add(ACTION_RETRIEVE);
+            break;
+        case "retriever-idle-with-bomb":
+            actions.add(ACTION_HOME);
             break;
         case "discovery-exploring":
         case "retriever-retrieving":

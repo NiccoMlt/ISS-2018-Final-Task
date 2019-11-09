@@ -155,7 +155,12 @@ doTheMove( M):-move( M1), ! ,eval( eq,M,M1), ! ,doTheFirstMove( M).
 doTheFirstMove( w):-retract( move( w)), ! .
 doTheFirstMove( a):-retract( move( a)), ! .
 doTheFirstMove( d):-retract( move( d)), ! .
-bombHome:-bomb( 0,0).
+homeReady:-curPos( 0,0,D),bomb( _,_).
+bombInRoom:-bomb( _,_).
+nearBomb:-curPos( X,Y,_),eval( plus,X,1,R),bomb( R,Y).
+nearBomb:-curPos( X,Y,_),eval( minus,X,1,R),bomb( R,Y).
+nearBomb:-curPos( X,Y,_),eval( plus,Y,1,R),bomb( X,R).
+nearBomb:-curPos( X,Y,_),eval( minus,Y,1,R),bomb( X,R).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

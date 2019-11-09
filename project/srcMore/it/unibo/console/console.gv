@@ -10,6 +10,7 @@ digraph finite_state_machine {
 	size="8,5"
 	
 	init [ color = red ][ fontcolor = red ][ penwidth = 3 ]
+	startRetrieval [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	updateView [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	doWork [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	handlePhoto [ color = black ][ fontcolor = black ][ penwidth = 3 ]
@@ -19,8 +20,10 @@ digraph finite_state_machine {
 	
 	doWork -> handlePhoto [ label = "bag" ][ color = black ][ fontcolor = black ]
 	doWork -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	handlePhoto -> updateView [ label = "stateUpdate" ][ color = red ][ fontcolor = red ][ dir = both ]
 	handlePhoto -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
 	doWork -> updateView [ label = "stateUpdate" ][ color = red ][ fontcolor = red ][ dir = both ]
+	startRetrieval -> doWork [ label = "timeout(1000)" ][ color = green ][ fontcolor = green ]
 	doWork -> doWork [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 	handleBagStatus -> handleAlert [ label = "alert" ][ color = black ][ fontcolor = black ]
 	handlePhoto -> adaptCommand [ label = "frontendUserCmd" ][ color = red ][ fontcolor = red ][ dir = both ]
@@ -31,6 +34,6 @@ digraph finite_state_machine {
 	handleBagStatus -> doWork [ label = "timeout(3000)" ][ color = green ][ fontcolor = green ]
 	handlePhoto -> handlePhoto [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 	handleAlert -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	handleAlert -> startRetrieval [ label = "robotHome" ][ color = black ][ fontcolor = black ]
 	doWork -> adaptCommand [ label = "frontendUserCmd" ][ color = red ][ fontcolor = red ][ dir = both ]
-	handleAlert -> doWork [ label = "robotHome" ][ color = black ][ fontcolor = black ]
 }

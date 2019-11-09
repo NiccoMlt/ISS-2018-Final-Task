@@ -14,6 +14,10 @@ public class systemStateUtil {
 		return singletonStateUtil;
 	}
 	
+    public static SystemState getSystemState() {
+        return systemState;
+    }
+	
 	private systemStateUtil() {
 		super();
 		systemState = new SystemState(new WorldState(null, null), new RobotState(new Position(), null, null), new State());

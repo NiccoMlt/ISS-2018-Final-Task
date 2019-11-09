@@ -34,7 +34,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 		public AbstractRobot_retriever_mind(String actorId, QActorContext myCtx, IOutputEnvView outEnvView )  throws Exception{
 			super(actorId, myCtx,  
 			"./srcMore/it/unibo/robot_retriever_mind/WorldTheory.pl",
-			setTheEnv( outEnvView )  , "home");
+			setTheEnv( outEnvView )  , "init");
 			this.planFilePath = "./srcMore/it/unibo/robot_retriever_mind/plans.txt";
 	  	}
 		@Override
@@ -43,7 +43,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 			mysupport = (IMsgQueue) QActorUtils.getQActor( name ); 
 			initStateTable(); 
 	 		initSensorSystem();
-	 		history.push(stateTab.get( "home" ));
+	 		history.push(stateTab.get( "init" ));
 	  	 	autoSendStateExecMsg();
 	  		//QActorContext.terminateQActorSystem(this);//todo
 		} 	
@@ -55,6 +55,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    //genAkkaMshHandleStructure
 	    protected void initStateTable(){  	
 	    	stateTab.put("handleToutBuiltIn",handleToutBuiltIn);
+	    	stateTab.put("init",init);
 	    	stateTab.put("home",home);
 	    	stateTab.put("checkTemperatureAndRetrieve",checkTemperatureAndRetrieve);
 	    	stateTab.put("goToReachBomb",goToReachBomb);
@@ -79,6 +80,20 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    		QActorContext.terminateQActorSystem(this); 
 	    	}
 	    };//handleToutBuiltIn
+	    
+	    StateFun init = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
+	    	String myselfName = "init";  
+	    	it.unibo.planning.planUtil.initAI( myself  );
+	    	//switchTo home
+	        switchToPlanAsNextState(pr, myselfName, "robot_retriever_mind_"+myselfName, 
+	              "home",false, false, null); 
+	    }catch(Exception e_init){  
+	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//init
 	    
 	    StateFun home = () -> {	
 	    try{	
@@ -116,8 +131,27 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	             //QActorContext.terminateQActorSystem(this); 
 	          }
 	          },
+	           () -> {	//AD HOC state to execute an action and resumeLastPlan
+	          try{
+	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
+	            //ActionSwitch for a message or event
+	             if( currentMessage.msgContent().startsWith("map") ){
+	            	{/* JavaLikeMove */ 
+	            	String arg1 = "M" ;
+	            	arg1 =  updateVars( Term.createTerm("map(M)"), Term.createTerm("map(M)"), 
+	            		                Term.createTerm(currentMessage.msgContent()),  arg1 );	                
+	            	//end arg1
+	            	it.unibo.utils.updateStateOnRobot.loadMap(this,arg1 );
+	            	}
+	             }
+	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
+	          }catch(Exception e ){  
+	             println( getName() + " plan=home WARNING:" + e.getMessage() );
+	             //QActorContext.terminateQActorSystem(this); 
+	          }
+	          },
 	           stateTab.get("checkTemperatureAndRetrieve") }, 
-	          new String[]{"true","E","environment", "true","M","cmdReachBomb" },
+	          new String[]{"true","E","environment", "true","M","map", "true","M","cmdReachBomb" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_home){  
 	    	 println( getName() + " plan=home WARNING:" + e_home.getMessage() );
@@ -148,7 +182,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("goToReachBomb",-1);
 	    	String myselfName = "goToReachBomb";  
-	    	temporaryStr = "\"STATE[goToReachBomb] ...\"";
+	    	temporaryStr = "\"RETRIEVER_MIND[goToReachBomb] ...\"";
 	    	println( temporaryStr );  
 	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"retriever-retrieving"  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?bomb(X,Y)" )) != null ){
@@ -170,14 +204,41 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("goToIdle",-1);
 	    	String myselfName = "goToIdle";  
-	    	temporaryStr = "\"STATE[goToIdle] ...\"";
+	    	temporaryStr = "\"RETRIEVER_MIND[goToIdle] ...\"";
 	    	println( temporaryStr );  
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?nearBomb" )) != null ){
+	    	{//actionseq
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"retriever-retrieving"  );
+	    	//delay  ( no more reactive within a plan)
+	    	aar = delayReactive(3000,"" , "");
+	    	if( aar.getInterrupted() ) curPlanInExec   = "goToIdle";
+	    	if( ! aar.getGoon() ) return ;
+	    	temporaryStr = "bomb(_,_)";
+	    	removeRule( temporaryStr );  
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
+	    	sendMsg("endAction",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
+	    	};//actionseq
+	    	}
+	    	else{ {//actionseq
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?bombInRoom" )) != null ){
+	    	{//actionseq
 	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"retriever-idle"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
-	    	//switchTo idle
-	        switchToPlanAsNextState(pr, myselfName, "robot_retriever_mind_"+myselfName, 
-	              "idle",false, false, null); 
+	    	};//actionseq
+	    	}
+	    	else{ {//actionseq
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"retriever-idle-with-bomb"  );
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
+	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
+	    	};//actionseq
+	    	}};//actionseq
+	    	}
+	    	//bbb
+	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
+	          new StateFun[]{stateTab.get("goToHome") }, 
+	          new String[]{"true","M","endAction" },
+	          100, "idle" );//msgTransition
 	    }catch(Exception e_goToIdle){  
 	    	 println( getName() + " plan=goToIdle WARNING:" + e_goToIdle.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -188,7 +249,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("goToHome",-1);
 	    	String myselfName = "goToHome";  
-	    	temporaryStr = "\"STATE[goToHome] ...\"";
+	    	temporaryStr = "\"RETRIEVER_MIND[goToHome] ...\"";
 	    	println( temporaryStr );  
 	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"retriever-home"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
@@ -315,12 +376,12 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    	println( temporaryStr );  
 	    	it.unibo.planning.planUtil.showMap( myself  );
 	    	it.unibo.utils.updateStateOnConsole.updateMap( myself  );
-	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?bombHome" )) != null ){
-	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
-	    	sendMsg("endAction",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
-	    	}
-	    	else{ temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdGoHome","cmdGoHome", guardVars ).toString();
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?homeReady" )) != null ){
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdGoHome","cmdGoHome", guardVars ).toString();
 	    	sendMsg("cmdGoHome",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
+	    	}
+	    	else{ temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
+	    	sendMsg("endAction",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
 	    	}};//actionseq
 	    	}
 	    	else{ {//actionseq
