@@ -131,6 +131,18 @@ public abstract class AbstractConsole extends QActor {
 	    	}
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("frontendUserCmd(cmd(retrieve))");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("frontendUserCmd") && 
+	    		pengine.unify(curT, Term.createTerm("frontendUserCmd(X)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg="cmdReachBomb";
+	    			/* SendDispatch */
+	    			parg = updateVars(Term.createTerm("frontendUserCmd(X)"),  Term.createTerm("frontendUserCmd(cmd(retrieve))"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	    			if( parg != null ) sendMsg("cmdReachBomb","robot_retriever_mind", QActorContext.dispatch, parg ); 
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("frontendUserCmd(cmd(halt))");
 	    	if( currentEvent != null && currentEvent.getEventId().equals("frontendUserCmd") && 
 	    		pengine.unify(curT, Term.createTerm("frontendUserCmd(X)")) && 
@@ -257,24 +269,7 @@ public abstract class AbstractConsole extends QActor {
 	    	String myselfName = "handleAlert";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
-	          new StateFun[]{() -> {	//AD HOC state to execute an action and resumeLastPlan
-	          try{
-	            PlanRepeat pr1 = PlanRepeat.setUp("adhocstate",-1);
-	            //ActionSwitch for a message or event
-	             if( currentMessage.msgContent().startsWith("robotHome") ){
-	            	String parg="cmdReachBomb";
-	            	/* SendDispatch */
-	            	parg = updateVars(Term.createTerm("robotHome"),  Term.createTerm("robotHome"), 
-	            		    		  					Term.createTerm(currentMessage.msgContent()), parg);
-	            	if( parg != null ) sendMsg("cmdReachBomb","robot_retriever_mind", QActorContext.dispatch, parg ); 
-	             }
-	            repeatPlanNoTransition(pr1,"adhocstate","adhocstate",false,true);
-	          }catch(Exception e ){  
-	             println( getName() + " plan=handleAlert WARNING:" + e.getMessage() );
-	             //QActorContext.terminateQActorSystem(this); 
-	          }
-	          },
-	           stateTab.get("updateView") }, 
+	          new StateFun[]{stateTab.get("doWork"), stateTab.get("updateView") }, 
 	          new String[]{"true","M","robotHome", "true","M","stateUpdate" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handleAlert){  

@@ -93,6 +93,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
 	    	it.unibo.planning.planUtil.initAI( myself  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-home"  );
 	    	//switchTo home
 	        switchToPlanAsNextState(pr, myselfName, "robot_discovery_mind_"+myselfName, 
 	              "home",false, false, null); 
@@ -107,7 +108,6 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_home",0);
 	     pr.incNumIter(); 	
 	    	String myselfName = "home";  
-	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"home"  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?foundBomb" )) != null ){
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotHome","robotHome", guardVars ).toString();
 	    	sendMsg("robotHome","console", QActorContext.dispatch, temporaryStr ); 
@@ -200,7 +200,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	 }
 	    	temporaryStr = "\"DISCOVERY_MIND[[goToExploration] ...\"";
 	    	println( temporaryStr );  
-	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"exploring"  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-exploring"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo exploreStep
@@ -218,7 +218,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String myselfName = "resumeExploration";  
 	    	temporaryStr = "\"DISCOVERY_MIND[resumeExploration] ...\"";
 	    	println( temporaryStr );  
-	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"exploring"  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-exploring"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo doActions
@@ -236,7 +236,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String myselfName = "goToHandleBag";  
 	    	temporaryStr = "\"DISCOVERY_MIND[goToHandleBag] ...\"";
 	    	println( temporaryStr );  
-	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"obstacle"  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-obstacle"  );
 	    	{
 	    	String tStr1 = "ledState(blinking)";
 	    	String tStr2 = "ledState(off)";
@@ -288,7 +288,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String myselfName = "resumeExplorationAfterBag";  
 	    	temporaryStr = "\"DISCOVERY_MIND[resumeExplorationAfterBag] ...\"";
 	    	println( temporaryStr );  
-	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"exploring"  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-exploring"  );
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?curGoal(N,N)" )) != null ){
 	    	it.unibo.planning.planUtil.setGoal( myself ,guardVars.get("N"), guardVars.get("N")  );
 	    	}
@@ -331,7 +331,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	 }
 	    	temporaryStr = "\"DISCOVERY_MIND[goToIdle] ...\"";
 	    	println( temporaryStr );  
-	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"idle"  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-idle"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStop)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo idle
@@ -364,7 +364,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String myselfName = "goToHome";  
 	    	temporaryStr = "\"DISCOVERY_MIND[goToHome] ...\"";
 	    	println( temporaryStr );  
-	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"home"  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-home"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo backToHome

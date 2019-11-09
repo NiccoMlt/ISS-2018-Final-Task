@@ -23,7 +23,6 @@ digraph finite_state_machine {
 	doWork -> updateView [ label = "stateUpdate" ][ color = red ][ fontcolor = red ][ dir = both ]
 	doWork -> doWork [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 	handleBagStatus -> handleAlert [ label = "alert" ][ color = black ][ fontcolor = black ]
-	handleAlert -> action [ label = "robotHome" ][ color = red ][ fontcolor = red ][ dir = both ]
 	handlePhoto -> adaptCommand [ label = "frontendUserCmd" ][ color = red ][ fontcolor = red ][ dir = both ]
 	handleAlert -> updateView [ label = "stateUpdate" ][ color = red ][ fontcolor = red ][ dir = both ]
 	init -> doWork [ label = "switch" ][ color = black ][ fontcolor = black ]
@@ -33,4 +32,5 @@ digraph finite_state_machine {
 	handlePhoto -> handlePhoto [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
 	handleAlert -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
 	doWork -> adaptCommand [ label = "frontendUserCmd" ][ color = red ][ fontcolor = red ][ dir = both ]
+	handleAlert -> doWork [ label = "robotHome" ][ color = black ][ fontcolor = black ]
 }

@@ -18,6 +18,7 @@ public class updateStateOnConsole {
 
 	private static final Action ACTION_HOME = new Action("Go home", "standard", "cmd(home)");
 	private static final Action ACTION_EXPLORE = new Action("Explore", "standard", "cmd(explore)");
+	private static final Action ACTION_RETRIEVE = new Action("Retrieve bomb", "standard", "cmd(retrieve)");
 	private static final Action ACTION_HALT = new Action("Stop", "standard", "cmd(halt)");
 	private static final Action ACTION_BAG = new Action("Is bag", "standard", "bagStatus(bag)");
 	private static final Action ACTION_BOMB = new Action("Is bomb", "standard", "bagStatus(bomb)");
@@ -60,20 +61,30 @@ public class updateStateOnConsole {
 		ArrayList<Action> actions = new ArrayList<>();
 
 		switch (state) {
-		case "home":
+		case "discovery-home":
 			actions.add(ACTION_EXPLORE);
 			break;
-		case "exploring":
-			actions.add(ACTION_HALT);
-			break;
-		case "idle":
+		case "discovery-idle":
 			actions.add(ACTION_HOME);
 			actions.add(ACTION_EXPLORE);
 			break;
-		case "obstacle":
+		case "discovery-obstacle":
 			actions.add(ACTION_BAG);
 			actions.add(ACTION_BOMB);
 			break;
+		case "retriever-home":
+            actions.add(ACTION_RETRIEVE);
+            break;
+        case "retriever-idle":
+            actions.add(ACTION_HOME);
+            actions.add(ACTION_RETRIEVE);
+            break;
+        case "discovery-exploring":
+        case "retriever-retrieving":
+            actions.add(ACTION_HALT);
+            break;
+        case "terminating":
+            break;
 		default:
 			actions.add(ACTION_HALT);
 		}
