@@ -100,20 +100,33 @@ public class updateStateOnConsole {
 		}
 	}
 
-	public static void receivedUpdateState(QActor qa, String type, String payload) {
-		switch (type) {
-		case "temperature":
-			systemStateUtil.getSystemStateUtil().updateTemperature(qa, payload);
-			break;
-		case "map":
-			systemStateUtil.getSystemStateUtil().updateMap(qa, jsonUtil.decodeFromProlog(payload, String[][].class));
-			break;
-		case "robotMovement":
-			systemStateUtil.getSystemStateUtil().updateRobotMovement(qa, jsonUtil.decodeFromProlog(payload, RobotState.class));
-			break;
-		case "robotState":
-			systemStateUtil.getSystemStateUtil().updateRobotState(qa, jsonUtil.decodeFromProlog(payload, State.class));
-			break;
-		}
-	}
+    public static void receivedUpdateState(QActor qa, String type, String payload) {
+        State robotState = systemStateUtil.getSystemState().getState();
+        switch (type) {
+            case "temperature":
+                systemStateUtil.getSystemStateUtil().updateTemperature(qa, payload);
+                break;
+            case "map":
+                systemStateUtil.getSystemStateUtil().updateMap(qa, jsonUtil.decodeFromProlog(payload, String[][].class));
+                break;
+            case "robotMovement":
+                systemStateUtil.getSystemStateUtil().updateRobotMovement(qa, jsonUtil.decodeFromProlog(payload, RobotState.class));
+                break;
+            case "robotState":
+                systemStateUtil.getSystemStateUtil().updateRobotState(qa, jsonUtil.decodeFromProlog(payload, State.class));
+                break;
+            case "messageDanger":
+                robotState.setMessage("DANGER:" + payload);
+                systemStateUtil.getSystemStateUtil().updateRobotState(qa, robotState);
+                break;
+            case "messageInfo":
+                robotState.setMessage("INFO:" + payload);
+                systemStateUtil.getSystemStateUtil().updateRobotState(qa, robotState);
+                break;
+            case "picture":
+                robotState.setMessage("picture:" + payload);
+                systemStateUtil.getSystemStateUtil().updateRobotState(qa, robotState);
+                break;
+        }
+    }
 }

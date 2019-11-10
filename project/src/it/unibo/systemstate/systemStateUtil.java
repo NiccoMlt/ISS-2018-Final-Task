@@ -6,7 +6,7 @@ import it.unibo.utils.jsonUtil;
 public class systemStateUtil {
 	
 	private static systemStateUtil singletonStateUtil;
-	private static SystemState systemState;
+    private static SystemState systemState = new SystemState(new WorldState(null, null), new RobotState(new Position(), null, null), new State());
 
 	public static systemStateUtil getSystemStateUtil() {
 		if (singletonStateUtil == null)
@@ -20,7 +20,6 @@ public class systemStateUtil {
 	
 	private systemStateUtil() {
 		super();
-		systemState = new SystemState(new WorldState(null, null), new RobotState(new Position(), null, null), new State());
 	}
 	
 	public static void updateTemperature(QActor qa, String value) {
@@ -39,13 +38,15 @@ public class systemStateUtil {
 	}
 	
 	public static void updateRobotState(QActor qa, State state) {
+	    if (state.getMessage() == null) {
+            state.setMessage(systemState.getState().getMessage());
+        }
 		systemState.setState(state);
 		notifyUpdateState(qa);
 	}
 
 	private static void notifyUpdateState(QActor qa) {
 		String payload = jsonUtil.encode(systemState);
-		System.out.println("jsonSTATE " + payload);
 
         /* PublishEvent */
         try {

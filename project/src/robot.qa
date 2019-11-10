@@ -765,6 +765,7 @@ QActor console context ctxRobot {
     transition
         stopAfter 60000
         whenEvent frontendUserCmd -> adaptCommand,
+        whenEvent environment -> storeEnvironment,
         whenMsg stateUpdate -> updateView,                            // R-consoleUpdate
         whenMsg bag -> handlePhoto
         finally repeatPlan
@@ -785,6 +786,14 @@ QActor console context ctxRobot {
         onEvent frontendUserCmd: frontendUserCmd(bagStatus(bag)) ->
             selfMsg bagStatus: bagStatus(bag)
     ]
+    
+    State storeEnvironment resumeLastPlan [
+        printCurrentEvent;
+        onEvent environment: environment(notok) ->
+            selfMsg stateUpdate: state(messageDanger, "Environment adverse - temperature too hot!");
+        onEvent environment: environment(ok) ->
+            selfMsg stateUpdate: state(messageInfo, "Environment condition is safe.")
+    ]
 
     /**
      * Lo stato handlePhoto gestisce la ricezione di una foto dal robot.
@@ -792,13 +801,13 @@ QActor console context ctxRobot {
      * Attende un messaggio di bagStatus per gestirlo.
      */
     State handlePhoto [
-        onMsg bag: bag(picture(X)) -> selfMsg stateUpdate: stateUpdate(picture, X);
+        onMsg bag: bag(picture(X)) -> selfMsg stateUpdate: state(picture, X);
         onMsg bag: bag(picture(X)) -> ReplaceRule picture(_) with picture(X)
     ] transition
         stopAfter 60000
+        whenMsg stateUpdate -> updateView,
         whenMsg bagStatus -> handleBagStatus,
-        whenEvent frontendUserCmd -> adaptCommand,
-        whenMsg stateUpdate -> updateView
+        whenEvent frontendUserCmd -> adaptCommand
         finally repeatPlan
 
     /**
@@ -844,7 +853,6 @@ QActor console context ctxRobot {
      * Una volta fatto, riprende lo stato precedente.
      */
     State updateView resumeLastPlan [
-        // onMsg stateUpdate: state(T,P) -> printCurrentEvent;
         onMsg stateUpdate: state(T,P) -> javaRun it.unibo.utils.updateStateOnConsole.receivedUpdateState(T, P)
     ]
 }

@@ -58,6 +58,7 @@ public abstract class AbstractConsole extends QActor {
 	    	stateTab.put("init",init);
 	    	stateTab.put("doWork",doWork);
 	    	stateTab.put("adaptCommand",adaptCommand);
+	    	stateTab.put("storeEnvironment",storeEnvironment);
 	    	stateTab.put("handlePhoto",handlePhoto);
 	    	stateTab.put("handleBagStatus",handleBagStatus);
 	    	stateTab.put("handleAlert",handleAlert);
@@ -104,8 +105,8 @@ public abstract class AbstractConsole extends QActor {
 	    	String myselfName = "doWork";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
-	          new StateFun[]{stateTab.get("adaptCommand"), stateTab.get("updateView"), stateTab.get("handlePhoto") }, 
-	          new String[]{"true","E","frontendUserCmd", "true","M","stateUpdate", "true","M","bag" },
+	          new StateFun[]{stateTab.get("adaptCommand"), stateTab.get("storeEnvironment"), stateTab.get("updateView"), stateTab.get("handlePhoto") }, 
+	          new String[]{"true","E","frontendUserCmd", "true","E","environment", "true","M","stateUpdate", "true","M","bag" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
 	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );
@@ -197,6 +198,42 @@ public abstract class AbstractConsole extends QActor {
 	    }
 	    };//adaptCommand
 	    
+	    StateFun storeEnvironment = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("storeEnvironment",-1);
+	    	String myselfName = "storeEnvironment";  
+	    	printCurrentEvent(false);
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("environment(notok)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("environment") && 
+	    		pengine.unify(curT, Term.createTerm("environment(X)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg="state(messageDanger,\"Environment adverse - temperature too hot!\")";
+	    			/* SendDispatch */
+	    			parg = updateVars(Term.createTerm("environment(X)"),  Term.createTerm("environment(notok)"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	    			if( parg != null ) sendMsg("stateUpdate",getNameNoCtrl(), QActorContext.dispatch, parg ); 
+	    	}
+	    	//onEvent 
+	    	setCurrentMsgFromStore(); 
+	    	curT = Term.createTerm("environment(ok)");
+	    	if( currentEvent != null && currentEvent.getEventId().equals("environment") && 
+	    		pengine.unify(curT, Term.createTerm("environment(X)")) && 
+	    		pengine.unify(curT, Term.createTerm( currentEvent.getMsg() ) )){ 
+	    			String parg="state(messageInfo,\"Environment condition is safe.\")";
+	    			/* SendDispatch */
+	    			parg = updateVars(Term.createTerm("environment(X)"),  Term.createTerm("environment(ok)"), 
+	    				    		  					Term.createTerm(currentEvent.getMsg()), parg);
+	    			if( parg != null ) sendMsg("stateUpdate",getNameNoCtrl(), QActorContext.dispatch, parg ); 
+	    	}
+	    	repeatPlanNoTransition(pr,myselfName,"console_"+myselfName,false,true);
+	    }catch(Exception e_storeEnvironment){  
+	    	 println( getName() + " plan=storeEnvironment WARNING:" + e_storeEnvironment.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//storeEnvironment
+	    
 	    StateFun handlePhoto = () -> {	
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp(getName()+"_handlePhoto",0);
@@ -208,7 +245,7 @@ public abstract class AbstractConsole extends QActor {
 	    	if( currentMessage != null && currentMessage.msgId().equals("bag") && 
 	    		pengine.unify(curT, Term.createTerm("bag(picture(X))")) && 
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
-	    		String parg="stateUpdate(picture,X)";
+	    		String parg="state(picture,X)";
 	    		/* SendDispatch */
 	    		parg = updateVars(Term.createTerm("bag(picture(X))"),  Term.createTerm("bag(picture(X))"), 
 	    			    		  					Term.createTerm(currentMessage.msgContent()), parg);
@@ -231,8 +268,8 @@ public abstract class AbstractConsole extends QActor {
 	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleBagStatus"), stateTab.get("adaptCommand"), stateTab.get("updateView") }, 
-	          new String[]{"true","M","bagStatus", "true","E","frontendUserCmd", "true","M","stateUpdate" },
+	          new StateFun[]{stateTab.get("updateView"), stateTab.get("handleBagStatus"), stateTab.get("adaptCommand") }, 
+	          new String[]{"true","M","stateUpdate", "true","M","bagStatus", "true","E","frontendUserCmd" },
 	          60000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handlePhoto){  
 	    	 println( getName() + " plan=handlePhoto WARNING:" + e_handlePhoto.getMessage() );
