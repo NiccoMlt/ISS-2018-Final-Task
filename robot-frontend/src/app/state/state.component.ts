@@ -13,11 +13,33 @@ export class StateComponent {
 
   state: {
     name: string;
+    message: string;
     actions: Action[];
   };
 
   constructor(private store: Store<fromRoot.AppState>, private remoterobotService: RemoterobotService) {
     store.pipe(select(fromRoot.selectSystemState)).subscribe(newState => this.state = newState);
+  }
+
+  messageIsPicture(): boolean {
+    return this.state.message.startsWith('picture:');
+  }
+
+  messageIsText(): boolean {
+    return !this.messageIsPicture();
+  }
+
+  parseMessageAsPicture(): string {
+    if (this.messageIsPicture()) {
+      return this.state.message.split('\'')[1];
+    }
+  }
+
+  getMessageColorClass() {
+    return this.state.message.startsWith('WARNING:') ? 'text-warning' :
+      this.state.message.startsWith('DANGER:') ? 'text-danger' :
+        this.state.message.startsWith('INFO:') ? 'text-info' :
+          '';
   }
 
   getColor(action: Action): string {

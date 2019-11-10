@@ -3,6 +3,7 @@ export interface SystemState {
   robot: RobotState;
   state: {
     name: string;
+    message: string;
     actions: Action[];
   };
 }
