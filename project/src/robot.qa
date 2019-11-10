@@ -788,7 +788,6 @@ QActor console context ctxRobot {
     ]
     
     State storeEnvironment resumeLastPlan [
-        printCurrentEvent;
         onEvent environment: environment(notok) ->
             selfMsg stateUpdate: state(messageDanger, "Environment adverse - temperature too hot!");
         onEvent environment: environment(ok) ->
@@ -818,7 +817,8 @@ QActor console context ctxRobot {
      */
     State handleBagStatus [
         onMsg bagStatus: bagStatus(bomb) -> {
-            ReplaceRule picture(X) with pictureBomb(X);                 // R-storePhoto
+            [ !? picture(X) ]
+                javaRun it.unibo.utils.photoUtil.storePhoto(X);         // R-storePhoto
             forward robot_discovery_mind -m cmdGoHome: cmdGoHome;       // R-backHomeSinceBomb
             selfMsg alert: alert                                        // R-alert
         };

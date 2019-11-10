@@ -202,7 +202,6 @@ public abstract class AbstractConsole extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("storeEnvironment",-1);
 	    	String myselfName = "storeEnvironment";  
-	    	printCurrentEvent(false);
 	    	//onEvent 
 	    	setCurrentMsgFromStore(); 
 	    	curT = Term.createTerm("environment(notok)");
@@ -289,11 +288,9 @@ public abstract class AbstractConsole extends QActor {
 	    		pengine.unify(curT, Term.createTerm( currentMessage.msgContent() ) )){ 
 	    		//println("WARNING: variable substitution not yet fully implemented " ); 
 	    		{//actionseq
-	    		{
-	    		String tStr1 = "picture(X)";
-	    		String tStr2 = "pictureBomb(X)";
-	    		 replaceRule( tStr1, tStr2 );  
-	    		 }
+	    		if( (guardVars = QActorUtils.evalTheGuard(this, " !?picture(X)" )) != null ){
+	    		it.unibo.utils.photoUtil.storePhoto( myself ,guardVars.get("X")  );
+	    		}
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"cmdGoHome","cmdGoHome", guardVars ).toString();
 	    		sendMsg("cmdGoHome","robot_discovery_mind", QActorContext.dispatch, temporaryStr ); 
 	    		temporaryStr = QActorUtils.unifyMsgContent(pengine,"alert","alert", guardVars ).toString();
