@@ -74,13 +74,21 @@ public class updateStateOnConsole {
     		case "retriever-home":
                 actions.add(ACTION_RETRIEVE);
                 break;
-            case "retriever-idle":
+    		case "retriever-idle-retrieving":
                 actions.add(ACTION_HOME);
                 actions.add(ACTION_RETRIEVE);
+                break;
+            case "retriever-idle-returning":
+                actions.add(ACTION_HOME);
+                break;
+            case "retriever-idle":
+                actions.add(ACTION_HOME);
                 break;
             case "retriever-idle-with-bomb":
                 actions.add(ACTION_HOME);
                 break;
+            case "discovery-returning":
+            case "retriever-returning":
             case "discovery-exploring":
             case "retriever-retrieving":
                 actions.add(ACTION_HALT);

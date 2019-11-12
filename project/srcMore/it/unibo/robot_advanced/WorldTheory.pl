@@ -150,7 +150,7 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %  User static rules about robot_advanced
 %------------------------------------------------- 
 timew( 1500).
-timeTurn( 1750).
+timeTurn( 900).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),
