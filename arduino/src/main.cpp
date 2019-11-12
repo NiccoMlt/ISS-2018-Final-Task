@@ -39,7 +39,7 @@ void setup() {
   sched = new Scheduler();
   sched->init(50);
 
-  distanceTask->init(100);
+  // distanceTask->init(100);
 
   blinkingLed = new BlinkTask(LED_PIN, &gloBlinkingState);
   blinkingLed->init(200);
