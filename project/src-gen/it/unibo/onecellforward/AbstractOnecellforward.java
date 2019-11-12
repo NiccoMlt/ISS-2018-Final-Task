@@ -82,8 +82,8 @@ public abstract class AbstractOnecellforward extends QActor {
 	    	String myselfName = "init";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"onecellforward_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleStop"), stateTab.get("startWork") }, 
-	          new String[]{"true","M","cmdStop", "true","M","moveMsgCmd" },
+	          new StateFun[]{stateTab.get("handleStop"), stateTab.get("init"), stateTab.get("startWork") }, 
+	          new String[]{"true","M","cmdStop", "true","M","collisionDispatch", "true","M","moveMsgCmd" },
 	          600000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
@@ -131,6 +131,7 @@ public abstract class AbstractOnecellforward extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("probableFixedObstacle",-1);
 	    	String myselfName = "probableFixedObstacle";  
+	    	printCurrentMessage(false);
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M,T)","robotCmd(h,0)", guardVars ).toString();
 	    	sendMsg("robotAdapterCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	it.unibo.utils.movePlanUtil.getDuration( myself  );

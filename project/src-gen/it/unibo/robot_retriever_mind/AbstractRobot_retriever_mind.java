@@ -293,11 +293,6 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"endAction","endAction", guardVars ).toString();
 	    	sendMsg("endAction",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
 	    	}
-	    	{
-	    	String tStr1 = "moveDuration(_)";
-	    	String tStr2 = "moveDuration(moveWDuration(0))";
-	    	 replaceRule( tStr1, tStr2 );  
-	    	 }
 	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?move(M)" )) != null ){
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"waitMoveCompleted","waitMoveCompleted", guardVars ).toString();
 	    	sendMsg("waitMoveCompleted",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 

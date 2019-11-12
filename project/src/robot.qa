@@ -113,7 +113,7 @@ Context ctxConsole ip [ host="localhost" port=8078 ] // TODO: switch to real IP
 
 Context ctxRobot ip [ host="localhost" port=8079 ] // TODO: switch to real IP
 
-// Handler sonar virtuale TODO (manca per il fisico)
+// Handler sonar virtuale
 EventHandler collisionevh for robotSonarObstacle -print  {
     forwardEvent onecellforward -m collisionDispatch
 };
@@ -212,9 +212,10 @@ QActor onecellforward context ctxRobot {
     State init initial []
     transition stopAfter 600000000
         whenMsg cmdStop -> handleStop,
+        whenMsg collisionDispatch -> init,  // clear collision before starting
         whenMsg moveMsgCmd -> startWork
 
-    State startWork[
+    State startWork [
         onMsg moveMsgCmd: moveMsgCmd(TF) ->
             ReplaceRule timew(_) with timew(TF);
         javaOp "storeCurrentMessageForReply()";  // utilizzato da replyToCaller
@@ -226,7 +227,8 @@ QActor onecellforward context ctxRobot {
         whenMsg cmdStop -> handleStop,
         whenMsg collisionDispatch -> probableFixedObstacle
 
-    State probableFixedObstacle[
+    State probableFixedObstacle [
+        printCurrentMessage;
         forward robot_adapter -m robotAdapterCmd: robotCmd(h, 0);
         javaRun it.unibo.utils.movePlanUtil.getDuration();
         [ !? moveWDuration(T) ]
@@ -324,6 +326,7 @@ QActor robot_discovery_mind context ctxRobot {
         ledState(off).
 
         // PLANNER
+        curPos(0, 0, down).
         numOfExplorations(3).
         curGoal(0, 0).
 
@@ -506,8 +509,7 @@ QActor robot_discovery_mind context ctxRobot {
         [ !? move(M) ]
             println( doActions_doingTheMove(M) );
         [ not !? move(M) ]
-            selfMsg endAction : endAction ;
-        ReplaceRule moveDuration(_) with  moveDuration(moveWDuration(0)); // TODO ??
+            selfMsg endAction: endAction;
         [ !? move(M) ]
             selfMsg waitMoveCompleted: waitMoveCompleted;
         [ !? doTheMove(M) ]
@@ -700,8 +702,7 @@ QActor robot_retriever_mind context ctxRobot {
      */
     Plan doActions[
         [ !? move(M) ] println( doActions_doingTheMove(M) );
-        [ not !? move(M) ] selfMsg endAction : endAction ;
-        ReplaceRule moveDuration(_) with  moveDuration(moveWDuration(0)); // TODO ??
+        [ not !? move(M) ] selfMsg endAction: endAction;
         [ !? move(M) ] selfMsg waitMoveCompleted: waitMoveCompleted;
         [ !? doTheMove(M) ] forward robot_advanced -m robotCmd: robotCmd(M)
     ] transition
