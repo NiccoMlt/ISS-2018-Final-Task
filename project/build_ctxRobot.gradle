@@ -187,6 +187,11 @@ copyInfoForDist.doLast {
     include '*.ddr'
     include '*.baseddr'
   }
+  copy { 
+    from 'res'
+    into 'src/dist/res/'
+    include '**/*.*'
+  }
 }
 
 task cleanDistDir(type: Delete) {
