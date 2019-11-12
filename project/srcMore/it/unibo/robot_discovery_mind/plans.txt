@@ -1,5 +1,4 @@
 plan(1,init, sentence(true,not here StateMoveNormal,'','' ))
-plan(2,init, sentence(true,not here StateMoveNormal,'','' ))
 plan(1,home, sentence( foundBomb,forward(console, robotHome,robotHome),'','' ))
 plan(1,checkTemperatureAndExplore, sentence( environment( ok),notHere SendDispatch,'','' ))
 plan(1,startExploration, sentence(true,move(solve,assign( curNumExplore,0),0,""),'','' ))

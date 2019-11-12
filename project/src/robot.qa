@@ -107,9 +107,11 @@ Event frontendUserCmd: frontendUserCmd(X)
 /** from CONSOLE to GUI; X = state */
 Event frontendRobotState: frontendRobotState(X)
 
-pubSubServer "tcp://127.0.0.1:1883" // The MQTT broker is on local machine
+// pubSubServer "tcp://127.0.0.1:1883" // The MQTT broker is on local machine
 
-Context ctxRobot ip [ host="localhost" port=8079 ]
+Context ctxConsole ip [ host="localhost" port=8078 ] // TODO: switch to real IP
+
+Context ctxRobot ip [ host="localhost" port=8079 ] // TODO: switch to real IP
 
 // Handler sonar virtuale TODO (manca per il fisico)
 EventHandler collisionevh for robotSonarObstacle -print  {
@@ -117,7 +119,7 @@ EventHandler collisionevh for robotSonarObstacle -print  {
 };
 
 /** Attore che osserva l'ambiente e valuta la temperatura. */
-QActor world_observer context ctxRobot {
+QActor world_observer context ctxConsole {
 
     Rules {
         // Impostazioni di default:
@@ -129,7 +131,8 @@ QActor world_observer context ctxRobot {
     }
 
     State init initial [
-        connectAsSubscriber "unibo/environment"
+        // connectAsSubscriber "unibo/environment"
+        javaRun it.unibo.utils.mqttUtil.connectAndSubscribe("unibo/environment")
     ] switchTo doObserve
 
     /** Lo stato doObserve è lo stato nel quale viene verificata la temperatura. */
@@ -182,7 +185,7 @@ QActor robot_adapter context ctxRobot {
      */
     State doWork []
     transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg robotCmd -> executeCommand,
         whenMsg robotAdapterCmd -> executeCommand
         finally repeatPlan
@@ -207,7 +210,7 @@ QActor onecellforward context ctxRobot {
     }
 
     State init initial []
-    transition stopAfter 600000
+    transition stopAfter 600000000
         whenMsg cmdStop -> handleStop,
         whenMsg moveMsgCmd -> startWork
 
@@ -219,7 +222,7 @@ QActor onecellforward context ctxRobot {
         [ !? timew(T) ]
             forward robot_adapter -m robotAdapterCmd: robotCmd(w, T)
     ] transition
-        /* [ !? timew(T) ] whenTime T */ whenTime 255 -> endMoveForward // async
+        /* [ !? timew(T) ] whenTime T */ whenTime 1500 -> endMoveForward // async
         whenMsg cmdStop -> handleStop,
         whenMsg collisionDispatch -> probableFixedObstacle
 
@@ -265,8 +268,8 @@ QActor onecellforward context ctxRobot {
 QActor robot_advanced context ctxRobot {
 
     Rules {
-        timew(255).
-        timeTurn(500).
+        timew(1500).
+        timeTurn(1750).
     }
 
     State init initial []
@@ -274,7 +277,7 @@ QActor robot_advanced context ctxRobot {
 
     State doWork []
     transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg robotCmd -> executeCommand
 
     State executeCommand [
@@ -298,7 +301,7 @@ QActor robot_advanced context ctxRobot {
 
     State waitMoveComletedAnswer []
     transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg moveMsgCmdDone -> receivedMoveCompletedAnswer,
         whenMsg moveMsgCmdObstacle -> receivedMoveCompletedAnswer
 
@@ -354,8 +357,7 @@ QActor robot_discovery_mind context ctxRobot {
 
     State init initial [
         // Planner
-        javaRun it.unibo.planning.planUtil.initAI();
-        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("discovery-home")
+        javaRun it.unibo.planning.planUtil.initAI()
     ] switchTo home
 
     /**
@@ -368,8 +370,15 @@ QActor robot_discovery_mind context ctxRobot {
     State home [
         [ !? foundBomb ]
             forward console -m robotHome: robotHome
+        else {
+            [ !? environment(X) ] println(environment(X));
+            [ !? environment(ok) ]
+                javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("discovery-home")
+            else
+                javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("environment-notok")
+        }
     ] transition
-        stopAfter 60000
+        whenTime 1000 -> home
         whenEvent environment: environment(E) do
             demo replaceRule(environment(X), environment(E)),
         whenMsg cmdExplore -> checkTemperatureAndExplore                // R-explore & R-TempOk
@@ -441,7 +450,7 @@ QActor robot_discovery_mind context ctxRobot {
         println("DISCOVERY_MIND[handleBag] waiting for console command ...")
     ]
     transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg cmdGoHome -> backHomeAfterBomb,                         // R-backHome
         whenMsg cmdExplore -> resumeExplorationAfterBag                 // R-continueExplore
 
@@ -479,7 +488,7 @@ QActor robot_discovery_mind context ctxRobot {
     State idle [
 
     ] transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg cmdExplore -> resumeExploration,                        // R-continueExplore
         whenMsg cmdGoHome -> goToHome                                   // R-backHome
 
@@ -503,7 +512,7 @@ QActor robot_discovery_mind context ctxRobot {
         [ !? doTheMove(M) ]
             forward robot_advanced -m robotCmd: robotCmd(M)
     ] transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg cmdStop -> goToIdle,   //first to be checked
         whenMsg cmdExplore -> goToExploration,
         whenMsg cmdGoHome -> goToHome,
@@ -513,7 +522,7 @@ QActor robot_discovery_mind context ctxRobot {
 
     State waitMoveCompletedAnswer []
     transition
-        stopAfter 60000
+        stopAfter 6000000
         // whenMsg cmdStop -> goToIdle,   // first to be checked // TODO
         whenMsg moveMsgCmdDone -> handleCmdDone,
         whenMsg moveMsgCmdObstacle -> goToHandleBag
@@ -626,7 +635,7 @@ QActor robot_retriever_mind context ctxRobot {
      */
     State home []
     transition
-        stopAfter 60000
+        stopAfter 6000000
         whenEvent environment: environment(E) do
             demo replaceRule(environment(X), environment(E)),
         whenMsg map: map(M) do
@@ -681,7 +690,7 @@ QActor robot_retriever_mind context ctxRobot {
     State idle [
         // TODO reach bomb solo se non ha bomba, go home in entrambi
     ] transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg cmdReachBomb -> goToReachBomb,
         whenMsg cmdGoHome -> goToHome                                               // R-backHome
 
@@ -695,7 +704,7 @@ QActor robot_retriever_mind context ctxRobot {
         [ !? move(M) ] selfMsg waitMoveCompleted: waitMoveCompleted;
         [ !? doTheMove(M) ] forward robot_advanced -m robotCmd: robotCmd(M)
     ] transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg cmdStop -> goToIdle,   // first to be checked
         whenMsg waitMoveCompleted -> waitMoveCompletedAnswer,
         whenMsg endAction -> backToHome  // all actions done
@@ -703,7 +712,7 @@ QActor robot_retriever_mind context ctxRobot {
 
     Plan waitMoveCompletedAnswer []
     transition
-        stopAfter 60000
+        stopAfter 6000000
 //      whenMsg cmdStop -> goToIdle,   // first to be checked TODO
         whenMsg moveMsgCmdDone -> handleCmdDone,
         whenMsg moveMsgCmdObstacle -> goToIdle  // TODO load bomb if bomb
@@ -747,13 +756,14 @@ QActor robot_retriever_mind context ctxRobot {
 }
 
 /** Attore console. */
-QActor console context ctxRobot {
+QActor console context ctxConsole {
 
     /** Stato iniziale della console. */
     State init initial [
         delay 2000;
-        println("Console init");
-        connectAsSubscriber "unibo/frontendUserCmd"
+        // connectAsSubscriber "unibo/frontendUserCmd";
+        javaRun it.unibo.utils.mqttUtil.connectAndSubscribe("unibo/frontendUserCmd");
+        println("Console init")
     ] switchTo doWork
 
     /**
@@ -763,7 +773,7 @@ QActor console context ctxRobot {
      */
     State doWork []
     transition
-        stopAfter 60000
+        stopAfter 6000000
         whenEvent frontendUserCmd -> adaptCommand,
         whenEvent environment -> storeEnvironment,
         whenMsg stateUpdate -> updateView,                            // R-consoleUpdate
@@ -803,7 +813,7 @@ QActor console context ctxRobot {
         onMsg bag: bag(picture(X)) -> selfMsg stateUpdate: state(picture, X);
         onMsg bag: bag(picture(X)) -> ReplaceRule picture(_) with picture(X)
     ] transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg stateUpdate -> updateView,
         whenMsg bagStatus -> handleBagStatus,
         whenEvent frontendUserCmd -> adaptCommand
@@ -835,7 +845,7 @@ QActor console context ctxRobot {
      */
     State handleAlert []
     transition
-        stopAfter 60000
+        stopAfter 6000000
         whenMsg robotHome -> startRetrieval,                            // R-waitForHome & R-reachBag
         whenMsg stateUpdate -> updateView
         finally repeatPlan

@@ -41,6 +41,9 @@ public class systemStateUtil {
 	    if (state.getMessage() == null) {
             state.setMessage(systemState.getState().getMessage());
         }
+        if (state.getActions() == null) {
+            state.setActions(systemState.getState().getActions());
+        }
 		systemState.setState(state);
 		notifyUpdateState(qa);
 	}
@@ -52,9 +55,13 @@ public class systemStateUtil {
         try {
             String parg = "frontendRobotState(P)".replace("P", payload);
             /* PublishEventMove */
-//          parg =  qa.updateVars( Term.createTerm("state(T,P)"), Term.createTerm("state(T,P)"), 
-//                            Term.createTerm(payload), parg);
-            if( parg != null ) qa.sendMsgMqtt(  "unibo/frontendRobotState", "frontendRobotState", "none", parg );
+            // parg =  qa.updateVars(
+            //    Term.createTerm("state(T,P)"),
+            //    Term.createTerm("state(T,P)"), 
+            //    Term.createTerm(payload),
+            //    parg);
+            // if( parg != null ) qa.sendMsgMqtt(  "unibo/frontendRobotState", "frontendRobotState", "none", parg );
+            it.unibo.utils.mqttUtil.sendMsgMqtt(qa, "unibo/frontendRobotState", "frontendRobotState", "none", parg);
         } catch (Exception e) {
             // TODO Auto-generated catch block
             e.printStackTrace();

@@ -26,7 +26,7 @@ public abstract class AbstractOnecellforward extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://127.0.0.1:1883";
+	//protected String mqttServer = "";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -84,7 +84,7 @@ public abstract class AbstractOnecellforward extends QActor {
 	     msgTransition( pr,myselfName,"onecellforward_"+myselfName,false,
 	          new StateFun[]{stateTab.get("handleStop"), stateTab.get("startWork") }, 
 	          new String[]{"true","M","cmdStop", "true","M","moveMsgCmd" },
-	          600000, "handleToutBuiltIn" );//msgTransition
+	          600000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_init){  
 	    	 println( getName() + " plan=init WARNING:" + e_init.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -120,7 +120,7 @@ public abstract class AbstractOnecellforward extends QActor {
 	     msgTransition( pr,myselfName,"onecellforward_"+myselfName,false,
 	          new StateFun[]{stateTab.get("handleStop"), stateTab.get("probableFixedObstacle") }, 
 	          new String[]{"true","M","cmdStop", "true","M","collisionDispatch" },
-	          255, "endMoveForward" );//msgTransition
+	          1500, "endMoveForward" );//msgTransition
 	    }catch(Exception e_startWork){  
 	    	 println( getName() + " plan=startWork WARNING:" + e_startWork.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

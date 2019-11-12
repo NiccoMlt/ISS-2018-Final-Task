@@ -1,6 +1,6 @@
 plan(1,init, sentence(true,delay( 2000) ,'','' ))
-plan(2,init, sentence(true,move(print("Console init")),'','' ))
-plan(3,init, sentence(true,not here StateMoveNormal,'','' ))
+plan(2,init, sentence(true,not here StateMoveNormal,'','' ))
+plan(3,init, sentence(true,move(print("Console init")),'','' ))
 plan(1,adaptCommand, sentence(true,printCurrentEvent(false),'','' ))
 plan(2,adaptCommand, sentence(true,eventswitch(frontendUserCmd, Â»frontendUserCmd( cmd( explore)), forward(robot_discovery_mind, cmdExplore,cmdExplore) ),'','' ))
 plan(3,adaptCommand, sentence(true,eventswitch(frontendUserCmd, Â»frontendUserCmd( cmd( retrieve)), forward(robot_retriever_mind, cmdReachBomb,cmdReachBomb) ),'','' ))

@@ -1,5 +1,5 @@
 %====================================================================================
-% Context ctxRobot  SYSTEM-configuration: file it.unibo.ctxRobot.robot.pl 
+% Context ctxConsole  SYSTEM-configuration: file it.unibo.ctxConsole.robot.pl 
 %====================================================================================
 pubsubserveraddr("").
 pubsubsystopic("unibo/qasys").
@@ -22,6 +22,5 @@ qactor( robot_retriever_mind_ctrl , ctxrobot, "it.unibo.robot_retriever_mind.Rob
 qactor( console , ctxconsole, "it.unibo.console.MsgHandle_Console"   ). %%store msgs 
 qactor( console_ctrl , ctxconsole, "it.unibo.console.Console"   ). %%control-driven 
 %%% -------------------------------------------
-eventhandler(collisionevh,ctxrobot,"it.unibo.ctxRobot.Collisionevh","robotSonarObstacle").  
 %%% -------------------------------------------
 

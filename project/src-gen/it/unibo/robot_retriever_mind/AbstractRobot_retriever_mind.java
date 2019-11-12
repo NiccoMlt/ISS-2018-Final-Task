@@ -26,7 +26,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://127.0.0.1:1883";
+	//protected String mqttServer = "";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -152,7 +152,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	          },
 	           stateTab.get("checkTemperatureAndRetrieve") }, 
 	          new String[]{"true","E","environment", "true","M","map", "true","M","cmdReachBomb" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_home){  
 	    	 println( getName() + " plan=home WARNING:" + e_home.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -271,7 +271,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
 	          new StateFun[]{stateTab.get("goToReachBomb"), stateTab.get("goToHome") }, 
 	          new String[]{"true","M","cmdReachBomb", "true","M","cmdGoHome" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_idle){  
 	    	 println( getName() + " plan=idle WARNING:" + e_idle.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -310,7 +310,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
 	          new StateFun[]{stateTab.get("goToIdle"), stateTab.get("waitMoveCompletedAnswer"), stateTab.get("backToHome") }, 
 	          new String[]{"true","M","cmdStop", "true","M","waitMoveCompleted", "true","M","endAction" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doActions){  
 	    	 println( getName() + " plan=doActions WARNING:" + e_doActions.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -325,7 +325,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
 	          new StateFun[]{stateTab.get("handleCmdDone"), stateTab.get("goToIdle") }, 
 	          new String[]{"true","M","moveMsgCmdDone", "true","M","moveMsgCmdObstacle" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitMoveCompletedAnswer){  
 	    	 println( getName() + " plan=waitMoveCompletedAnswer WARNING:" + e_waitMoveCompletedAnswer.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

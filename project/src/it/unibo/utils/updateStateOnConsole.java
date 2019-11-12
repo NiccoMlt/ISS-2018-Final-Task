@@ -60,35 +60,38 @@ public class updateStateOnConsole {
 		ArrayList<Action> actions = new ArrayList<>();
 
 		switch (state) {
-		case "discovery-home":
-			actions.add(ACTION_EXPLORE);
-			break;
-		case "discovery-idle":
-			actions.add(ACTION_HOME);
-			actions.add(ACTION_EXPLORE);
-			break;
-		case "discovery-obstacle":
-			actions.add(ACTION_BAG);
-			actions.add(ACTION_BOMB);
-			break;
-		case "retriever-home":
-            actions.add(ACTION_RETRIEVE);
-            break;
-        case "retriever-idle":
-            actions.add(ACTION_HOME);
-            actions.add(ACTION_RETRIEVE);
-            break;
-        case "retriever-idle-with-bomb":
-            actions.add(ACTION_HOME);
-            break;
-        case "discovery-exploring":
-        case "retriever-retrieving":
-            actions.add(ACTION_HALT);
-            break;
-        case "terminating":
-            break;
-		default:
-			actions.add(ACTION_HALT);
+            case "environment-notok":
+                // No actions, stuck!
+                break;
+    		case "discovery-home":
+    			actions.add(ACTION_EXPLORE);
+    			break;
+    		case "discovery-idle":
+    			actions.add(ACTION_HOME);
+    			actions.add(ACTION_EXPLORE);
+    			break;
+    		case "discovery-obstacle":
+    			actions.add(ACTION_BAG);
+    			actions.add(ACTION_BOMB);
+    			break;
+    		case "retriever-home":
+                actions.add(ACTION_RETRIEVE);
+                break;
+            case "retriever-idle":
+                actions.add(ACTION_HOME);
+                actions.add(ACTION_RETRIEVE);
+                break;
+            case "retriever-idle-with-bomb":
+                actions.add(ACTION_HOME);
+                break;
+            case "discovery-exploring":
+            case "retriever-retrieving":
+                actions.add(ACTION_HALT);
+                break;
+            case "terminating":
+                break;
+    		default:
+    			actions.add(ACTION_HALT);
 		}
 
 		String payload = jsonUtil.encodeForProlog(new State(state, actions.toArray(new Action[0])));
@@ -128,5 +131,6 @@ public class updateStateOnConsole {
                 systemStateUtil.getSystemStateUtil().updateRobotState(qa, robotState);
                 break;
         }
+        qa.println("STATE STATUS: " + systemStateUtil.getSystemStateUtil().getSystemState().getState().getName());
     }
 }

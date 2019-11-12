@@ -13,4 +13,9 @@ public class Console extends AbstractConsole {
 /*
  * ADDED BY THE APPLICATION DESIGNER	
  */
+    @Override
+    public void terminate() {
+        it.unibo.utils.mqttUtil.disconnect(this);
+        super.terminate();
+    }
 }

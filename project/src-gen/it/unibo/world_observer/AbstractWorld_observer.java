@@ -26,7 +26,7 @@ public abstract class AbstractWorld_observer extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://127.0.0.1:1883";
+	//protected String mqttServer = "";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -75,8 +75,7 @@ public abstract class AbstractWorld_observer extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("init",-1);
 	    	String myselfName = "init";  
-	    	//ConnectToSubscribe
-	    	connectAndSubscribe( this.getName(), "tcp://127.0.0.1:1883", "unibo/environment");
+	    	it.unibo.utils.mqttUtil.connectAndSubscribe( myself ,"unibo/environment"  );
 	    	//switchTo doObserve
 	        switchToPlanAsNextState(pr, myselfName, "world_observer_"+myselfName, 
 	              "doObserve",false, false, null); 

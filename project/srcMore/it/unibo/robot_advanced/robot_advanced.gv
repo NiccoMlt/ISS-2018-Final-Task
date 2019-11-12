@@ -18,10 +18,10 @@ digraph finite_state_machine {
 	receivedMoveCompletedAnswer -> doWork [ label = "switch" ][ color = black ][ fontcolor = black ]
 	waitMoveComletedAnswer -> receivedMoveCompletedAnswer [ label = "moveMsgCmdDone" ][ color = black ][ fontcolor = black ]
 	waitMoveComletedAnswer -> receivedMoveCompletedAnswer [ label = "moveMsgCmdObstacle" ][ color = black ][ fontcolor = black ]
+	doWork -> handleToutBuiltIn [ label = "timeout(6000000)" ][ color = green ][ fontcolor = green ]
 	doWork -> executeCommand [ label = "robotCmd" ][ color = black ][ fontcolor = black ]
 	executeCommand -> waitMoveComletedAnswer [ label = "waitMoveCompleted" ][ color = black ][ fontcolor = black ]
-	doWork -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
+	waitMoveComletedAnswer -> handleToutBuiltIn [ label = "timeout(6000000)" ][ color = green ][ fontcolor = green ]
 	init -> doWork [ label = "switch" ][ color = black ][ fontcolor = black ]
 	executeCommand -> doWork [ label = "timeout(100)" ][ color = green ][ fontcolor = green ]
-	waitMoveComletedAnswer -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
 }

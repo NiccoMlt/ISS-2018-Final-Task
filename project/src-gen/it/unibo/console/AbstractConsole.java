@@ -26,7 +26,7 @@ public abstract class AbstractConsole extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://127.0.0.1:1883";
+	//protected String mqttServer = "";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -85,10 +85,9 @@ public abstract class AbstractConsole extends QActor {
 	    	aar = delayReactive(2000,"" , "");
 	    	if( aar.getInterrupted() ) curPlanInExec   = "init";
 	    	if( ! aar.getGoon() ) return ;
+	    	it.unibo.utils.mqttUtil.connectAndSubscribe( myself ,"unibo/frontendUserCmd"  );
 	    	temporaryStr = "\"Console init\"";
 	    	println( temporaryStr );  
-	    	//ConnectToSubscribe
-	    	connectAndSubscribe( this.getName(), "tcp://127.0.0.1:1883", "unibo/frontendUserCmd");
 	    	//switchTo doWork
 	        switchToPlanAsNextState(pr, myselfName, "console_"+myselfName, 
 	              "doWork",false, false, null); 
@@ -107,7 +106,7 @@ public abstract class AbstractConsole extends QActor {
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("adaptCommand"), stateTab.get("storeEnvironment"), stateTab.get("updateView"), stateTab.get("handlePhoto") }, 
 	          new String[]{"true","E","frontendUserCmd", "true","E","environment", "true","M","stateUpdate", "true","M","bag" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
 	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -269,7 +268,7 @@ public abstract class AbstractConsole extends QActor {
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("updateView"), stateTab.get("handleBagStatus"), stateTab.get("adaptCommand") }, 
 	          new String[]{"true","M","stateUpdate", "true","M","bagStatus", "true","E","frontendUserCmd" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handlePhoto){  
 	    	 println( getName() + " plan=handlePhoto WARNING:" + e_handlePhoto.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -329,7 +328,7 @@ public abstract class AbstractConsole extends QActor {
 	     msgTransition( pr,myselfName,"console_"+myselfName,false,
 	          new StateFun[]{stateTab.get("startRetrieval"), stateTab.get("updateView") }, 
 	          new String[]{"true","M","robotHome", "true","M","stateUpdate" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handleAlert){  
 	    	 println( getName() + " plan=handleAlert WARNING:" + e_handleAlert.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

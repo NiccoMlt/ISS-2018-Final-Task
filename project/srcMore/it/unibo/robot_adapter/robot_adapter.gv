@@ -15,8 +15,8 @@ digraph finite_state_machine {
 	executeCommand [ color = black ][ fontcolor = black ][ penwidth = 3 ]
 	
 	doWork -> executeCommand [ label = "robotCmd" ][ color = red ][ fontcolor = red ][ dir = both ]
+	doWork -> handleToutBuiltIn [ label = "timeout(6000000)" ][ color = green ][ fontcolor = green ]
 	doWork -> executeCommand [ label = "robotAdapterCmd" ][ color = red ][ fontcolor = red ][ dir = both ]
-	doWork -> handleToutBuiltIn [ label = "timeout(60000)" ][ color = green ][ fontcolor = green ]
 	initRobots -> doWork [ label = "timeout(2000)" ][ color = green ][ fontcolor = green ]
 	initRobots -> action [ label = "robotAdapterAdd" ][ color = red ][ fontcolor = red ][ dir = both ]
 	initRobots -> initRobots [ label = "repeat "][ style = dashed ][ color = blue ][ fontcolor = blue ]
