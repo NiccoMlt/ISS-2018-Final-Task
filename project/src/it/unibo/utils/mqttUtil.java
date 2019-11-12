@@ -18,10 +18,10 @@ import it.unibo.qactors.akka.QActor;
 
 public class mqttUtil {
 
-	private static final String BROKER = "tcp://broker.hivemq.com:1883";
+	private static final String BROKER = "tcp://127.0.0.1:1883"; // TODO: use real IP
 
 	private static HashMap<String, MqttClient> connections = new HashMap<>();
-	
+
 	private static void connect(QActor qa) {
 		MemoryPersistence persistence = new MemoryPersistence();
 		try {
@@ -36,7 +36,7 @@ public class mqttUtil {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private static void subscribe(QActor qa, String topic) {
 		try {
 			MqttClient sampleClient = connections.get(qa.getName());
@@ -103,7 +103,7 @@ public class mqttUtil {
 			try {
 //	    			 println("	%%% MqttUtils messageArrived on "+ topic + ": "+msg.toString());
 				Struct msgt = (Struct) Term.createTerm(msg.toString());
-//	 			 println("	%%% MqttUtils messageArrived msgt "+ msgt + " actor=" + actor.getName() ); 
+//	 			 println("	%%% MqttUtils messageArrived msgt "+ msgt + " actor=" + actor.getName() );
 				msgID = msgt.getArg(0).toString();
 				msgType = msgt.getArg(1).toString();
 				msgSender = msgt.getArg(2).toString();
@@ -129,7 +129,6 @@ public class mqttUtil {
 		@Override
 		public void deliveryComplete(IMqttDeliveryToken token) {
 			// TODO Auto-generated method stub
-
 		}
 	}
 }
