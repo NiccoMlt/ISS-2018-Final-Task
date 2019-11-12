@@ -36,9 +36,9 @@ SerialTask* serialTask = new SerialTask(gloDistanceValue, gloBlinkingState, move
 void setup() {
   sched.init(50);
 
-  distanceTask->init(200);
+  distanceTask->init(100);
   blinkingLed->init(200);
-  serialTask->init(100);
+  serialTask->init(50);
 
   sched.addTask(distanceTask);
   sched.addTask(blinkingLed);
