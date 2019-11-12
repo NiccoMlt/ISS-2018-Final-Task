@@ -281,8 +281,8 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	println( temporaryStr );  
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("backHomeAfterBomb"), stateTab.get("resumeExplorationAfterBag") }, 
-	          new String[]{"true","M","cmdGoHome", "true","M","cmdExplore" },
+	          new StateFun[]{stateTab.get("handleBag"), stateTab.get("backHomeAfterBomb"), stateTab.get("resumeExplorationAfterBag") }, 
+	          new String[]{"true","M","cmdStop", "true","M","cmdGoHome", "true","M","cmdExplore" },
 	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_handleBag){  
 	    	 println( getName() + " plan=handleBag WARNING:" + e_handleBag.getMessage() );
@@ -429,8 +429,8 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String myselfName = "waitMoveCompletedAnswer";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_discovery_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleCmdDone"), stateTab.get("goToHandleBag") }, 
-	          new String[]{"true","M","moveMsgCmdDone", "true","M","moveMsgCmdObstacle" },
+	          new StateFun[]{stateTab.get("goToHandleBag"), stateTab.get("goToIdle"), stateTab.get("handleCmdDone") }, 
+	          new String[]{"true","M","moveMsgCmdObstacle", "true","M","cmdStop", "true","M","moveMsgCmdDone" },
 	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitMoveCompletedAnswer){  
 	    	 println( getName() + " plan=waitMoveCompletedAnswer WARNING:" + e_waitMoveCompletedAnswer.getMessage() );

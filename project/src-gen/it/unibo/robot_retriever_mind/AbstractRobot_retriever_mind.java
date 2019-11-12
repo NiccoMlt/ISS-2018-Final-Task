@@ -269,8 +269,8 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    	String myselfName = "idle";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("goToReachBomb"), stateTab.get("goToHome") }, 
-	          new String[]{"true","M","cmdReachBomb", "true","M","cmdGoHome" },
+	          new StateFun[]{stateTab.get("idle"), stateTab.get("goToReachBomb"), stateTab.get("goToHome") }, 
+	          new String[]{"true","M","cmdStop", "true","M","cmdReachBomb", "true","M","cmdGoHome" },
 	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_idle){  
 	    	 println( getName() + " plan=idle WARNING:" + e_idle.getMessage() );
@@ -323,8 +323,8 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    	String myselfName = "waitMoveCompletedAnswer";  
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("handleCmdDone"), stateTab.get("goToIdle") }, 
-	          new String[]{"true","M","moveMsgCmdDone", "true","M","moveMsgCmdObstacle" },
+	          new StateFun[]{stateTab.get("goToIdle"), stateTab.get("goToIdle"), stateTab.get("handleCmdDone") }, 
+	          new String[]{"true","M","moveMsgCmdObstacle", "true","M","cmdStop", "true","M","moveMsgCmdDone" },
 	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitMoveCompletedAnswer){  
 	    	 println( getName() + " plan=waitMoveCompletedAnswer WARNING:" + e_waitMoveCompletedAnswer.getMessage() );

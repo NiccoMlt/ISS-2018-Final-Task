@@ -60,9 +60,6 @@ public class updateStateOnConsole {
 		ArrayList<Action> actions = new ArrayList<>();
 
 		switch (state) {
-            case "environment-notok":
-                // No actions, stuck!
-                break;
     		case "discovery-home":
     			actions.add(ACTION_EXPLORE);
     			break;
@@ -88,7 +85,9 @@ public class updateStateOnConsole {
             case "retriever-retrieving":
                 actions.add(ACTION_HALT);
                 break;
+            case "environment-notok":
             case "terminating":
+                // No actions, stuck!
                 break;
     		default:
     			actions.add(ACTION_HALT);

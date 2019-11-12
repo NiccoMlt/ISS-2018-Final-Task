@@ -451,6 +451,7 @@ QActor robot_discovery_mind context ctxRobot {
     ]
     transition
         stopAfter 6000000
+        whenMsg cmdStop -> handleBag,
         whenMsg cmdGoHome -> backHomeAfterBomb,                         // R-backHome
         whenMsg cmdExplore -> resumeExplorationAfterBag                 // R-continueExplore
 
@@ -523,9 +524,9 @@ QActor robot_discovery_mind context ctxRobot {
     State waitMoveCompletedAnswer []
     transition
         stopAfter 6000000
-        // whenMsg cmdStop -> goToIdle,   // first to be checked // TODO
-        whenMsg moveMsgCmdDone -> handleCmdDone,
-        whenMsg moveMsgCmdObstacle -> goToHandleBag
+        whenMsg moveMsgCmdObstacle -> goToHandleBag,
+        whenMsg cmdStop -> goToIdle,
+        whenMsg moveMsgCmdDone -> handleCmdDone
 
     State handleCmdDone [
         printCurrentMessage;
@@ -588,7 +589,6 @@ QActor robot_discovery_mind context ctxRobot {
             javaRun it.unibo.planning.planUtil.doPlan()
         else
             selfMsg endAction: endAction
-        // ;javaOp "debugStep()"
     ] transition
         whenTime 100 -> doActions
         whenMsg endAction: endAction do println("bye")
@@ -691,6 +691,7 @@ QActor robot_retriever_mind context ctxRobot {
         // TODO reach bomb solo se non ha bomba, go home in entrambi
     ] transition
         stopAfter 6000000
+        whenMsg cmdStop -> idle,
         whenMsg cmdReachBomb -> goToReachBomb,
         whenMsg cmdGoHome -> goToHome                                               // R-backHome
 
@@ -713,9 +714,9 @@ QActor robot_retriever_mind context ctxRobot {
     Plan waitMoveCompletedAnswer []
     transition
         stopAfter 6000000
-//      whenMsg cmdStop -> goToIdle,   // first to be checked TODO
-        whenMsg moveMsgCmdDone -> handleCmdDone,
-        whenMsg moveMsgCmdObstacle -> goToIdle  // TODO load bomb if bomb
+        whenMsg moveMsgCmdObstacle -> goToIdle,
+        whenMsg cmdStop -> goToIdle,
+        whenMsg moveMsgCmdDone -> handleCmdDone
 
     Plan handleCmdDone [
         printCurrentMessage;
