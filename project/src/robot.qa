@@ -84,6 +84,9 @@ Dispatch handleBag: handleBag(X)                                        // R-sto
 /** X = photo */
 Dispatch bag: bag(picture(X))                                           // R-sendPhoto & R-storePhoto
 
+Dispatch idleWhileRetrieving: idleWhileRetrieving
+Dispatch idleWhileReturning: idleWhileReturning
+
 /*
  * *********************************************************
  * Messaggi & Eventi Console
@@ -271,7 +274,7 @@ QActor robot_advanced context ctxRobot {
 
     Rules {
         timew(1500).
-        timeTurn(1750).
+        timeTurn(900).
     }
 
     State init initial []
@@ -498,7 +501,7 @@ QActor robot_discovery_mind context ctxRobot {
 
     State goToHome [
         println("DISCOVERY_MIND[goToHome] ...");
-        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("discovery-home");
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("discovery-returning");
         forward robot_adapter -m robotCmd: robotCmd(blinkStart)         // R-blinkLed (start)
     ] switchTo backToHome
 
@@ -685,16 +688,35 @@ QActor robot_retriever_mind context ctxRobot {
 
     State goToHome [
         println("RETRIEVER_MIND[goToHome] ...");
-        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("retriever-home");
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("discovery-returning");
         forward robot_adapter -m robotCmd: robotCmd(blinkStart)                     // R-blinkLed (start)
     ] switchTo backToHome
 
     State idle [
-        // TODO reach bomb solo se non ha bomba, go home in entrambi
+        // reach bomb solo se non ha bomba, go home in entrambi
+        [ !? bombInRoom ]
+            selfMsg idleWhileRetrieving: idleWhileRetrieving
+        else
+            selfMsg idleWhileReturning: idleWhileReturning
     ] transition
         stopAfter 6000000
         whenMsg cmdStop -> idle,
+        whenMsg idleWhileRetrieving -> idleWhileRetrieving,
+        whenMsg idleWhileReturning -> idleWhileReturning
+    
+    State idleWhileRetrieving [
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("retriever-idle-retrieving")
+    ] transition
+        stopAfter 6000000
+        whenMsg cmdStop -> idleWhileRetrieving,
         whenMsg cmdReachBomb -> goToReachBomb,
+        whenMsg cmdGoHome -> goToHome                                               // R-backHome
+
+    State idleWhileReturning [
+        javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("retriever-idle-returning")
+    ] transition
+        stopAfter 6000000
+        whenMsg cmdStop -> idleWhileReturning,
         whenMsg cmdGoHome -> goToHome                                               // R-backHome
 
     /*

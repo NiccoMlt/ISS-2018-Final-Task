@@ -62,6 +62,8 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    	stateTab.put("goToIdle",goToIdle);
 	    	stateTab.put("goToHome",goToHome);
 	    	stateTab.put("idle",idle);
+	    	stateTab.put("idleWhileRetrieving",idleWhileRetrieving);
+	    	stateTab.put("idleWhileReturning",idleWhileReturning);
 	    	stateTab.put("doActions",doActions);
 	    	stateTab.put("waitMoveCompletedAnswer",waitMoveCompletedAnswer);
 	    	stateTab.put("handleCmdDone",handleCmdDone);
@@ -251,7 +253,7 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    	String myselfName = "goToHome";  
 	    	temporaryStr = "\"RETRIEVER_MIND[goToHome] ...\"";
 	    	println( temporaryStr );  
-	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"retriever-home"  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-returning"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo backToHome
@@ -267,16 +269,55 @@ public abstract class AbstractRobot_retriever_mind extends QActor {
 	    try{	
 	     PlanRepeat pr = PlanRepeat.setUp("idle",-1);
 	    	String myselfName = "idle";  
+	    	if( (guardVars = QActorUtils.evalTheGuard(this, " !?bombInRoom" )) != null ){
+	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"idleWhileRetrieving","idleWhileRetrieving", guardVars ).toString();
+	    	sendMsg("idleWhileRetrieving",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
+	    	}
+	    	else{ temporaryStr = QActorUtils.unifyMsgContent(pengine,"idleWhileReturning","idleWhileReturning", guardVars ).toString();
+	    	sendMsg("idleWhileReturning",getNameNoCtrl(), QActorContext.dispatch, temporaryStr ); 
+	    	}
 	    	//bbb
 	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
-	          new StateFun[]{stateTab.get("idle"), stateTab.get("goToReachBomb"), stateTab.get("goToHome") }, 
-	          new String[]{"true","M","cmdStop", "true","M","cmdReachBomb", "true","M","cmdGoHome" },
+	          new StateFun[]{stateTab.get("idle"), stateTab.get("idleWhileRetrieving"), stateTab.get("idleWhileReturning") }, 
+	          new String[]{"true","M","cmdStop", "true","M","idleWhileRetrieving", "true","M","idleWhileReturning" },
 	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_idle){  
 	    	 println( getName() + " plan=idle WARNING:" + e_idle.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
 	    }
 	    };//idle
+	    
+	    StateFun idleWhileRetrieving = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("idleWhileRetrieving",-1);
+	    	String myselfName = "idleWhileRetrieving";  
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"retriever-idle-retrieving"  );
+	    	//bbb
+	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
+	          new StateFun[]{stateTab.get("idleWhileRetrieving"), stateTab.get("goToReachBomb"), stateTab.get("goToHome") }, 
+	          new String[]{"true","M","cmdStop", "true","M","cmdReachBomb", "true","M","cmdGoHome" },
+	          6000000, "handleToutBuiltIn" );//msgTransition
+	    }catch(Exception e_idleWhileRetrieving){  
+	    	 println( getName() + " plan=idleWhileRetrieving WARNING:" + e_idleWhileRetrieving.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//idleWhileRetrieving
+	    
+	    StateFun idleWhileReturning = () -> {	
+	    try{	
+	     PlanRepeat pr = PlanRepeat.setUp("idleWhileReturning",-1);
+	    	String myselfName = "idleWhileReturning";  
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"retriever-idle-returning"  );
+	    	//bbb
+	     msgTransition( pr,myselfName,"robot_retriever_mind_"+myselfName,false,
+	          new StateFun[]{stateTab.get("idleWhileReturning"), stateTab.get("goToHome") }, 
+	          new String[]{"true","M","cmdStop", "true","M","cmdGoHome" },
+	          6000000, "handleToutBuiltIn" );//msgTransition
+	    }catch(Exception e_idleWhileReturning){  
+	    	 println( getName() + " plan=idleWhileReturning WARNING:" + e_idleWhileReturning.getMessage() );
+	    	 QActorContext.terminateQActorSystem(this); 
+	    }
+	    };//idleWhileReturning
 	    
 	    StateFun doActions = () -> {	
 	    try{	

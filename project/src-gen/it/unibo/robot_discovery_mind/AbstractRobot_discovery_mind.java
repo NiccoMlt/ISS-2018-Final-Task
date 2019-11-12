@@ -372,7 +372,7 @@ public abstract class AbstractRobot_discovery_mind extends QActor {
 	    	String myselfName = "goToHome";  
 	    	temporaryStr = "\"DISCOVERY_MIND[goToHome] ...\"";
 	    	println( temporaryStr );  
-	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-home"  );
+	    	it.unibo.utils.updateStateOnConsole.updateRobotState( myself ,"discovery-returning"  );
 	    	temporaryStr = QActorUtils.unifyMsgContent(pengine,"robotCmd(M)","robotCmd(blinkStart)", guardVars ).toString();
 	    	sendMsg("robotCmd","robot_adapter", QActorContext.dispatch, temporaryStr ); 
 	    	//switchTo backToHome
