@@ -1,9 +1,6 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
 
-// #include <Drive.h>
-#include "actuators/L298N.h"
-
 #include "scheduler/Scheduler.h"
 #include "scheduler/tasks/DistanceTask.h"
 #include "scheduler/tasks/BlinkTask.h"
@@ -22,9 +19,6 @@ const int DIRECTION2 = 12;
 
 void move(int direction);
 
-L298N motor1(SPEED1, DIRECTION1); // right from back
-L298N motor2(SPEED2, DIRECTION2); // left from back
-
 Scheduler *sched;
 // Drive motor(SPEED1, DIRECTION1, SPEED2, DIRECTION2);
 
@@ -35,17 +29,22 @@ bool gloBlinkingState = false;
 BlinkTask *blinkingLed;
 SerialTask *serialTask;
 
+typedef enum {
+  FORWARD  = LOW,
+  BACKWARD = HIGH
+} Direction;
+
 void setup() {
   sched = new Scheduler();
   sched->init(50);
 
   // distanceTask->init(100);
 
+  pinMode(DIRECTION1, OUTPUT);
+  pinMode(DIRECTION2, OUTPUT);
+
   blinkingLed = new BlinkTask(LED_PIN, &gloBlinkingState);
   blinkingLed->init(200);
-
-  motor1.setSpeed(50);  // TODO: debug
-  motor2.setSpeed(150); // TODO: debug
 
   serialTask = new SerialTask(&gloDistanceValue, &gloBlinkingState, move);
   serialTask->init(100);
@@ -84,24 +83,34 @@ void move(int direction) {
 
   switch (direction) {
     case 1://forward
-      motor1.forward();
-      motor2.forward();
+      digitalWrite(DIRECTION1, LOW);
+      digitalWrite(DIRECTION2, LOW);
+      analogWrite(SPEED1, 200);   // PWM regulate speed
+      analogWrite(SPEED2, 150);   // PWM regulate speed
       break;
     case 2: //backward
-      motor1.backward();
-      motor2.backward();
+      digitalWrite(DIRECTION1, HIGH);
+      digitalWrite(DIRECTION2, HIGH);
+      analogWrite(SPEED1, 145);   // PWM regulate speed
+      analogWrite(SPEED2, 200);   // PWM regulate speed
       break;
     case 3: //left
-      motor1.backward();
-      motor2.forward();
+      digitalWrite(DIRECTION1, HIGH);
+      digitalWrite(DIRECTION2, LOW);
+      analogWrite(SPEED1, 100);   // PWM regulate speed
+      analogWrite(SPEED2, 100);   // PWM regulate speed
       break;
     case 4: //right
-      motor1.forward();
-      motor2.backward();
+      digitalWrite(DIRECTION1, LOW);
+      digitalWrite(DIRECTION2, HIGH);
+      analogWrite(SPEED1, 100);   // PWM regulate speed
+      analogWrite(SPEED2, 100);   // PWM regulate speed
       break;
     case 5: //halt
-      motor1.stop();
-      motor2.stop();
+      digitalWrite(DIRECTION1, LOW);
+      digitalWrite(DIRECTION2, LOW);
+      analogWrite(SPEED1, 0);   // PWM regulate speed
+      analogWrite(SPEED2, 0);   // PWM regulate speed
       break;
   }
 
