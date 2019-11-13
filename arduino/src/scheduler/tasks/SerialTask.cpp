@@ -21,7 +21,7 @@ void SerialTask::init(int period) {
 void SerialTask::remoteCmdExecutor() {
   if ((Serial.available()) > (0)) {
     input = Serial.read();
-    //Serial.println(input);
+    Serial.println(input);
     switch (input) {
       case 'w' :
         move(1);
