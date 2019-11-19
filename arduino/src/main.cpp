@@ -81,55 +81,35 @@ void move(int direction) {
   }
 
   switch (direction) {
-    case 1://forward
+    case 1: // forward
       digitalWrite(DIRECTION1, LOW);
       digitalWrite(DIRECTION2, LOW);
       analogWrite(SPEED1, 200);   // PWM regulate speed
       analogWrite(SPEED2, 150);   // PWM regulate speed
       break;
-    case 2: //backward
+    case 2: // backward
       digitalWrite(DIRECTION1, HIGH);
       digitalWrite(DIRECTION2, HIGH);
       analogWrite(SPEED1, 145);   // PWM regulate speed
       analogWrite(SPEED2, 200);   // PWM regulate speed
       break;
-    case 3: //left
+    case 3: // left
       digitalWrite(DIRECTION1, HIGH);
       digitalWrite(DIRECTION2, LOW);
       analogWrite(SPEED1, 100);   // PWM regulate speed
       analogWrite(SPEED2, 100);   // PWM regulate speed
       break;
-    case 4: //right
+    case 4: // right
       digitalWrite(DIRECTION1, LOW);
       digitalWrite(DIRECTION2, HIGH);
       analogWrite(SPEED1, 100);   // PWM regulate speed
       analogWrite(SPEED2, 100);   // PWM regulate speed
       break;
-    case 5: //halt
+    case 5: // halt
       digitalWrite(DIRECTION1, LOW);
       digitalWrite(DIRECTION2, LOW);
       analogWrite(SPEED1, 0);   // PWM regulate speed
       analogWrite(SPEED2, 0);   // PWM regulate speed
       break;
   }
-
-  /*
-  switch (direction) {
-    case 1: // forward
-      motor.moveForward(PWM_SPEED);
-      break;
-    case 2: // backward
-      motor.moveBackward(PWM_SPEED);
-      break;
-    case 3: // left
-      motor.turnLeft(PWM_SPEED);
-      break;
-    case 4: // right
-      motor.turnRight(PWM_SPEED);
-      break;
-    case 5: // halt
-      motor.stopMoving();
-      break;
-  }
-  */
 }

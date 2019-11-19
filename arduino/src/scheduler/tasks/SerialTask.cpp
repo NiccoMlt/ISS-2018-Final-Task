@@ -52,9 +52,9 @@ void SerialTask::remoteCmdExecutor() {
 void SerialTask::tick() {
   remoteCmdExecutor();
 
-  if (c++ == 3) {
+  if (c++ == 10) {
     c = 0;
     Serial.println(*gloDistanceValue); // TODO
-    Serial.println(*gloBlinkingState); // TODO
+    // Serial.println(*gloBlinkingState); // TODO
   }
 }
