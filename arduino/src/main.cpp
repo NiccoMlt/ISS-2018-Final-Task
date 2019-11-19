@@ -20,12 +20,11 @@ const int DIRECTION2 = 12;
 void move(int direction);
 
 Scheduler *sched;
-// Drive motor(SPEED1, DIRECTION1, SPEED2, DIRECTION2);
 
 float gloDistanceValue = 5.0;
 bool gloBlinkingState = false;
 
-// DistanceTask* distanceTask = new DistanceTask(PROXIMITY_TRIG_PIN, PROXIMITY_ECHO_PIN, gloDistanceValue);
+DistanceTask* distanceTask = new DistanceTask(PROXIMITY_TRIG_PIN, PROXIMITY_ECHO_PIN, &gloDistanceValue);
 BlinkTask *blinkingLed;
 SerialTask *serialTask;
 
@@ -38,7 +37,7 @@ void setup() {
   sched = new Scheduler();
   sched->init(50);
 
-  // distanceTask->init(100);
+  distanceTask->init(100);
 
   pinMode(DIRECTION1, OUTPUT);
   pinMode(DIRECTION2, OUTPUT);
@@ -49,7 +48,7 @@ void setup() {
   serialTask = new SerialTask(&gloDistanceValue, &gloBlinkingState, move);
   serialTask->init(100);
 
-  // sched->addTask(distanceTask);
+  sched->addTask(distanceTask);
   sched->addTask(blinkingLed);
   sched->addTask(serialTask);
 }
