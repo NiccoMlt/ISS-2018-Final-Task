@@ -1,21 +1,21 @@
 #include "BlinkingLed.h"
 
-BlinkingLed::BlinkingLed(Led* led){
+BlinkingLed::BlinkingLed(Led *led) {
   this->led = led;
   this->isOn = false;
 }
 
-void BlinkingLed::switchOn(){
+void BlinkingLed::switchOn() {
   this->led->switchOn();
   isOn = true;
 }
 
-void BlinkingLed::switchOff(){
+void BlinkingLed::switchOff() {
   this->led->switchOff();
   isOn = false;
 };
 
-void BlinkingLed::blink(){
+void BlinkingLed::blink() {
   if (isOn) {
     switchOff();
   } else {
