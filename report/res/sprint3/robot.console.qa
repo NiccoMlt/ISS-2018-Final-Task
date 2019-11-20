@@ -1,0 +1,91 @@
+QActor console context ctxRobot {
+
+    /** Stato iniziale della console. */
+    State init initial [
+        delay 500;
+        println("Console init");
+        connectAsSubscriber "unibo/frontendUserCmd"
+    ] switchTo doWork
+
+    /**
+     * Stato principale della console.
+     *
+     * Attende messaggi dal robot e li gestisce.
+     */
+    State doWork []
+    transition
+        stopAfter 60000
+        whenEvent frontendUserCmd -> adaptCommand,
+        whenMsg stateUpdate -> updateView,                            // R-consoleUpdate
+        whenMsg bag -> handlePhoto
+        finally repeatPlan
+
+    /** Lo stato adaptCommand permette di convertire comandi provenienti dalla WebGUI. */
+    State adaptCommand resumeLastPlan [
+        printCurrentEvent;
+        onEvent frontendUserCmd: frontendUserCmd(cmd(explore)) ->
+            forward robot_discovery_mind -m cmdExplore: cmdExplore;
+        onEvent frontendUserCmd: frontendUserCmd(cmd(halt)) ->
+            forward robot_discovery_mind -m cmdStop: cmdStop;
+        onEvent frontendUserCmd: frontendUserCmd(cmd(home)) ->
+            forward robot_discovery_mind -m cmdGoHome: cmdGoHome;
+        onEvent frontendUserCmd: frontendUserCmd(bagStatus(bomb)) ->
+            selfMsg bagStatus: bagStatus(bomb, args(picture(nothing)));
+        onEvent frontendUserCmd: frontendUserCmd(bagStatus(bag)) ->
+            selfMsg bagStatus: bagStatus(bag, args(nothing))
+    ]
+
+    /**
+     * Lo stato handlePhoto gestisce la ricezione di una foto dal robot.
+     *
+     * Attende un messaggio di bagStatus per gestirlo.
+     */
+    State handlePhoto [
+        onMsg bag: bag(picture(X)) -> printCurrentMessage
+    ] transition
+        stopAfter 60000
+        whenMsg bagStatus -> handleBagStatus,
+        whenEvent frontendUserCmd -> adaptCommand
+        finally repeatPlan
+
+    /**
+     * Lo stato handleBagStatus permette di gestire se la borsa è una bomba o no.
+     *
+     * Se lo è, memorizza la foto, ordina al robot di tornare e segnala un alert.
+     * Se non lo è, ordina al robot di continuare l'esplorazione.
+     */
+    State handleBagStatus [
+        onMsg bagStatus: bagStatus(bomb, args(picture(X))) -> {
+            // TODO implement save X                                    // R-storePhoto
+            forward robot_discovery_mind -m cmdGoHome: cmdGoHome;       // R-backHomeSinceBomb
+            selfMsg alert: alert                                        // R-alert
+        };
+        onMsg bagStatus: bagStatus(bag, Y) ->
+            forward robot_discovery_mind -m cmdExplore: cmdExplore      // R-continueExploreAfterPhoto
+    ] transition
+        whenTime 3000 -> doWork
+        whenMsg alert -> handleAlert
+
+    /**
+     * Lo stato handleAlert permette di gestire uno stato di allerta.
+     *
+     * Aspetta che il robot sia tornato poi lo manda a raccogliere la bomba.
+     */
+    State handleAlert []
+    transition
+        stopAfter 60000
+        whenMsg robotHome: robotHome do
+            forward robot_retriever_mind -m cmdReachBomb: cmdReachBomb,  // R-waitForHome & R-reachBag
+        whenMsg stateUpdate -> updateView
+        finally repeatPlan
+
+    /**
+     * Lo stato updateView permette di gestire gli aggiornamenti di stato della vista.
+     *
+     * Una volta fatto, riprende lo stato precedente.
+     */
+    State updateView resumeLastPlan [
+        // onMsg stateUpdate: state(T,P) -> printCurrentEvent;
+        onMsg stateUpdate: state(T,P) -> javaRun it.unibo.utils.updateStateOnConsole.receivedUpdateState(T, P)
+    ]
+}

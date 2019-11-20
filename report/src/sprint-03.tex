@@ -115,20 +115,22 @@ Inoltre, la software house mette già a disposizione un adattatore per JavaScrip
 Ancora una volta a causa di vincoli di spazio, di seguito sono riportate esclusivamente le modifiche più rilevanti alla specifica di metamodello QA in uscita alle fasi di analisi.
 
 % WORLD OBSERVER
-\lstinputlisting[%
-  firstline=118,%
-  lastline=150,%
-  language=qa%
-]{res/sprint3/robot.qa}
+% \lstinputlisting[%
+%   firstline=118,%
+%   lastline=150,%
+%   language=qa%
+% ]{res/sprint3/robot.qa}
+\lstinputlisting[language=qa]{res/sprint2/robot.world-observer.qa}
 
 Come è possibile vedere, ora il componente \texttt{world\_observer} è connesso come subscriber al broker MQTT e comunica tramite messaggi alla console le variazioni della temperatura.
 
 % CONSOLE
-\lstinputlisting[%
-  firstline=640,%
-  lastline=730,%
-  language=qa%
-]{res/sprint3/robot.qa}
+% \lstinputlisting[%
+%   firstline=640,%
+%   lastline=730,%
+%   language=qa%
+% ]{res/sprint3/robot.qa}
+\lstinputlisting[language=qa]{res/sprint2/robot.console.qa}
 
 Anche il componente \texttt{console} è connesso via MQTT e interpreta i nuovi comandi \texttt{frontendUserCmd} ricevuti come eventi dall'interfaccia web, inoltrandoli come messaggi diretti alle relative \texttt{mind}.
 Inoltre, delega la gestione dello stato a un \textit{singleton} in Java.

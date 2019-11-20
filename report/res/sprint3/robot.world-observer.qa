@@ -1,0 +1,34 @@
+/** Attore che osserva l'ambiente e valuta la temperatura. */
+QActor world_observer context ctxRobot {
+
+    Rules {
+        // Impostazioni di default:
+        temperature(18).
+        // Regole di valutazione:
+        evaluateTemp :- temperature(X), eval(lt, X, 25).                // R-TempOk
+        // Regola di valutazione complessiva:
+        evaluateEnvironment :- evaluateTemp.
+    }
+
+    State init initial [
+        connectAsSubscriber "unibo/environment"
+    ] switchTo doObserve
+
+    /** Lo stato doObserve è lo stato nel quale viene verificata la temperatura. */
+    State doObserve [
+        [ !? evaluateEnvironment ]
+            emit environment: environment(ok)
+        else
+            emit environment: environment(notok)
+    ] transition
+        whenTime 1000 -> doObserve
+        whenEvent temperature -> evaluateTemperature                    // R-TempOk
+        finally repeatPlan
+
+    State evaluateTemperature [
+        onEvent temperature: temperature(X) ->
+            ReplaceRule temperature(_) with temperature(X);
+        onEvent temperature: temperature(X) ->
+            forward console -m stateUpdate: state(temperature, X)
+    ] switchTo doObserve
+}
