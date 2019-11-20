@@ -1,0 +1,34 @@
+QActor robot_adapter context ctxRobot {
+
+    Rules {
+      // robotType("robotSerial", setuparg("/dev/ttyACM0")).
+      // robotType("robotVirtual", setuparg("localhost")).
+      robotType("robotDemo", setuparg("")).
+    }
+
+    State init initial []
+    transition
+        whenTime 100 -> initRobots
+
+    State initRobots [
+        [ ?? robotType(T, setuparg(A)) ] selfMsg robotAdapterAdd: robot(T, A)
+    ] transition
+        whenTime 2000 -> doWork
+        whenMsg robotAdapterAdd: robot(T, A) do
+            javaRun it.unibo.robot_adapter.robots.setUp(T, A)
+        finally repeatPlan
+
+    State doWork []
+    transition
+        stopAfter 60000
+        whenMsg robotCmd -> executeCommand,
+        whenMsg robotAdapterCmd -> executeCommand
+        finally repeatPlan
+
+    State executeCommand resumeLastPlan [
+        onMsg robotCmd: robotCmd(X) ->
+            javaRun it.unibo.robot_adapter.robots.doMove(X);
+        onMsg robotAdapterCmd: robotCmd(X, T) ->
+            javaRun it.unibo.robot_adapter.robots.doMove(X, T)
+    ]
+}

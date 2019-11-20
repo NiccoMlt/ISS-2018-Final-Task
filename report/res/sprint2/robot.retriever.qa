@@ -1,0 +1,30 @@
+QActor robot_retriever_mind context ctxRobot {
+
+    Rules {
+        environment(notok).
+    }
+
+    State home initial []
+    transition
+        stopAfter 60000
+        whenEvent environment: environment(E) do
+            demo replaceRule(environment(X), environment(E)),
+        whenMsg cmdReachBomb -> checkTemperatureAndRetrieve             // R-reachBag & R-TempOk
+        finally repeatPlan
+
+    State checkTemperatureAndRetrieve [                                 // R-TempOk
+        [ !? environment(ok) ] selfMsg cmdReachBomb: cmdReachBomb
+    ] transition
+        whenTime 100 -> home
+        whenMsg cmdReachBomb -> goToReachBomb
+
+    State goToReachBomb []
+    transition
+        whenTime 1000 -> reachBomb
+
+    State reachBomb [
+        println("RETRIVING BOMB ...")
+    ] transition
+        whenTime 3000 -> reachBomb
+        whenMsg robotHome -> home
+}

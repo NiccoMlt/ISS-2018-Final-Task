@@ -1,0 +1,58 @@
+QActor console context ctxRobot {
+
+    State init initial [
+        println("Console init")
+    ] switchTo doWork
+
+    State doWork []
+    transition
+        stopAfter 60000
+        whenEvent usercmd -> adaptCommand,
+        whenEvent robotState -> updateView,                             // R-consoleUpdate
+        whenMsg bag -> handlePhoto
+        finally repeatPlan
+
+    State adaptCommand resumeLastPlan [
+        printCurrentEvent;
+        onEvent usercmd: usercmd(robotgui(cmd(explore))) ->
+            forward robot_discovery_mind -m cmdExplore: cmdExplore;
+        onEvent usercmd: usercmd(robotgui(cmd(halt))) ->
+            forward robot_discovery_mind -m cmdStop: cmdStop;
+        onEvent usercmd: usercmd(robotgui(cmd(home))) ->
+            forward robot_discovery_mind -m cmdGoHome: cmdGoHome;
+        onEvent usercmd: usercmd(robotgui(bagStatus(bomb))) ->
+            selfMsg bagStatus: bagStatus(bomb, args(picture(nothing)));
+        onEvent usercmd: usercmd(robotgui(bagStatus(bag))) ->
+            selfMsg bagStatus: bagStatus(bag, args(nothing))
+    ]
+
+    State handlePhoto [
+        onMsg bag: bag(picture(X)) -> printCurrentMessage
+    ] transition
+        stopAfter 60000
+        whenMsg bagStatus -> handleBagStatus,
+        whenEvent usercmd -> adaptCommand
+        finally repeatPlan
+
+    State handleBagStatus [
+        onMsg bagStatus: bagStatus(bomb, args(picture(X))) -> {
+            // TODO implement save X                                    // R-storePhoto
+            forward robot_discovery_mind -m cmdGoHome: cmdGoHome;       // R-backHomeSinceBomb
+            selfMsg alert: alert                                        // R-alert
+        };
+        onMsg bagStatus: bagStatus(bag, Y) ->
+            forward robot_discovery_mind -m cmdExplore: cmdExplore      // R-continueExploreAfterPhoto
+    ] transition
+        whenTime 3000 -> doWork
+        whenMsg alert -> handleAlert
+
+    State handleAlert []
+    transition
+        whenTime 3000 -> handleAlert
+        whenMsg robotHome: robotHome do
+            forward robot_retriever_mind -m cmdReachBomb: cmdReachBomb  // R-waitForHome & R-reachBag
+
+    State updateView resumeLastPlan [
+        onMsg robotState: state(X) -> printCurrentMessage
+    ]
+}

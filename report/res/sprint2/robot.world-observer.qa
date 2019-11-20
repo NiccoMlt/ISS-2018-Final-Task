@@ -1,0 +1,20 @@
+QActor world_observer context ctxRobot {
+
+    Rules {
+        temperature(18).
+
+        evaluateTemp :- temperature(X), eval(lt, X, 25).                // R-TempOk
+        evaluateEnvironment :- evaluateTemp.
+    }
+
+    State doObserve initial [
+        [ !? evaluateEnvironment ]
+            emit environment: environment(ok)
+        else
+            emit environment: environment(notok)
+    ] transition
+        whenTime 1000 -> doObserve
+        whenEvent temperature: temperature(X) do
+            ReplaceRule temperature(Z) with temperature(X)              // R-TempOk
+        finally repeatPlan
+}

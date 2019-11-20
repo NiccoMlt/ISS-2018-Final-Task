@@ -1,0 +1,192 @@
+QActor robot_discovery_mind context ctxRobot {
+
+    Rules {
+        environment(notok).
+        /** ledState(X) ; X = off|blinking */
+        ledState(off).
+
+        numOfExplorations(3).
+        curGoal(0, 0).
+
+        continueForward(T) :-
+            timew(T),
+            inc(repeatForward, 1, R),
+            getVal(nstep, N),
+            output(continueForward(R, N, T)),
+            eval(lt, R, N).
+        continueExplore(V) :-
+            numOfExplorations(MAX),
+            inc(curNumExplore, 1, V),
+            output(continueExplore(V, MAX)),
+            eval(le, V, MAX),
+            replaceRule(curGoal(_, _), curGoal(V, V)).
+        continueExplore(V) :- removeeRule(curGoal(_, _)).
+
+        eval( eq, X, X ).
+        doTheMove(M) :-
+            move(M1), !,
+            eval(eq,M,M1), !,
+            doTheFirstMove(M).
+
+        doTheFirstMove(w) :- retract( move(w) ), !.
+        doTheFirstMove(a) :- retract( move(a) ), !.
+        doTheFirstMove(d) :- retract( move(d) ), !.
+    }
+
+    State init initial [
+        javaRun it.unibo.planning.planUtil.initAI()
+    ] switchTo home
+
+    State home [
+        onMsg robotHome: robotHome -> forward console -m robotHome: robotHome
+    ] transition
+        stopAfter 60000
+        whenEvent environment: environment(E) do
+            demo replaceRule(environment(X), environment(E)),
+        whenMsg cmdExplore -> checkTemperatureAndExplore                // R-explore & R-TempOk
+        finally repeatPlan
+
+    State checkTemperatureAndExplore [                                  // R-TempOk
+        [ !? environment(ok) ] selfMsg cmdExplore: cmdExplore
+    ] transition
+        whenTime 100 -> home
+        whenMsg cmdExplore -> goToExploration
+
+    State goToExploration [
+        ReplaceRule ledState(off) with ledState(blinking);
+        println("STATE[goToExploration] ...");
+        forward robot_adapter -m robotCmd: robotCmd(blinkStart);        // R-blinkLed (start)
+        // Planner
+        demo assign(curNumExplore, 0);
+        javaRun it.unibo.planning.planUtil.cleanQa();
+        demo assign(nstep, 0)
+    ] switchTo exploreStep
+
+    State goToHandleBag [
+        println("STATE[goToHandleBag] ...");
+        // Handle obstacle
+        ReplaceRule ledState(blinking) with ledState(off);              // R-blinkLed (stop)
+        forward robot_adapter -m robotCmd: robotCmd(blinkStop);         // R-blinkLed (stop)
+        println("TAKE PHOTO ...");  // TODO implement                   // R-takePhoto
+        forward console -m bag: bag(picture(ofBag));                    // R-sendPhoto
+        [ !? curPos(X, Y, D) ] println( handleFixedObstacleCases_1(X, Y, D));
+        // Update map
+        javaRun it.unibo.planning.planUtil.markCellAsObstacle();
+        javaRun it.unibo.planning.planUtil.showMap()
+    ] switchTo handleBag
+
+    State handleBag []
+    transition
+        stopAfter 60000
+        whenMsg cmdGoHome -> goToHome,                                              // R-backHome
+        whenMsg cmdExplore -> resumeExplorationAfterBag                             // R-continueExplore
+
+    State resumeExplorationAfterBag [
+        [ !? curGoal(N,N) ] javaRun it.unibo.planning.planUtil.setGoal(N,N);
+        [ !? curGoal(N,N) ] javaRun it.unibo.planning.planUtil.doPlan()
+    ] switchTo doActions
+
+    State goToIdle [
+        ReplaceRule ledState(blinking) with ledState(off);
+        println("STATE[goToIdle] ...");
+        forward robot_adapter -m robotCmd: robotCmd(blinkStop)                      // R-blinkLed (stop)
+    ] switchTo idle
+
+    State goToHome [
+        println("STATE[goToHome] ...");
+        forward robot_adapter -m robotCmd: robotCmd(blinkStart)                     // R-blinkLed (start)
+    ] switchTo backToHome
+
+    State idle []
+    transition
+        stopAfter 60000
+        whenMsg cmdExplore -> goToExploration,                                      // R-continueExplore
+        whenMsg cmdGoHome -> goToHome                                               // R-backHome
+
+    State doActions[
+        [ !? move(M) ]
+            println( doActions_doingTheMove(M) );
+        [ not !? move(M) ]
+            selfMsg endAction : endAction ;
+        ReplaceRule moveDuration(_) with  moveDuration(moveWDuration(0)); // TODO ??
+        [ !? move(M) ]
+            selfMsg waitMoveCompleted: waitMoveCompleted;
+        [ !? doTheMove(M) ]
+            forward robot_advanced -m robotCmd: robotCmd(M)
+    ] transition
+        stopAfter 60000
+        whenMsg cmdStop -> goToIdle,   //first to be checked
+        whenMsg cmdExplore -> goToExploration,
+        whenMsg cmdGoHome -> goToHome,
+        whenMsg waitMoveCompleted -> waitMoveCompletedAnswer,
+        whenMsg endAction -> backToHome  //all actions done
+        finally repeatPlan
+
+    State waitMoveCompletedAnswer []
+    transition
+        stopAfter 60000
+        whenMsg cmdStop -> goToIdle,   //first to be checked
+        whenMsg moveMsgCmdDone -> handleCmdDone,
+        whenMsg moveMsgCmdObstacle -> goToHandleBag
+
+    State handleCmdDone [
+        printCurrentMessage;
+        onMsg moveMsgCmdDone: moveMsgCmdDone(X) ->
+            javaRun it.unibo.planning.planUtil.doMove(X); //update the map
+        javaRun it.unibo.planning.planUtil.showMap()
+    ] switchTo doActions
+
+    State backToHome  [
+        [ !? curPos(0,0,D) ] {
+            forward robot_adapter -m robotCmd: robotCmd(blinkStop);                 // R-blinkLed (stop)
+            println("AT HOME");
+            javaRun it.unibo.planning.planUtil.showMap() ;
+            selfMsg endAction: endAction
+        } else {
+            javaRun it.unibo.planning.planUtil.setGoal("0","0");
+            [ !? curPos(X,Y,D) ]
+                println( backToHome(X,Y,D) );
+            javaRun it.unibo.planning.planUtil.doPlan()
+        }
+    ] transition
+        whenTime 100 -> doActions
+        whenMsg endAction -> exploreStep
+
+    State exploreStep [
+        println(state(exploreStep));
+        [ !? curPos(X,Y,D) ]
+            println( exploreStep(X,Y,D) );
+        [ !? continueExplore(N)] {
+            javaRun it.unibo.planning.planUtil.extendSpaceToexplore( );
+            [!? getVal(curNumExplore,E)]
+                javaRun it.unibo.planning.planUtil.setGoal(E,E);
+            javaRun it.unibo.planning.planUtil.doPlan() //;javaOp "debugStep()"
+        } else {
+            selfMsg endAction: endAction
+        }
+    ]
+    transition whenTime 1000 -> doActions
+        whenMsg endAction -> exploreUncovered //: endAction do println("bye")
+
+    State exploreUncovered[
+        [ !? curPos(X,Y,D) ]
+            println( exploreUncovered(X,Y,D) );
+        javaRun it.unibo.planning.planUtil.showMap() ;
+        javaRun it.unibo.planning.planUtil.findNextCellUncovered( );
+        [ !? uncovered(X,Y )]
+            println( uncovered(X,Y ) );
+        [ !? uncovered(X,Y )]
+            javaRun it.unibo.planning.planUtil.setGoal(X,Y);
+        [ ?? uncovered(X,Y )]
+            javaRun it.unibo.planning.planUtil.doPlan()
+        else
+            selfMsg endAction: endAction
+        ;javaOp "debugStep()"
+    ] transition
+        whenTime 100 -> doActions
+        whenMsg endAction: endAction do println("bye")
+
+    State handleError [
+        println("mind ERROR")
+    ]
+}
