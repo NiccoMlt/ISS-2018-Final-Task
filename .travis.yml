@@ -9,14 +9,14 @@ jobs:
       addons:
         apt:
           packages:
-            - graphviz        # Graphviz is used to handle DOT and GV files
-            - gnuplot         # Gnuplot is used to handle TikZ figures
+            # - graphviz        # Graphviz is used to handle DOT and GV files
+            # - gnuplot         # Gnuplot is used to handle TikZ figures
             - icc-profiles    # color profiles are needed to generate PDF/A
             - miktex          # MikTeX is the chosen LaTeX distribution
             - openjdk-8-jre-headless  # arara requires Java
-            - inkscape        # Inkscape is used to handle SVG files
-            - ghostscript     # Ghostscript is used to handle EPS files
-            - python-pygments # Pygments is used to handle source code syntax highlight with minted
+            # - inkscape        # Inkscape is used to handle SVG files
+            # - ghostscript     # Ghostscript is used to handle EPS files
+            # - python-pygments # Pygments is used to handle source code syntax highlight with minted
           sources:
             - sourceline: "deb [arch=amd64] http://miktex.org/download/ubuntu xenial universe"
               key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
@@ -27,16 +27,16 @@ jobs:
         - sudo mpm --admin --package-level=basic --find-upgrades --upgrade
         - cd ./report
         - arara --version     # fetch arara from MikTeX and print version
-        - gs --version        # print Ghostscript version
-        - dot -V              # print Graphviz version
-        - pygmentize -V       # print Pygments version
-        - inkscape --version  # print Inkscape version
+        # - gs --version        # print Ghostscript version
+        # - dot -V              # print Graphviz version
+        # - pygmentize -V       # print Pygments version
+        # - inkscape --version  # print Inkscape version
       script:
         - arara --log --verbose report.tex
         - chktex report.tex
       after_failure:
         - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/pdflatex.log
-        - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/epstopdf.log
+        # - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/epstopdf.log
         - cat arara.log
         - cat report.log
       deploy:
