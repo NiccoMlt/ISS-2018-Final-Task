@@ -10,15 +10,6 @@
 % arara: pdflatex:      { interaction: nonstopmode, shell: yes }
 % arara: pdflatex:      { interaction: nonstopmode, synctex: yes, shell: yes }
 
-%% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
-\begin{filecontents*}{\jobname.xmpdata}
-  \Title{Laboratorio di Sistemi Software - Tema finale}
-  \Subject{Realizzazione di un sistema per l'individuazione e rimozione di una bomba dalla hall di un aeroporto tramite robot controllato da remoto.}
-  \Author{Niccolò Maltoni}
-  \Copyright{Questo documento è fornito sotto licenza Apache License, Version 2.0}
-  \CopyrightURL{https://opensource.org/licenses/Apache-2.0}
-\end{filecontents*}
-
 \documentclass{llncs}           % LaTeX document class for Lecture Notes in Computer Science
 
 \usepackage{a4wide}
@@ -44,9 +35,16 @@
 ]{csquotes}                     % serve a impostare lo stile delle virgolette
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{silence}            % silenzia warning attesi
-\WarningFilter{latex}{Writing file}
-\WarningFilter{latex}{Overwriting file}
+\usepackage{fancyvrb}
+
+%% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
+\begin{VerbatimOut}{\jobname.xmpdata}
+  \Title{Laboratorio di Sistemi Software - Tema finale}
+  \Subject{Realizzazione di un sistema per l'individuazione e rimozione di una bomba dalla hall di un aeroporto tramite robot controllato da remoto.}
+  \Author{Niccolò Maltoni}
+  \Copyright{Questo documento è fornito sotto licenza Apache License, Version 2.0}
+  \CopyrightURL{https://opensource.org/licenses/Apache-2.0}
+\end{VerbatimOut}
 
 \usepackage{relsize, etoolbox}  % permette di riferirsi ad ambienti specifici
 \AtBeginEnvironment{foreigndisplayquote}{\smaller}
