@@ -1,0 +1,48 @@
+\section{Difficoltà e note varie}
+
+Durante lo sviluppo, sono state riscontrate diverse difficoltà che per completezza è bene elencare.
+
+Risulta comunque evidente che queste criticità rispecchino il mondo reale e dunque bene si vadano ad integrare con lo scopo di questo progetto di rispecchiare fedelmente un processo di sviluppo all'interno di una software house.
+
+\subsection{Creazione dinamica degli attori}
+Sarebbe stato molto utile poter creare dinamicamente gli attori in QA\@:
+infatti, sarebbe stato possibile creare un robot adapter per ogni robot a runtime senza dover assegnare tutti i robot usati allo stesso adapter.
+
+Per esempio, sarebbe stato possibile usare un robot per l'esplorazione ed uno differente per il recupero.
+
+\subsection{Tecnologie datate}
+Esperienza interessante è stata il dover avere a che fare con tecnologie almeno in parte datate o non complete:
+
+\begin{itemize}
+  \item
+    come specificato più nel dettaglio in~\Cref{app:raspi},
+    l'immagine per Raspberry Pi fornita come riferimento dalla software house è basata su una versione datata dei pacchetti, e la configurazione in parte fuori standard ha convinto a realizzare una nuova immagine al solo scopo di questo progetto.
+  \item
+    il linguaggio QA è eccezionale sotto il punto di vista della realizzazione di metamodelli e per il \textit{bootstrap} di prototipi, ma come anche da documentazione ci sono alcune funzionalità solo teorizzate o implementate in parte che possono risultare limitanti dal lato pratico.
+    \begin{itemize}
+      \item
+        è comunque importante specificare che è stata usata la versione 1.5.13.2, in quanto quella presentata durante le lezioni e meglio conosciuta;
+        è probabile che la nuova versione disponibile possa arginare alcune delle criticità delle versioni più vecchie.
+    \end{itemize}
+  \item
+    la software factory richiede necessariamente Eclipse per la code generation e presenta dunque un lock-in non indifferente rispetto a tecnologie differenti basate su build system (ad esempio, Gradle) anziché su IDE, anche in ottica di continuous integration.
+  \item
+    il template fornito per realizzare questo report è basato su una versione datata e modificata della classe \LaTeX{} \texttt{LLNCS} fornita da Springer\footnote{\url{https://www.springer.com/gp/computer-science/lncs/conference-proceedings-guidelines}};
+    a causa di questo vincolo, sono state riscontrate difficoltà con l'utilizzo di pacchetti moderni (come ad esempio \texttt{subcaption}).
+\end{itemize}
+
+\subsection{Modularizzazione del metamodello QA}
+Durante lo sviluppo è stata riscontrata una limitazione non indifferente, soprattutto in termini di sintesi e pulizia del codice:
+i file QA prodotti tendono a diventare molto grandi (anche più di 700 righe) e diventano di difficile fruizione.
+
+\subsection{Stampa degli errori}
+Durante lo sviluppo, un grosso rallentamento è stato causato dalla mancata stampa su console di errori incontrati, poiché ciò rende molto più complesso il debug.
+
+\subsection{MQTT non funzionante}
+Durante lo sviluppo sono stati riscontrati diversi problemi con l'uso di MQTT\@:
+infatti, la software factory incita l'utilizzo di MQTT per la realizzazione della comunicazione tra le entità in gioco, ma ha grossi problemi di implementazione
+\begin{itemize}
+    \item pacchetti persi;
+    \item problemi durante l'avvio degli attori dovuti ad una sovrapposizione delle connessioni;
+    \item ritardo di comunicazione anche su singola macchina in comunicazione tramite localhost.
+\end{itemize}
