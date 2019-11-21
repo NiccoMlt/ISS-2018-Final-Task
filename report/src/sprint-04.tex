@@ -51,6 +51,8 @@ Dopo aver definito l'obiettivo di massima di questo Sprint, si è proceduto con 
 
 \end{description}
 
+% TODO Metamodello QA
+
 \subsection{Analisi del problema}\labelssec{sp4:prob_analysis}
 
 A seguito dell'analisi dei requisiti, sono state fatte diverse considerazioni sui problemi emersi;
@@ -98,14 +100,6 @@ aggiungere queste informazioni allo stato che la console invia periodicamente al
 
 Questo approccio, unito al fatto che è la console stessa a specificare all'interno dello stato quali azioni sono possibili, abilita alla possibilità di inviare messaggi con azioni custom nel caso in cui in futuro ciò si dimostri necessario.
 
-% TODO \subsubsection{Trasmissione delle foto}
-% Dal momento che le informazioni scambiate tra robot-console-interfaccia sono di tipo testuale, si è dovuto valutare un \textbf{sistema per la codifica delle immagini} in maniera testuale per il loro invio.
-%
-% Una possibilità poteva essere quella di memorizzare le immagini nel robot stesso e inviare solamente l'indirizzo per il loro accesso.
-% Questo approccio però non rispettava pienamente i requisiti del sistema (dove si chiede esplicitamente di inviare le foto e la loro memorizzazione viene fatta sulla console), inoltre aumentava il livello di centralizzazione del sistema ed appesantiva ulteriormente la parte più sensibile: il robot.
-%
-% L'approccio alternativo, quello adottato, consiste nel codificare l'immagine in \textbf{Base64} dal robot per poi inviarla alla console che si occuperà di gestire questa informazione inserendola nello stato ed inoltrandolo alle interfacce tramite MQTT.
-
 \subsubsection{Storage foto}
 
 Da requisiti concordati con il committente, è necessario memorizzare la foto della bomba incontrata (\requirementref{R-storePhoto}).
@@ -126,8 +120,6 @@ La memorizzazione di tali foto può essere fatta sia in localmente al robot, che
 Dato che il robot è in possesso della sola foto e non delle informazioni di contesto, è illogico memorizzare tale foto sul robot.
 Per quanto riguarda la memorizzazione su console o servizio remoto, il committente non ha espresso preferenze a riguardo, perciò ancora una volta è stata scelta la soluzione più semplice:
 memorizzare su file nella console.
-
-% TODO Per quanto riguarda il formato di memorizzazione, il committente non ha espresso preferenze, quindi si è deciso di salvare una foto ed un file testuale contenete le informazioni di contesto.
 
 \subsubsection{Condivisione della mappa}
 
@@ -196,4 +188,26 @@ Non ha infatti senso alcuno sovraccaricare il robot, già sensibile, con l'elabo
 
 Il sistema distribuito eterogeneo risultante è quello rappresentato in~\Cref{fig:sp4:system}.
 
+\subsection{Progettazione}\labelssec{sp4:project}
 
+\subsubsection{Arduino e PlatformIO}
+
+Per la realizzazione del codice alla base del robot fisico, si è deciso di partire da codice già presente all'interno della software house, opportunamente adattato a build system più moderni.
+In particolare, la software house metteva a disposizione soprattutto codice pensato per l'utilizzo con l'mBot\footnote{\url{https://www.makeblock.com/steam-kits/mbot}} prodotto da Makeblock, hardware giudicato purtroppo troppo costoso per gli obiettivi del progetto.
+In alternativa, era fornito anche codice per robot Arduino custom; si è deciso dunque di partire da questo codice, sostituendo il build system della toolchain di Arduino con PlatformIO\footnote{\url{https://platformio.org/}}.
+
+Questa scelta ha permesso, innanzitutto, di configurare il provider di continuous integration di eseguire build del codice ad ogni push sul repository GitHub utilizzato;
+inoltre, la toolchain messa a disposizione è molto flessibile e può essere utilizzata per il debug anche in modalità headless su Raspberry Pi.
+
+\subsubsection{Trasmissione e memorizzazione delle foto}
+
+Dal momento che le informazioni scambiate tra robot-console-interfaccia sono di tipo testuale, si è dovuto valutare un \textbf{sistema per la codifica delle immagini} in maniera testuale per il loro invio.
+
+Una possibilità poteva essere quella di memorizzare le immagini nel robot stesso e inviare solamente l'indirizzo per il loro accesso.
+Questo approccio però non rispettava pienamente i requisiti del sistema (dove si chiede esplicitamente di inviare le foto e la loro memorizzazione viene fatta sulla console), inoltre aumentava il livello di centralizzazione del sistema ed appesantiva ulteriormente la parte più sensibile: il robot.
+
+L'approccio alternativo, che poi è quello che si è scelto di adottare, consiste nel codificare l'immagine in \textbf{Base64} dal robot per poi inviarla alla console che si occuperà di gestire questa informazione inserendola nello stato ed inoltrandolo alle interfacce tramite MQTT\@.
+
+Per quanto riguarda il formato di memorizzazione, il committente non ha espresso preferenze, quindi si è deciso di salvare una foto ed un file testuale contenete le informazioni di contesto.
+
+% TODO: sprint review
