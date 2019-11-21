@@ -20,7 +20,7 @@ jobs:
           sources:
             - sourceline: "deb [arch=amd64] http://miktex.org/download/ubuntu xenial universe"
               key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
-            - sourceline: "ppa:inkscape.dev/stable"
+            # - sourceline: "ppa:inkscape.dev/stable"
       install:
         - sudo miktexsetup --shared=yes finish
         - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
@@ -34,6 +34,9 @@ jobs:
       script:
         - arara --log --verbose report.tex
         - chktex report.tex
+      after_success:
+        - pwd
+        - ls -al
       after_failure:
         - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/pdflatex.log
         # - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/epstopdf.log
