@@ -112,7 +112,7 @@ Event frontendRobotState: frontendRobotState(X)
 
 // pubSubServer "tcp://127.0.0.1:1883" // The MQTT broker is on local machine
 
-Context ctxConsole ip [ host="localhost" port=8078 ] // TODO: switch to real IP
+Context ctxConsole ip [ host="127.0.0.1" port=8078 ] // TODO: switch to real IP
 
 Context ctxRobot ip [ host="localhost" port=8079 ] // TODO: switch to real IP
 

@@ -4,7 +4,7 @@
 pubsubserveraddr("").
 pubsubsystopic("unibo/qasys").
 %%% -------------------------------------------
-context(ctxconsole, "localhost",  "TCP", "8078" ).  		 
+context(ctxconsole, "127.0.0.1",  "TCP", "8078" ).  		 
 context(ctxrobot, "localhost",  "TCP", "8079" ).  		 
 %%% -------------------------------------------
 qactor( world_observer , ctxconsole, "it.unibo.world_observer.MsgHandle_World_observer"   ). %%store msgs 
