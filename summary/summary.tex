@@ -218,8 +218,10 @@
 \section*{Premessa}
 
 Questo documento si propone di essere un breve riassunto di quanto realizzato per l'elaborato finale del corso di Laboratorio di Sistemi Software.
+In particolare, è stato richiesto di avere una rappresentazione grafica di massima dell'\textbf{architettura del sistema} sia al termine dell'\textbf{analisi} che al termine della \textbf{progettazione}, in modo da sottolineare l'evoluzione.
 
-Tutti i dettagli di quanto realizzato in ciascuno Sprint sono riportate nel report completo disponibile nella sezione \href{http://github.com/NiccoMlt/ISS-2018-Final-Task/releases}{\textit{Release}} del repository GitHub di questo progetto\footnote{\url{http://github.com/NiccoMlt/ISS-2018-Final-Task}}.
+Il testo a corredo delle rappresentazioni grafiche è stato richiesto essere breve e focalizzato alla comprensione dei diagrammi;
+i dettagli di quanto realizzato in ciascuno Sprint sono riportati nel report completo disponibile nella sezione \href{http://github.com/NiccoMlt/ISS-2018-Final-Task/releases}{\textit{Release}} del repository GitHub di questo progetto\footnote{\url{http://github.com/NiccoMlt/ISS-2018-Final-Task}}.
 
 %===========================================================================
 \section{Introduzione}\labelsec{intro}
@@ -248,7 +250,78 @@ L'obiettivo finale è la realizzazione di un sistema software per l'esplorazione
 
 %===========================================================================
 \section{Analisi dei requisiti}\labelsec{req_analysis}
-TODO % TODO
+
+Durante le fasi di analisi (sia dei requisiti che del problema) si è cercato di restare il più possibile \textbf{technology independent}, pur essendo però \textbf{technology aware}.
+
+In fase di analisi dei requisiti, sono stati individuati i seguenti componenti:
+
+\begin{description}
+  \item[Console]
+    La console consiste in un'interfaccia grafica attraverso la quale l'operatore può interagire con il sistema.
+
+    Essa permette di interagire con il robot esploratore inviandogli un comando per far partire l'esplorazione.
+    Attraverso la console l'utente può stoppare l'esplorazione per poi scegliere di continuarla oppure di farlo tornare alla base.
+    In caso di rilevamento di un ordigno la console deve segnalarlo all'utente, salvare la foto ed inviare al robot il comando per tornare alla posizione iniziale.
+    Infine, deve consentire l'invio di un comando per far sì che un altro robot possa recuperare l'ordigno.
+
+  \item[Robot Discovery]
+    Il Robot Discovery è un robot che si occupa dell'esplorazione dell'ambiente per rilevare la presenza di eventuali ordigni.
+    Il robot per il committente è un dispositivo fisico in grado di muoversi nell'ambiente grazie a delle ruote motrici, fornito di un LED
+    e dotato di un sonar posto frontalmente per individuare ostacoli.
+
+    Esso permette di essere avviato e/o stoppato remotamente.
+    Deve far lampeggiare un LED ed inviare informazione sullo stato suo e dell'esplorazione.
+    In prossimità di una valigia deve fermarsi, scattare una foto ed inviarla all'operatore.
+
+  \item[Robot Retriever]
+    Il Robot Retriever è un robot che ha il compito di raggiungere la borsa individuata (contenente la bomba) e trasportarla alla posizione iniziale.
+\end{description}
+
+Le interazioni individuate sono le seguenti:
+
+\begin{itemize}
+  \item
+    Il robot invia informazioni sullo stato alla console tramite l'invio di messaggi di tipo \textbf{fire-and-forget}
+    (\texttt{dispatch} nel meta-linguaggio QA).
+
+    Essendo il tipo di interazione \textit{uno-ad-uno}, si è ritenuto appropriato utilizzare come metodo di interazione lo scambio di messaggi.
+
+  \item
+    La console invia istruzioni ai robot anch'essa tramite l'invio di messaggi;
+    le ragioni sono analoghe al caso precedente, e a maggior ragione è evidente come vi sia uno e soltanto un destinatario.
+\end{itemize}
+
+Durante la fase di analisi del problema si è deciso di dividere il \textbf{robot discovery} in due componenti principali:
+
+\begin{itemize}
+  \item uno che conterrà la business logic (\textbf{robot-mind}).
+  \item uno che lavorerà come adattatore per i robot in ambiente virtuale o fisico (\textbf{robot-adapter}).
+\end{itemize}
+
+Inoltre, dato che le informazioni ambientali vengono generate esternamente sia rispetto al robot che rispetto alla console,
+è stato aggiunto un componente (\textbf{world-observer}) che si occupa di osservare le variazioni delle condizioni ambientali e di valutare se sono adeguate al funzionamento del robot o meno e di informare la \textbf{robot-mind}.
+
+Inoltre, considerando le interazioni durante la fase di analisi del problema, sono state effettuate le seguenti modifiche:
+
+\begin{itemize}
+    \item
+      I comandi ricevuti dal \textbf{robot adapter} possono essere \textbf{messaggi};
+      questo è dovuto al fatto che il robot potrebbe ricevere comandi urgenti e che è fondamentale che vengano effettivamente elaborati;
+    \item
+      Il \textbf{world observer} osserva le condizioni ambientali notificate tramite \textbf{eventi} e, dopo aver operato le sue valutazioni, emette anch'esso degli eventi per informare il resto del sistema che le condizioni sono favorevoli o avverse.
+
+      Infatti, non vi è interesse a notificare di ciò uno specifico componente del sistema e non è necessaria alcuna forma di garanzia sul fatto che prima o poi queste informazioni vengano elaborate.
+\end{itemize}
+
+Di seguito, in~\Cref{fig:analysis} è possibile vedere una rappresentazione grafica del sistema per come è stato pensato nelle fasi di analisi.
+
+\begin{figure}[H]
+  \centering%
+  \includegraphics[width=\textwidth]{res/analysis}%
+  \caption{Grafico realizzato in draw.io che rappresenta lo stato del sistema in output all'analisi}%
+  \label{fig:analysis}
+\end{figure}
+
 %===========================================================================
 % \subsection{Casi d'uso}\labelssec{use_cases}
 
@@ -274,7 +347,7 @@ TODO % TODO
 %===========================================================================
 
 %===========================================================================
-\section{Progetto}\labelsec{project}
+\section{Progettazione}\labelsec{project}
 TODO % TODO
 %===========================================================================
 
