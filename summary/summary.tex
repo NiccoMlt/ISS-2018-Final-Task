@@ -32,7 +32,7 @@
 
 %% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
 \begin{VerbatimOut}{\jobname.xmpdata}
-  \Title{Laboratorio di Sistemi Software --- Breve presentazione del tema finale}
+  \Title{Laboratorio di Sistemi Software --- Breve presentazione dell'elaborato finale}
   \Subject{Realizzazione di un sistema per l'individuazione e rimozione di una bomba dalla hall di un aeroporto tramite robot controllato da remoto.}
   \Author{Niccolò Maltoni}
   \Copyright{Questo documento è fornito sotto licenza Apache License, Version 2.0}
@@ -201,7 +201,7 @@
 
 \title{%
   \textbf{LSS --- Laboratorio di Sistemi Software}\\%
-  Breve presentazione del tema finale\\%
+  Breve presentazione dell'elaborato finale\\%
   \textit{\small \url{https://github.com/NiccoMlt/ISS-2018-Final-Task}}
 }
 
@@ -237,7 +237,7 @@ L'obiettivo finale è la realizzazione di un sistema software per l'esplorazione
 
 Durante le fasi di analisi (sia dei requisiti che del problema) si è cercato di restare il più possibile \textbf{technology independent}, pur essendo però \textbf{technology aware}.
 
-In fase di analisi dei requisiti, sono stati individuati i seguenti componenti:
+In fase di \textit{analisi dei requisiti}, sono stati individuati i seguenti componenti:
 
 \begin{description}
   \item[Console]
@@ -275,24 +275,24 @@ Le interazioni individuate sono le seguenti:
     le ragioni sono analoghe al caso precedente, e a maggior ragione è evidente come vi sia uno e soltanto un destinatario.
 \end{itemize}
 
-Durante la fase di analisi del problema si è deciso di dividere il \textbf{robot discovery} in due componenti principali:
+Durante la fase di \textit{analisi del problema} si è deciso di dividere il \textbf{Robot Discovery} in due componenti principali:
 
 \begin{itemize}
-  \item uno che conterrà la business logic (\textbf{robot-mind}).
-  \item uno che lavorerà come adattatore per i robot in ambiente virtuale o fisico (\textbf{robot-adapter}).
+  \item uno che conterrà la business logic (\textbf{Robot Mind}).
+  \item uno che lavorerà come adattatore per i robot in ambiente virtuale o fisico (\textbf{Robot Adapter}).
 \end{itemize}
 
 Inoltre, dato che le informazioni ambientali vengono generate esternamente sia rispetto al robot che rispetto alla console,
-è stato aggiunto un componente (\textbf{world-observer}) che si occupa di osservare le variazioni delle condizioni ambientali e di valutare se sono adeguate al funzionamento del robot o meno e di informare la \textbf{robot-mind}.
+è stato aggiunto un componente (\textbf{World Observer}) che si occupa di osservare le variazioni delle condizioni ambientali e di valutare se sono adeguate al funzionamento del robot o meno e di informare la \textbf{Robot Mind}.
 
-Inoltre, considerando le interazioni durante la fase di analisi del problema, sono state effettuate le seguenti modifiche:
+Inoltre, considerando le interazioni durante la fase di analisi del problema, sono state effettuate le seguenti scelte:
 
 \begin{itemize}
     \item
-      I comandi ricevuti dal \textbf{robot adapter} possono essere \textbf{messaggi};
+      I comandi ricevuti dal \textbf{Robot Adapter} possono essere \textbf{messaggi};
       questo è dovuto al fatto che il robot potrebbe ricevere comandi urgenti e che è fondamentale che vengano effettivamente elaborati;
     \item
-      Il \textbf{world observer} osserva le condizioni ambientali notificate tramite \textbf{eventi} e, dopo aver operato le sue valutazioni, emette anch'esso degli eventi per informare il resto del sistema che le condizioni sono favorevoli o avverse.
+      Il \textbf{World Observer} osserva le condizioni ambientali notificate tramite \textbf{eventi} e, dopo aver operato le sue valutazioni, emette anch'esso degli eventi per informare il resto del sistema che le condizioni sono favorevoli o avverse.
 
       Infatti, non vi è interesse a notificare di ciò uno specifico componente del sistema e non è necessaria alcuna forma di garanzia sul fatto che prima o poi queste informazioni vengano elaborate.
 \end{itemize}
@@ -310,9 +310,9 @@ Di seguito, in~\Cref{fig:analysis} è possibile vedere una rappresentazione graf
 
 \section{Progettazione}\labelsec{project}
 
-Durante la fase di progettazione, sono state fatte le scelte necessarie a pianificare il lavoro per la realizzazione del sistema.
+Durante la fase di \textit{progettazione}, sono state fatte le scelte necessarie a pianificare il lavoro per la realizzazione del sistema.
 
-Per quanto riguarda le entità appartenenti al sistema, è risultato necessario scomporre il robot-adapter in entità più piccole, in modo da poter modularizzare meglio la logica implementativa:
+Per quanto riguarda le entità appartenenti al sistema, è risultato necessario scomporre il Robot Adapter in entità più piccole, in modo da poter modularizzare meglio la logica implementativa:
 
 \begin{description}
   \item[Robot Adapter] continua ad esistere come livello più basso, comportandosi come mero driver per le varie tipologie di robot.
@@ -320,14 +320,14 @@ Per quanto riguarda le entità appartenenti al sistema, è risultato necessario 
   \item[One Cell Forward] viene adottato dalla codebase fornita dalla software house per lo spostamento tra le celle di una cella alla volte permettendo di mantenere lo stato consistente anche in presenza di ostacoli.
 \end{description}
 
-Le interazioni tra le entità sono a livello teorico delle request, in quanto ciascun comando impartito ha come risposta il nuovo stato;
-purtroppo l'infrastruttura non metteva a disposizione delle vere request, di conseguenza si è optato per l'impiego di dispatch memorizzando manualmente il destinatario.
+Le interazioni tra le entità sono a livello teorico delle \texttt{request}, in quanto ciascun comando impartito ha come risposta il nuovo stato;
+purtroppo l'infrastruttura non metteva a disposizione delle vere \texttt{request}, di conseguenza per realizzarle si è optato per l'impiego di \texttt{dispatch} memorizzando manualmente il destinatario.
 
 I messaggi e gli eventi precedentemente modellati sono i medesimi;
-la componente di invio degli eventi è gestita tramite broker MQTT esterno (basato su Mosquitto e Docker).
+la componente di invio degli eventi è gestita tramite \textbf{broker MQTT} esterno (basato su Mosquitto e Docker).
 
-Per quanto riguarda il componente alieno del frontend, esso è stato modellato come un server Express che interagisce tramite MQTT con il sistema, generando eventi.
-L'utente interagisce con il server mediante un'interfaccia web in Angular servita dallo stesso, che diventa di fatto un client in esecuzione sul browser che interagisce tramite WebSocket con il server Express.
+Per quanto riguarda il componente alieno del frontend, esso è stato modellato come un \textbf{server Express} che interagisce tramite MQTT con il sistema, generando \textbf{eventi}.
+L'utente interagisce con il server mediante un'\textbf{interfaccia web in Angular} servita dallo stesso, che diventa di fatto un client in esecuzione sul browser che interagisce tramite \textbf{WebSocket} con il server Express.
 
 Di seguito, in~\Cref{fig:project} è possibile vedere una rappresentazione grafica del sistema per come è stato progettato e realizzato.
 
