@@ -18,7 +18,7 @@ import it.unibo.qactors.akka.QActor;
 
 public class mqttUtil {
 
-	private static final String BROKER = "tcp://127.0.0.1:1883"; // TODO: use real IP
+	private static final String BROKER = "tcp://127.0.0.1:1883";
 
 	private static HashMap<String, MqttClient> connections = new HashMap<>();
 
@@ -127,8 +127,6 @@ public class mqttUtil {
 		}
 
 		@Override
-		public void deliveryComplete(IMqttDeliveryToken token) {
-			// TODO Auto-generated method stub
-		}
+		public void deliveryComplete(IMqttDeliveryToken token) { }
 	}
 }

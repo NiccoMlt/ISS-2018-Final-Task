@@ -51,8 +51,6 @@ Dopo aver definito l'obiettivo di massima di questo Sprint, si è proceduto con 
 
 \end{description}
 
-% TODO Metamodello QA
-
 \subsection{Analisi del problema}\labelssec{sp4:prob_analysis}
 
 A seguito dell'analisi dei requisiti, sono state fatte diverse considerazioni sui problemi emersi;
@@ -64,11 +62,6 @@ Analizzando il comportamento che dovrebbe tenere il robot retriever e le interaz
 la principale differenza al riguardo è che il retriever non deve esplorare la hall, ma deve essere dotato di conoscenza della mappa prima ancora di partire.
 
 Il presupposto è che il robot non debba mai incontrare ostacoli se non quando giunge alla bomba (\requirementref{R-reachBag}), caso in cui la carica e torna a casa (\requirementref{R-bagAtHome}).
-
-% TODO Per errori o nel malaugurato caso sia presente un nuovo ostacolo, il robot si ferma appena lo incontra e lascia all'utente la possibilità di ritentare il ritorno a casa.
-% TODO Se invece l'ostacolo lo incontra nella strada per recuperare la bomba, pone all'utente sia la possibilità di tornare a casa senza bomba che quella di riprovare il recupero.
-% TODO Tale scelta non è stata guidata affatto dai requisiti (in quanto non veniva richiesto nulla di tutto ciò e si era inoltre supposto un ambiente privo di ostacoli dinamici),
-% TODO ma solamente dal buonsenso in quanto il robot in quel momento sta svolgendo un'operazione particolarmente sensibile e non si può ignorare la presenza di un ostacolo o far svolgere un'azione alla cieca al robot.
 
 \subsubsection{Condivisione dello stato della temperatura}
 

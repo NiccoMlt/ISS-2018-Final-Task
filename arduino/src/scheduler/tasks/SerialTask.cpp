@@ -54,7 +54,7 @@ void SerialTask::tick() {
 
   if (c++ == 10) {
     c = 0;
-    Serial.println(*gloDistanceValue); // TODO
-    // Serial.println(*gloBlinkingState); // TODO
+    Serial.println(*gloDistanceValue);
+    Serial.println(*gloBlinkingState);
   }
 }
