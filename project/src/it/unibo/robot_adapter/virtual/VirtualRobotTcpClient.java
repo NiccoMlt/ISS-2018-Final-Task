@@ -60,7 +60,6 @@ public class VirtualRobotTcpClient {
         try {
             clientSocket.close();
         } catch (final IOException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         }
     }

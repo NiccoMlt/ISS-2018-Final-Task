@@ -5,7 +5,6 @@ import it.unibo.supports.serial.SerialPortConnSupport;
 import java.util.ArrayList;
 import java.util.List;
 
-/** TODO: documentation */
 public class RobotSerialCommunication {
 
     private final List<IRobotSerialObserver> observers = new ArrayList<>();

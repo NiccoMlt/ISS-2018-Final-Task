@@ -112,9 +112,9 @@ Event frontendRobotState: frontendRobotState(X)
 
 // pubSubServer "tcp://127.0.0.1:1883" // The MQTT broker is on local machine
 
-Context ctxConsole ip [ host="127.0.0.1" port=8078 ] // TODO: switch to real IP
+Context ctxConsole ip [ host="127.0.0.1" port=8078 ]
 
-Context ctxRobot ip [ host="localhost" port=8079 ] // TODO: switch to real IP
+Context ctxRobot ip [ host="localhost" port=8079 ]
 
 // Handler sonar virtuale
 EventHandler collisionevh for robotSonarObstacle -print  {
@@ -621,13 +621,13 @@ QActor robot_retriever_mind context ctxRobot {
 
         homeReady :- curPos(0,0,D), bomb(_,_).
         bombInRoom :- bomb(_,_).
-        
+
         nearBomb :- curPos(X,Y,_), eval(plus,X,1,R), bomb(R,Y).
         nearBomb :- curPos(X,Y,_), eval(minus,X,1,R), bomb(R,Y).
         nearBomb :- curPos(X,Y,_), eval(plus,Y,1,R), bomb(X,R).
         nearBomb :- curPos(X,Y,_), eval(minus,Y,1,R), bomb(X,R).
     }
-    
+
     State init initial [
         // Planner
         javaRun it.unibo.planning.planUtil.initAI()
@@ -703,7 +703,7 @@ QActor robot_retriever_mind context ctxRobot {
         whenMsg cmdStop -> idle,
         whenMsg idleWhileRetrieving -> idleWhileRetrieving,
         whenMsg idleWhileReturning -> idleWhileReturning
-    
+
     State idleWhileRetrieving [
         javaRun it.unibo.utils.updateStateOnConsole.updateRobotState("retriever-idle-retrieving")
     ] transition
@@ -820,7 +820,7 @@ QActor console context ctxConsole {
         onEvent frontendUserCmd: frontendUserCmd(bagStatus(bag)) ->
             selfMsg bagStatus: bagStatus(bag)
     ]
-    
+
     State storeEnvironment resumeLastPlan [
         onEvent environment: environment(notok) ->
             selfMsg stateUpdate: state(messageDanger, "Environment adverse - temperature too hot!");
@@ -873,7 +873,7 @@ QActor console context ctxConsole {
         whenMsg robotHome -> startRetrieval,                            // R-waitForHome & R-reachBag
         whenMsg stateUpdate -> updateView
         finally repeatPlan
-    
+
     State startRetrieval [
         // Send map
         javaRun it.unibo.utils.updateStateOnRobot.sendMap();
