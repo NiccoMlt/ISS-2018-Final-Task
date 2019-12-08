@@ -170,9 +170,9 @@
 \newcommand{\xunibo}{Alma~Mater~Studiorum~--~University~of~Bologna}
 
 \usepackage{enumitem}
-\setlist[itemize]{itemsep=1em,topsep=1em,itemindent=0.5\parindent}
-\setlist[enumerate]{itemsep=1em,topsep=1em,itemindent=0.5\parindent}
-\setlist[description]{itemsep=1em,topsep=1em,itemindent=0.25\parindent}
+% \setlist[itemize]{itemsep=1em,topsep=1em,itemindent=0.5\parindent}
+% \setlist[enumerate]{itemsep=1em,topsep=1em,itemindent=0.5\parindent}
+% \setlist[description]{itemsep=1em,topsep=1em,itemindent=0.25\parindent}
 
 \setcounter{secnumdepth}{2}
 \setcounter{tocdepth}{3}
@@ -223,7 +223,6 @@ In particolare, è stato richiesto di avere una rappresentazione grafica di mass
 Il testo a corredo delle rappresentazioni grafiche è stato richiesto essere breve e focalizzato alla comprensione dei diagrammi;
 i dettagli di quanto realizzato in ciascuno Sprint sono riportati nel report completo disponibile nella sezione \href{http://github.com/NiccoMlt/ISS-2018-Final-Task/releases}{\textit{Release}} del repository GitHub di questo progetto\footnote{\url{http://github.com/NiccoMlt/ISS-2018-Final-Task}}.
 
-%===========================================================================
 \section{Introduzione}\labelsec{intro}
 
 Per sviluppare l'elaborato di progetto finale, è stato utilizzato un approccio che vuole ricordare quello adottato da una software house:
@@ -234,21 +233,6 @@ il sistema software è stato quindi realizzato con un approccio incrementale con
 
 L'obiettivo finale è la realizzazione di un sistema software per l'esplorazione della hall di un aeroporto alla ricerca di una bomba e il recupero della stessa.
 
-%===========================================================================
-
-%===========================================================================
-% \section{Visione}\labelsec{vision}
-%===========================================================================
-
-%===========================================================================
-% \section{Obiettivi}\labelsec{goals}
-%===========================================================================
-
-%===========================================================================
-% \section{Requisiti}\labelsec{requirements}
-%===========================================================================
-
-%===========================================================================
 \section{Analisi dei requisiti}\labelsec{req_analysis}
 
 Durante le fasi di analisi (sia dei requisiti che del problema) si è cercato di restare il più possibile \textbf{technology independent}, pur essendo però \textbf{technology aware}.
@@ -315,69 +299,43 @@ Inoltre, considerando le interazioni durante la fase di analisi del problema, so
 
 Di seguito, in~\Cref{fig:analysis} è possibile vedere una rappresentazione grafica del sistema per come è stato pensato nelle fasi di analisi.
 
-\begin{figure}[H]
+\begin{figure}[h]
   \centering%
-  \includegraphics[width=\textwidth]{res/analysis}%
+  \includegraphics[width=0.85\textwidth]{res/analysis}%
   \caption{Grafico realizzato in draw.io che rappresenta lo stato del sistema in output all'analisi}%
   \label{fig:analysis}
 \end{figure}
 
-%===========================================================================
-% \subsection{Casi d'uso}\labelssec{use_cases}
-
-% \subsection{Scenario}\labelssec{scenarios}
-
-% \subsection{Modello di dominio}\labelssec{modello}
-
-% \subsection{Test plan}\labelssec{test_plan}
-
-%===========================================================================
-% \section{Analisi del problema}\labelsec{problem_analysis}
-
-%===========================================================================
-% \subsection{Architettura logica}\labelssec{logic_arch}
-
-% \subsection{Abstraction gap}\labelssec{abstraction-gap}
-
-% \subsection{Analisi del rischio}\labelssec{risk_analysis}
-
-%===========================================================================
-% \section{Piano di lavoro}\labelsec{work_plan}
-
-%===========================================================================
-
-%===========================================================================
-\section{Progettazione}\labelsec{project}
-TODO % TODO
-%===========================================================================
-
-% \subsection{Struttura}\labelssec{structure}
-% \subsection{Interazione}\labelssec{interaction}
-% \subsection{Comportamento}\labelssec{behavior}
-
-%===========================================================================
-% \section{Implementazione}\labelsec{implementation}
-
-%===========================================================================
-
-%===========================================================================
-% \section{Testing}\labelsec{testing}
-
-%===========================================================================
-
-%===========================================================================
-% \section{Deployment}\labelsec{deployment}
-%===========================================================================
-
-%===========================================================================
-% \section{Manutenzione}\labelsec{maintenance}
-
-%===========================================================================
-
 \newpage
 
-% \input{src/note.tex} % TODO
+\section{Progettazione}\labelsec{project}
 
-% \input{src/appendice.tex} % TODO
+Durante la fase di progettazione, sono state fatte le scelte necessarie a pianificare il lavoro per la realizzazione del sistema.
+
+Per quanto riguarda le entità appartenenti al sistema, è risultato necessario scomporre il robot-adapter in entità più piccole, in modo da poter modularizzare meglio la logica implementativa:
+
+\begin{description}
+  \item[Robot Adapter] continua ad esistere come livello più basso, comportandosi come mero driver per le varie tipologie di robot.
+  \item[Robot Advanced] si inserisce tra le due \textbf{Mind} e il \textbf{Robot Adapter} e introduce la possibilità di effettuare movimenti atomici sulla mappa, ora considerabile suddivisa in ``celle''.
+  \item[One Cell Forward] viene adottato dalla codebase fornita dalla software house per lo spostamento tra le celle di una cella alla volte permettendo di mantenere lo stato consistente anche in presenza di ostacoli.
+\end{description}
+
+Le interazioni tra le entità sono a livello teorico delle request, in quanto ciascun comando impartito ha come risposta il nuovo stato;
+purtroppo l'infrastruttura non metteva a disposizione delle vere request, di conseguenza si è optato per l'impiego di dispatch memorizzando manualmente il destinatario.
+
+I messaggi e gli eventi precedentemente modellati sono i medesimi;
+la componente di invio degli eventi è gestita tramite broker MQTT esterno (basato su Mosquitto e Docker).
+
+Per quanto riguarda il componente alieno del frontend, esso è stato modellato come un server Express che interagisce tramite MQTT con il sistema, generando eventi.
+L'utente interagisce con il server mediante un'interfaccia web in Angular servita dallo stesso, che diventa di fatto un client in esecuzione sul browser che interagisce tramite WebSocket con il server Express.
+
+Di seguito, in~\Cref{fig:project} è possibile vedere una rappresentazione grafica del sistema per come è stato progettato e realizzato.
+
+\begin{figure}[h]
+  \centering%
+  \includegraphics[width=0.85\textwidth]{res/project}%
+  \caption{Grafico realizzato in draw.io che rappresenta lo stato del sistema in output alla fase di progettazione}%
+  \label{fig:project}
+\end{figure}
 
 \end{document}
