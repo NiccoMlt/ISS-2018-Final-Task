@@ -30,7 +30,7 @@ Dopo aver delineato tutti i requisiti base, si è scelto di approfondire quelli 
     tramite una console grafica l'utente dovrà poter inviare un comando di inizio esplorazione, il comando dovrà essere ricevuto dal robot, il quale dovrà dare inizio alla fase di esplorazione se il requisito successivo è verificato.
   \item[\requirementref{R-explore}]
     l'esplorazione per questo sprint iniziale sarà dummy, in modo da permettere all'utente di vedere il robot muoversi.
-  \item[\requirementref{R-tempOk}]
+  \item[\requirementref{R-TempOk}]
     l'esplorazione dovrà partire soltanto se la temperatura è inferiore ad una certa soglia.
     % Da requisiti iniziali non è chiaro se il robot debba essere reattivo a cambi della temperatura durante la fase di esplorazione;
     % per il momento si assume di no.
@@ -125,7 +125,7 @@ Inoltre è stato aggiunto un componente che si occupa di valutare se le condizio
 
 Dato che le informazioni ambientali vengono generate esternamente sia rispetto al robot che rispetto alla console,
 è stato ritenuto approriato istruire un nuovo componente nel sistema che si occupi di osservare le variazioni delle condizioni ambientali
-e che vada a valutarle per decidere se queste sono favorevoli o meno al corretto funzionamento del robot (\requirementref{R-tempOk});
+e che vada a valutarle per decidere se queste sono favorevoli o meno al corretto funzionamento del robot (\requirementref{R-TempOk});
 una volta valutate tali condizioni, il componente emette un evento tramite il quale informa il resto del sistema.
 
 \subsubsection{Robot Adapter e Robot Mind}\labelsssec{sp1:mind_adapter}

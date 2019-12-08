@@ -1,6 +1,5 @@
 #include <Arduino.h>
 #include <SoftwareSerial.h>
-#include <Drive.h>
 
 #include "scheduler/Scheduler.h"
 #include "scheduler/tasks/DistanceTask.h"
@@ -20,74 +19,97 @@ const int DIRECTION2 = 12;
 
 void move(int direction);
 
-// L298N motor1(SPEED1, DIRECTION1);
-// L298N motor2(SPEED2, DIRECTION2);
+Scheduler *sched;
 
-Scheduler sched;
-Drive motor(SPEED1, DIRECTION1, SPEED2, DIRECTION2);
+float gloDistanceValue = 5.0;
+bool gloBlinkingState = false;
 
-float* gloDistanceValue = new float(5.0);
-bool* gloBlinkingState = new bool(false);
+DistanceTask* distanceTask = new DistanceTask(PROXIMITY_TRIG_PIN, PROXIMITY_ECHO_PIN, &gloDistanceValue);
+BlinkTask *blinkingLed;
+SerialTask *serialTask;
 
-DistanceTask* distanceTask = new DistanceTask(PROXIMITY_TRIG_PIN, PROXIMITY_ECHO_PIN, gloDistanceValue);
-BlinkTask* blinkingLed = new BlinkTask(LED_PIN, gloBlinkingState);
-SerialTask* serialTask = new SerialTask(gloDistanceValue, gloBlinkingState, move);
+typedef enum {
+  FORWARD  = LOW,
+  BACKWARD = HIGH
+} Direction;
 
 void setup() {
-  sched.init(50);
+  sched = new Scheduler();
+  sched->init(50);
 
-  distanceTask->init(200);
+  distanceTask->init(100);
+
+  pinMode(DIRECTION1, OUTPUT);
+  pinMode(DIRECTION2, OUTPUT);
+
+  blinkingLed = new BlinkTask(LED_PIN, &gloBlinkingState);
   blinkingLed->init(200);
+
+  serialTask = new SerialTask(&gloDistanceValue, &gloBlinkingState, move);
   serialTask->init(100);
 
-  sched.addTask(distanceTask);
-  sched.addTask(blinkingLed);
-  sched.addTask(serialTask);
+  sched->addTask(distanceTask);
+  sched->addTask(blinkingLed);
+  sched->addTask(serialTask);
 }
 
 void loop() {
-  sched.schedule();
+  sched->schedule();
 }
 
-void move(int direction)
-{
-  /*switch (direction) {
-    case 1://forward
-      motor1.forward();
-      motor2.forward();
+void move(int direction) {
+  Serial.print("Moving to direction: ");
+  Serial.print(direction);
+  Serial.print(" which means: ");
+  switch (direction) {
+    case 1:
+      Serial.println("Forward (both motors forward)");
       break;
-    case 2: //backward
-      motor1.backward();
-      motor2.backward();
+    case 2:
+      Serial.println("Backward (both motors backward)");
       break;
-    case 3: //left
-      motor1.backward();
-      motor2.forward();
+    case 3:
+      Serial.println("Left (motor 1 backward, motor 2 forward)");
       break;
-    case 4: //right
-      motor1.forward();
-      motor2.backward();
+    case 4:
+      Serial.println("Right (motor 1 forward, motor 2 backward)");
       break;
-    case 5: //halt
-      motor1.stop();
-      motor2.stop();
+    case 5:
+      Serial.println("halt");
+    default:
       break;
-  }*/
+  }
+
   switch (direction) {
     case 1: // forward
-      motor.moveForward(PWM_SPEED);
+      digitalWrite(DIRECTION1, LOW);
+      digitalWrite(DIRECTION2, LOW);
+      analogWrite(SPEED1, 200);   // PWM regulate speed
+      analogWrite(SPEED2, 150);   // PWM regulate speed
       break;
     case 2: // backward
-      motor.moveBackward(PWM_SPEED);
+      digitalWrite(DIRECTION1, HIGH);
+      digitalWrite(DIRECTION2, HIGH);
+      analogWrite(SPEED1, 145);   // PWM regulate speed
+      analogWrite(SPEED2, 200);   // PWM regulate speed
       break;
     case 3: // left
-      motor.turnLeft(PWM_SPEED);
+      digitalWrite(DIRECTION1, HIGH);
+      digitalWrite(DIRECTION2, LOW);
+      analogWrite(SPEED1, 100);   // PWM regulate speed
+      analogWrite(SPEED2, 100);   // PWM regulate speed
       break;
     case 4: // right
-      motor.turnRight(PWM_SPEED);
+      digitalWrite(DIRECTION1, LOW);
+      digitalWrite(DIRECTION2, HIGH);
+      analogWrite(SPEED1, 100);   // PWM regulate speed
+      analogWrite(SPEED2, 100);   // PWM regulate speed
       break;
     case 5: // halt
-      motor.stopMoving();
+      digitalWrite(DIRECTION1, LOW);
+      digitalWrite(DIRECTION2, LOW);
+      analogWrite(SPEED1, 0);   // PWM regulate speed
+      analogWrite(SPEED2, 0);   // PWM regulate speed
       break;
   }
 }

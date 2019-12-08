@@ -14,12 +14,6 @@
 
 \usepackage{a4wide}
 
-% \usepackage{geometry}
-% \geometry{
-%   a4paper,
-%   heightrounded    % integer number of lines
-% }
-
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %% package sillabazione italiana e uso lettere accentate
 \usepackage[T1]{fontenc}        % serve per impostare la codifica di output del font
@@ -41,19 +35,16 @@
 ]{csquotes}                     % serve a impostare lo stile delle virgolette
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\usepackage{filecontents}       % permette di definire ambienti filecontents (senza * finale) per sovrascrivere il file
-\usepackage{silence}            % silenzia warning attesi
-\WarningFilter{latex}{Writing file}
-\WarningFilter{latex}{Overwriting file}
+\usepackage{fancyvrb}
 
 %% Genera un file report.xmpdata con i dati di titolo e autore per il formato PDF/A %%
-\begin{filecontents}{\jobname.xmpdata}
-  \Title{Laboratorio di Sistemi Software - Tema finale}
+\begin{VerbatimOut}{\jobname.xmpdata}
+  \Title{Laboratorio di Sistemi Software --- Tema finale}
   \Subject{Realizzazione di un sistema per l'individuazione e rimozione di una bomba dalla hall di un aeroporto tramite robot controllato da remoto.}
   \Author{Niccolò Maltoni}
   \Copyright{Questo documento è fornito sotto licenza Apache License, Version 2.0}
   \CopyrightURL{https://opensource.org/licenses/Apache-2.0}
-\end{filecontents}
+\end{VerbatimOut}
 
 \usepackage{relsize, etoolbox}  % permette di riferirsi ad ambienti specifici
 \AtBeginEnvironment{foreigndisplayquote}{\smaller}
@@ -71,7 +62,7 @@
 \makeatother
 
 \usepackage{natbib}
-\usepackage{xcolor}             % serve per la gestione dei colori nel testo
+\usepackage{xcolor}           % serve per la gestione dei colori nel testo
 
 \usepackage{graphicx}         % serve per includere immagini e grafici
 \DeclareGraphicsExtensions{.eps, .pdf, .jpg, .tif, .png} % chktex 26
@@ -80,7 +71,6 @@
 % \usepackage{svg}
 % \svgpath{{res}}
 \usepackage{subcaption}       % serve per ottenere sottofigure
-\usepackage{caption}          % permette di controllare la formattazione delle didascalie
 \usepackage{float}
 % \usepackage{graphviz}
 % \usepackage{tikz}
@@ -274,6 +264,9 @@
 \section{Sprint 3}\labelsec{sprint3}
 \input{src/sprint-03.tex}
 
+\section{Sprint 4}\labelsec{sprint4}
+\input{src/sprint-04.tex}
+
 %===========================================================================
 % \subsection{Casi d'uso}\labelssec{use_cases}
 
@@ -326,8 +319,15 @@
 
 %===========================================================================
 
-% \appendix
+\newpage
 
+\input{src/note.tex}
+
+\newpage
+
+\input{src/appendice.tex}
+
+\nocite{Natali2018,Natali2019,Natali2020}
 \bibliographystyle{abbrv}
 \bibliography{biblio}
 

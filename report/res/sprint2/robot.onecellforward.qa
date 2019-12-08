@@ -1,0 +1,59 @@
+QActor onecellforward context ctxRobot {
+
+    Rules{
+        timew(10).
+        moveTimeInfo(timew(TF), moveWDuration(TD)) :-
+            timew(TF),
+            moveWDuration(TD).
+    }
+
+    State init initial []
+    transition stopAfter 600000
+        whenMsg cmdStop -> handleStop,
+        whenMsg moveMsgCmd -> startWork
+
+    State startWork [
+        onMsg moveMsgCmd: moveMsgCmd(TF) -> ReplaceRule timew(_) with timew(TF);
+        javaOp "storeCurrentMessageForReply()";
+        javaRun it.unibo.utils.movePlanUtil.startTimer();
+        [ !? timew(T) ] forward robot_adapter -m robotAdapterCmd: robotCmd(w, T)
+    ] transition
+        /* [ !? timew(T) ] whenTime T */ whenTime 255 -> endMoveForward // async
+        whenMsg cmdStop -> handleStop,
+        whenMsg collisionDispatch -> probableFixedObstacle
+
+    State probableFixedObstacle[
+        forward robot_adapter -m robotAdapterCmd: robotCmd(h, 0);
+        javaRun it.unibo.utils.movePlanUtil.getDuration();
+        [ !? moveWDuration(T) ] println(onecellforward_probableFixedObstacle(T));
+        selfMsg obstacleNear: obstacleNear
+    ] switchTo consumePendingCollisions
+
+    State consumePendingCollisions [
+        println("onecellforward: consumePendingCollisions")
+    ] transition
+        whenTime 3000 -> handleError
+        whenMsg cmdStop -> handleStop,
+        whenMsg collisionDispatch -> consumePendingCollisions,
+        whenMsg obstacleNear -> sendAnswerAfterCollision
+
+    State sendAnswerAfterCollision [
+        println("onecellforward: sendAnswerAfterCollision");
+        javaOp "ignoreCurrentCaller()";
+        [ ?? moveWDuration(T) ]
+            replyToCaller -m moveMsgCmdObstacle: moveMsgCmdObstacle(moveWDuration(T))
+    ] switchTo init
+
+    State endMoveForward [
+        forward robot_adapter -m robotAdapterCmd: robotCmd(h, 0);
+        replyToCaller -m moveMsgCmdDone: moveMsgCmdDone(w)
+    ] switchTo init
+
+    State handleStop [
+        println("onecellforward: robot STOPPED: no reply to the caller")
+    ]
+
+    State handleError [
+        println("onecellforward ERROR")
+    ]
+}

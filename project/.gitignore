@@ -2,6 +2,7 @@ src/**/.gitignore
 srcMore/**/.gitignore
 src-gen/**/.gitignore
 *.lck
+bombs/
 
 # Created by https://www.gitignore.io/api/java,xtext,gradle,eclipse,intellij+all
 # Edit at https://www.gitignore.io/?templates=java,xtext,gradle,eclipse,intellij+all

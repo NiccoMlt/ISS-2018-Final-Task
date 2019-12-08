@@ -115,22 +115,24 @@ Inoltre, la software house mette già a disposizione un adattatore per JavaScrip
 Ancora una volta a causa di vincoli di spazio, di seguito sono riportate esclusivamente le modifiche più rilevanti alla specifica di metamodello QA in uscita alle fasi di analisi.
 
 % WORLD OBSERVER
-\lstinputlisting[%
-  firstline=118,%
-  lastline=150,%
-  language=qa%
-]{res/sprint3/robot.qa}
+% \lstinputlisting[%
+%   firstline=118,%
+%   lastline=150,%
+%   language=qa%
+% ]{res/sprint3/robot.qa}
+\lstinputlisting[language=qa]{res/sprint2/robot.world-observer.qa}
 
 Come è possibile vedere, ora il componente \texttt{world\_observer} è connesso come subscriber al broker MQTT e comunica tramite messaggi alla console le variazioni della temperatura.
 
 % CONSOLE
-\lstinputlisting[%
-  firstline=640,%
-  lastline=730,%
-  language=qa%
-]{res/sprint3/robot.qa}
+% \lstinputlisting[%
+%   firstline=640,%
+%   lastline=730,%
+%   language=qa%
+% ]{res/sprint3/robot.qa}
+\lstinputlisting[language=qa]{res/sprint2/robot.console.qa}
 
-Anche il componente \texttt{console} è connesso via MQTT e interpreta i nuovi comandi \texttt{frontendUserCmd} ricevuti come eventi dall'interfaccia web, inoltrandoli come messaggi diretti alle relative \texttt{mind}.
+Anche il componente \texttt{console} è connesso via MQTT e interpreta i nuovi comandi del tipo \texttt{frontendUserCmd} ricevuti come eventi dall'interfaccia web, inoltrandoli come messaggi diretti alle relative \texttt{mind}.
 Inoltre, delega la gestione dello stato a un \textit{singleton} in Java.
 
 \subsection{Progettazione}\labelssec{sp3:project}
@@ -174,7 +176,7 @@ Per tale comunicazione si è scelto di adottare le \textbf{WebSocket}:
 canali di comunicazione bidirezionali che usano socket HTTP e che sono molto ben supportate dalla libreria RxJS fornita insiema al framework Angular.
 Il loro utilizzo permette di aggiornare dinamicamente l'interfaccia grafica ad ogni modifica dello stato del sistema, senza che sia l'utente a dover periodicamente richiedere tale informazione con una tecnica di polling.
 
-\subsection{Sprint Review}\labelssec{sp2:review}
+\subsection{Sprint Review}\labelssec{sp3:review}
 
 In questo caso, si sono verificate problematiche relativamente al movimento del robot nello spazio;
 in particolare, durante alcune esecuzioni, il robot non riceve in tempo il comando di stop che termina il movimento atomico in avanti a causa di ritardi causati dal protocollo MQTT utilizzato.

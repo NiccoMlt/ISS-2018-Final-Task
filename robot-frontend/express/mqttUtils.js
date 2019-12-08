@@ -12,26 +12,26 @@ var qaUtils = require('./qaUtils');
 
 client.on('connect', function () {
 	  client.subscribe( topicSubscriber );
-	  console.log('EXPRESS - MQTT client has subscribed successfully ');
+	  console.log('EXPRESS - MQTT client has subscribed successfully');
 });
 
-//The message usually arrives as buffer, so I had to convert it to string data type;
+// The message usually arrives as buffer, so I had to convert it to string data type;
 client.on('message', function (topic, message){
 	var msg = message.toString();
-  console.log("EXPRESS - MQTT RECEIVES:"+ msg);
+  console.log("EXPRESS - event received");
 	state = qaUtils.parseQAmessage(msg);
-	console.log(state);
-	webSocket.send(state);
+	// console.log(state);
+	webSocket.sendall(state);
 });
 
 exports.wss = webSocket;
 
 exports.publishCommand = function( msg ){
-  console.log('EXPRESS - mqtt publish with ' + /*util.inspect(*/JSON.stringify(client.options)/*)*/);
+  console.log('EXPRESS - MQTT publish command');
 	client.publish(topicPublisherCommand, msg);
 }
 
 exports.publishEnvironment = function( msg ){
-  console.log('EXPRESS - mqtt publish with ' + /*util.inspect(*/JSON.stringify(client.options)/*)*/);
+  console.log('EXPRESS - MQTT publish command');
 	client.publish(topicPublisherEnvironment, msg);
 }

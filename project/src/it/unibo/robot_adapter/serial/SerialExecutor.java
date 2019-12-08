@@ -8,7 +8,8 @@ import it.unibo.robot_adapter.IRobotExecutor;
  */
 public class SerialExecutor implements IRobotExecutor {
 
-    private RobotSerialCommunication robotSupport;
+    private RobotSerialCommunication robotSupport; // singleton
+    private int printCount = 0;
 
     @Override
     public void setUp(final QActor qa, final String port) {
@@ -27,8 +28,18 @@ public class SerialExecutor implements IRobotExecutor {
                 }
             });
 
-            this.robotSupport.addObserverToSensors(data ->
-                qa.emit("robotSonar", "robotSonar(distance(" + data + "))"));
+            this.robotSupport.addObserverToSensors(data -> {
+                double distance = Double.parseDouble(data);
+                if (distance < 20.0 || printCount++ == 5) {
+                    printCount = 0;
+                    qa.println("\t sonar: " + distance);
+                    qa.emit("robotSonar", "robotSonar(distance(" + data + "))");
+                    if (distance < 7.0) {
+                        qa.println("\t FISICAL COLLISION: " + distance);
+                        qa.emit("collisionDispatch", "collisionDispatch(obstacle(fisico))");
+                    }
+                }
+            });
         }
     }
 

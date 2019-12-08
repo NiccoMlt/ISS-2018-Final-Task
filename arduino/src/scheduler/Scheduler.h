@@ -14,7 +14,7 @@ class Scheduler {
   Timer timer;
 
 public:
-  void init(int basePeriod);
+  void init(int period);
   virtual bool addTask(Task* task);
   virtual void schedule();
 

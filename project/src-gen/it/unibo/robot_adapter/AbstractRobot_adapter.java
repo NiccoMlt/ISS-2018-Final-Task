@@ -26,7 +26,7 @@ public abstract class AbstractRobot_adapter extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://127.0.0.1:1883";
+	//protected String mqttServer = "";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -141,7 +141,7 @@ public abstract class AbstractRobot_adapter extends QActor {
 	     msgTransition( pr,myselfName,"robot_adapter_"+myselfName,false,
 	          new StateFun[]{stateTab.get("executeCommand"), stateTab.get("executeCommand") }, 
 	          new String[]{"true","M","robotCmd", "true","M","robotAdapterCmd" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
 	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

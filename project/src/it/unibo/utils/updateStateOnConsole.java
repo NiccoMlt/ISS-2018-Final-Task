@@ -18,6 +18,7 @@ public class updateStateOnConsole {
 
 	private static final Action ACTION_HOME = new Action("Go home", "standard", "cmd(home)");
 	private static final Action ACTION_EXPLORE = new Action("Explore", "standard", "cmd(explore)");
+	private static final Action ACTION_RETRIEVE = new Action("Retrieve bomb", "standard", "cmd(retrieve)");
 	private static final Action ACTION_HALT = new Action("Stop", "standard", "cmd(halt)");
 	private static final Action ACTION_BAG = new Action("Is bag", "standard", "bagStatus(bag)");
 	private static final Action ACTION_BOMB = new Action("Is bomb", "standard", "bagStatus(bomb)");
@@ -35,7 +36,6 @@ public class updateStateOnConsole {
 			e1.printStackTrace();
 		}
 
-		qa.solveGoal("bomb(X,Y)");
 		String map = jsonUtil.encodeForProlog(matrix);
 		try {
 			qa.sendMsg("stateUpdate", "console", QActorContext.dispatch,
@@ -60,22 +60,45 @@ public class updateStateOnConsole {
 		ArrayList<Action> actions = new ArrayList<>();
 
 		switch (state) {
-		case "home":
-			actions.add(ACTION_EXPLORE);
-			break;
-		case "exploring":
-			actions.add(ACTION_HALT);
-			break;
-		case "idle":
-			actions.add(ACTION_HOME);
-			actions.add(ACTION_EXPLORE);
-			break;
-		case "obstacle":
-			actions.add(ACTION_BAG);
-			actions.add(ACTION_BOMB);
-			break;
-		default:
-			actions.add(ACTION_HALT);
+    		case "discovery-home":
+    			actions.add(ACTION_EXPLORE);
+    			break;
+    		case "discovery-idle":
+    			actions.add(ACTION_HOME);
+    			actions.add(ACTION_EXPLORE);
+    			break;
+    		case "discovery-obstacle":
+    			actions.add(ACTION_BAG);
+    			actions.add(ACTION_BOMB);
+    			break;
+    		case "retriever-home":
+                actions.add(ACTION_RETRIEVE);
+                break;
+    		case "retriever-idle-retrieving":
+                actions.add(ACTION_HOME);
+                actions.add(ACTION_RETRIEVE);
+                break;
+            case "retriever-idle-returning":
+                actions.add(ACTION_HOME);
+                break;
+            case "retriever-idle":
+                actions.add(ACTION_HOME);
+                break;
+            case "retriever-idle-with-bomb":
+                actions.add(ACTION_HOME);
+                break;
+            case "discovery-returning":
+            case "retriever-returning":
+            case "discovery-exploring":
+            case "retriever-retrieving":
+                actions.add(ACTION_HALT);
+                break;
+            case "environment-notok":
+            case "terminating":
+                // No actions, stuck!
+                break;
+    		default:
+    			actions.add(ACTION_HALT);
 		}
 
 		String payload = jsonUtil.encodeForProlog(new State(state, actions.toArray(new Action[0])));
@@ -87,20 +110,34 @@ public class updateStateOnConsole {
 		}
 	}
 
-	public static void receivedUpdateState(QActor qa, String type, String payload) {
-		switch (type) {
-		case "temperature":
-			systemStateUtil.getSystemStateUtil().updateTemperature(qa, payload);
-			break;
-		case "map":
-			systemStateUtil.getSystemStateUtil().updateMap(qa, jsonUtil.decodeFromProlog(payload, String[][].class));
-			break;
-		case "robotMovement":
-			systemStateUtil.getSystemStateUtil().updateRobotMovement(qa, jsonUtil.decodeFromProlog(payload, RobotState.class));
-			break;
-		case "robotState":
-			systemStateUtil.getSystemStateUtil().updateRobotState(qa, jsonUtil.decodeFromProlog(payload, State.class));
-			break;
-		}
-	}
+    public static void receivedUpdateState(QActor qa, String type, String payload) {
+        State robotState = systemStateUtil.getSystemState().getState();
+        switch (type) {
+            case "temperature":
+                systemStateUtil.getSystemStateUtil().updateTemperature(qa, payload);
+                break;
+            case "map":
+                systemStateUtil.getSystemStateUtil().updateMap(qa, jsonUtil.decodeFromProlog(payload, String[][].class));
+                break;
+            case "robotMovement":
+                systemStateUtil.getSystemStateUtil().updateRobotMovement(qa, jsonUtil.decodeFromProlog(payload, RobotState.class));
+                break;
+            case "robotState":
+                systemStateUtil.getSystemStateUtil().updateRobotState(qa, jsonUtil.decodeFromProlog(payload, State.class));
+                break;
+            case "messageDanger":
+                robotState.setMessage("DANGER:" + payload);
+                systemStateUtil.getSystemStateUtil().updateRobotState(qa, robotState);
+                break;
+            case "messageInfo":
+                robotState.setMessage("INFO:" + payload);
+                systemStateUtil.getSystemStateUtil().updateRobotState(qa, robotState);
+                break;
+            case "picture":
+                robotState.setMessage("picture:" + payload);
+                systemStateUtil.getSystemStateUtil().updateRobotState(qa, robotState);
+                break;
+        }
+        qa.println("STATE STATUS: " + systemStateUtil.getSystemStateUtil().getSystemState().getState().getName());
+    }
 }

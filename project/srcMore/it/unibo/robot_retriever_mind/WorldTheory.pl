@@ -150,6 +150,17 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %  User static rules about robot_retriever_mind
 %------------------------------------------------- 
 environment( notok).
+eval( eq,X,X).
+doTheMove( M):-move( M1), ! ,eval( eq,M,M1), ! ,doTheFirstMove( M).
+doTheFirstMove( w):-retract( move( w)), ! .
+doTheFirstMove( a):-retract( move( a)), ! .
+doTheFirstMove( d):-retract( move( d)), ! .
+homeReady:-curPos( 0,0,D),bomb( _,_).
+bombInRoom:-bomb( _,_).
+nearBomb:-curPos( X,Y,_),eval( plus,X,1,R),bomb( R,Y).
+nearBomb:-curPos( X,Y,_),eval( minus,X,1,R),bomb( R,Y).
+nearBomb:-curPos( X,Y,_),eval( plus,Y,1,R),bomb( X,R).
+nearBomb:-curPos( X,Y,_),eval( minus,Y,1,R),bomb( X,R).
 /*
 ------------------------------------------------------------------------
 testex :- actorPrintln( testex ),

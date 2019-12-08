@@ -21,6 +21,7 @@ export const initialState: SystemState = {
   },
   state: {
     name: 'demo',
+    message: undefined,
     actions: [
       {
         name: 'explore',

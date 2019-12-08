@@ -496,7 +496,7 @@ QActor robot_discovery_mind context ctxRobot {
             println( doActions_doingTheMove(M) );
         [ not !? move(M) ]
             selfMsg endAction : endAction ;
-        ReplaceRule moveDuration(_) with  moveDuration(moveWDuration(0)); // TODO ??
+        ReplaceRule moveDuration(_) with moveDuration(moveWDuration(0));
         [ !? move(M) ]
             selfMsg waitMoveCompleted: waitMoveCompleted;
         [ !? doTheMove(M) ]

@@ -26,7 +26,7 @@ public abstract class AbstractRobot_advanced extends QActor {
 	protected String parg="";
 	protected boolean bres=false;
 	protected IActorAction action;
-	//protected String mqttServer = "tcp://127.0.0.1:1883";
+	//protected String mqttServer = "";
 	
 		protected static IOutputEnvView setTheEnv(IOutputEnvView outEnvView ){
 			return outEnvView;
@@ -94,7 +94,7 @@ public abstract class AbstractRobot_advanced extends QActor {
 	     msgTransition( pr,myselfName,"robot_advanced_"+myselfName,false,
 	          new StateFun[]{stateTab.get("executeCommand") }, 
 	          new String[]{"true","M","robotCmd" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_doWork){  
 	    	 println( getName() + " plan=doWork WARNING:" + e_doWork.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 
@@ -173,7 +173,7 @@ public abstract class AbstractRobot_advanced extends QActor {
 	     msgTransition( pr,myselfName,"robot_advanced_"+myselfName,false,
 	          new StateFun[]{stateTab.get("receivedMoveCompletedAnswer"), stateTab.get("receivedMoveCompletedAnswer") }, 
 	          new String[]{"true","M","moveMsgCmdDone", "true","M","moveMsgCmdObstacle" },
-	          60000, "handleToutBuiltIn" );//msgTransition
+	          6000000, "handleToutBuiltIn" );//msgTransition
 	    }catch(Exception e_waitMoveComletedAnswer){  
 	    	 println( getName() + " plan=waitMoveComletedAnswer WARNING:" + e_waitMoveComletedAnswer.getMessage() );
 	    	 QActorContext.terminateQActorSystem(this); 

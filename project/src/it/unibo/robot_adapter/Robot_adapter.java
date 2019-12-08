@@ -13,4 +13,9 @@ public class Robot_adapter extends AbstractRobot_adapter {
 /*
  * ADDED BY THE APPLICATION DESIGNER	
  */
+	@Override
+	public void aroundPostStop() {
+        it.unibo.robot_adapter.robots.terminate(this);
+        super.aroundPostStop();
+    }
 }

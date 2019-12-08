@@ -1,13 +1,14 @@
 %====================================================================================
 % Context ctxRobot  SYSTEM-configuration: file it.unibo.ctxRobot.robot.pl 
 %====================================================================================
-pubsubserveraddr("tcp://127.0.0.1:1883").
+pubsubserveraddr("").
 pubsubsystopic("unibo/qasys").
 %%% -------------------------------------------
+context(ctxconsole, "127.0.0.1",  "TCP", "8078" ).  		 
 context(ctxrobot, "localhost",  "TCP", "8079" ).  		 
 %%% -------------------------------------------
-qactor( world_observer , ctxrobot, "it.unibo.world_observer.MsgHandle_World_observer"   ). %%store msgs 
-qactor( world_observer_ctrl , ctxrobot, "it.unibo.world_observer.World_observer"   ). %%control-driven 
+qactor( world_observer , ctxconsole, "it.unibo.world_observer.MsgHandle_World_observer"   ). %%store msgs 
+qactor( world_observer_ctrl , ctxconsole, "it.unibo.world_observer.World_observer"   ). %%control-driven 
 qactor( robot_adapter , ctxrobot, "it.unibo.robot_adapter.MsgHandle_Robot_adapter"   ). %%store msgs 
 qactor( robot_adapter_ctrl , ctxrobot, "it.unibo.robot_adapter.Robot_adapter"   ). %%control-driven 
 qactor( onecellforward , ctxrobot, "it.unibo.onecellforward.MsgHandle_Onecellforward"   ). %%store msgs 
@@ -18,8 +19,8 @@ qactor( robot_discovery_mind , ctxrobot, "it.unibo.robot_discovery_mind.MsgHandl
 qactor( robot_discovery_mind_ctrl , ctxrobot, "it.unibo.robot_discovery_mind.Robot_discovery_mind"   ). %%control-driven 
 qactor( robot_retriever_mind , ctxrobot, "it.unibo.robot_retriever_mind.MsgHandle_Robot_retriever_mind"   ). %%store msgs 
 qactor( robot_retriever_mind_ctrl , ctxrobot, "it.unibo.robot_retriever_mind.Robot_retriever_mind"   ). %%control-driven 
-qactor( console , ctxrobot, "it.unibo.console.MsgHandle_Console"   ). %%store msgs 
-qactor( console_ctrl , ctxrobot, "it.unibo.console.Console"   ). %%control-driven 
+qactor( console , ctxconsole, "it.unibo.console.MsgHandle_Console"   ). %%store msgs 
+qactor( console_ctrl , ctxconsole, "it.unibo.console.Console"   ). %%control-driven 
 %%% -------------------------------------------
 eventhandler(collisionevh,ctxrobot,"it.unibo.ctxRobot.Collisionevh","robotSonarObstacle").  
 %%% -------------------------------------------

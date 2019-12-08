@@ -151,6 +151,7 @@ actorPrintln( X ):- actorobj(A), text_term(XS,X), A  <- println( XS ).
 %------------------------------------------------- 
 environment( notok).
 ledState( off).
+curPos( 0,0,down).
 numOfExplorations( 3).
 curGoal( 0,0).
 continueForward( T):-timew( T),inc( repeatForward,1,R),getVal( nstep,N),output( continueForward( R,N,T)),eval( lt,R,N).

@@ -1,0 +1,51 @@
+QActor robot_advanced context ctxRobot {
+
+    Rules {
+        timew(255).
+        timeTurn(500).
+    }
+
+    State init initial []
+    switchTo doWork
+
+    State doWork []
+    transition
+        stopAfter 60000
+        whenMsg robotCmd -> executeCommand
+
+    State executeCommand [
+        javaOp "storeCurrentMessageForReply()";
+        onMsg robotCmd: robotCmd(a) -> {
+            [ !? timeTurn(T) ]
+                forward robot_adapter -m robotAdapterCmd: robotCmd(a,T);
+            selfMsg waitMoveCompleted: waitMoveCompleted
+        };
+        onMsg robotCmd: robotCmd(d) -> {
+            [ !? timeTurn(T) ]
+                forward robot_adapter -m robotAdapterCmd: robotCmd(d,T);
+            selfMsg waitMoveCompleted: waitMoveCompleted
+        };
+        onMsg robotCmd: robotCmd(w) -> {
+            [ !? timew(T) ]
+                forward onecellforward -m moveMsgCmd : moveMsgCmd(T);
+            selfMsg waitMoveCompleted: waitMoveCompleted
+        }
+    ] transition
+        whenTime 100 -> doWork
+        whenMsg waitMoveCompleted -> waitMoveComletedAnswer
+
+    State waitMoveComletedAnswer []
+    transition
+        stopAfter 60000
+        whenMsg moveMsgCmdDone -> receivedMoveCompletedAnswer,
+        whenMsg moveMsgCmdObstacle -> receivedMoveCompletedAnswer
+
+    State receivedMoveCompletedAnswer [
+        onMsg moveMsgCmdDone: moveMsgCmdDone(X) ->
+            replyToCaller -m moveMsgCmdDone: moveMsgCmdDone(X);
+        onMsg moveMsgCmdObstacle: moveMsgCmdObstacle(moveWDuration(T)) ->
+            forward robot_adapter -m robotAdapterCmd: robotCmd(s, T);
+        onMsg moveMsgCmdObstacle: moveMsgCmdObstacle(moveWDuration(T)) ->
+            replyToCaller -m moveMsgCmdObstacle: moveMsgCmdObstacle(moveWDuration(T))
+    ] switchTo doWork
+}

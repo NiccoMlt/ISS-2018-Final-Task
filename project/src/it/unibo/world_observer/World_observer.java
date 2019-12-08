@@ -13,4 +13,9 @@ public class World_observer extends AbstractWorld_observer {
 /*
  * ADDED BY THE APPLICATION DESIGNER	
  */
+	@Override
+	public void aroundPostStop() {
+        it.unibo.utils.mqttUtil.disconnect(this);
+        super.aroundPostStop();
+    }
 }

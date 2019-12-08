@@ -4,51 +4,98 @@ dist: xenial
 language: shell
 jobs:
   include:
-    - name: report - arara
-      language: shell
-      addons:
-        apt:
-          packages:
-            - graphviz        # Graphviz is used to handle DOT and GV files
-            - gnuplot         # Gnuplot is used to handle TikZ figures
-            - icc-profiles    # color profiles are needed to generate PDF/A
-            - miktex          # MikTeX is the chosen LaTeX distribution
-            - openjdk-8-jre-headless  # arara requires Java
-            - inkscape        # Inkscape is used to handle SVG files
-            - ghostscript     # Ghostscript is used to handle EPS files
-            - python-pygments # Pygments is used to handle source code syntax highlight with minted
-          sources:
-            - sourceline: "deb [arch=amd64] http://miktex.org/download/ubuntu xenial universe"
-              key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
-            - sourceline: "ppa:inkscape.dev/stable"
-      install:
-        - sudo miktexsetup --shared=yes finish
-        - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
-        - sudo mpm --admin --package-level=basic --find-upgrades --upgrade
-        - cd ./report
-        - arara --version     # fetch arara from MikTeX and print version
-        - gs --version        # print Ghostscript version
-        - dot -V              # print Graphviz version
-        - pygmentize -V       # print Pygments version
-        - inkscape --version  # print Inkscape version
-      script:
-        - arara --log --verbose report.tex
-        - chktex report.tex
-      after_failure:
-        - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/pdflatex.log
-        - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/epstopdf.log
-        - cat arara.log
-        - cat report.log
-      deploy:
-        provider: releases
-        edge: true  # enable dpl v2 preview to fix token issue
-        token:
-          secure: u8V40HdVQh0UcWjjfjbMGbhlMr/6n1kUaoEliFs8BvUsDOLzZ49bSey5afNm2VvK4/T4DeRO1CfZ3u1xcZPP8V+CpjQgbcOsn9O1TMcdfY1gvC9b/NMbhST9bTO3HMo89SNBpdjAcDFHHkKpWbRiIweDYzoKkqzHPkdLaP83QrtlUjrdJgBIJMlwxF/QWltKGMKebP44LqucoWnpVv8HQ2OJ1XACfZXVtyk43kjcIgrRSee9cQIiD6fImSMsMd0Ya+BdSCtmAdCqU9UZx1d+jwxZ9ab33CDQji6mwK/0yvtPVgNTg4yEORvJRGXMo6KH7ZVKm3nOWEkwOmZJuszp4oa1bZ8gVEwnArg0CVCSV+T2ZR/YPzwvo4MYC7OUIiC1WFvK0YyWIqSwl5PCDN8DZPBJyA1a8E8urUA+GBR9yjlLophCq0gfNGOQJFCVwJoTXmXjnKAEhF7Ktn9IB2Bsok+2WzFN6xL2Xl0pY5wXvpb+qWYE4a9PtdgM+r8MOOiN/xXilgn75ZH9Ko8tom83IzgcOHvEfRZTCB23YJYCci3MNK3RCaAzBC02DkSgwd2p3Ijde5rsTFTbR/MTBcPY096ABW3I/7RwwuY9U6VCgzXEDMLv7vQXbi8tNvOo50GOSGIT3j/0NBclTqPM3g/CBKGKgBwuuvtJ40W7McoQBrA=
-        file: "report.pdf"
-        cleanup: true
-        draft: true
-        on:
-          repo: NiccoMlt/ISS-2018-Final-Task
+    # - name: report - arara
+    #   language: shell
+    #   addons:
+    #     apt:
+    #       packages:
+    #         # - graphviz        # Graphviz is used to handle DOT and GV files
+    #         # - gnuplot         # Gnuplot is used to handle TikZ figures
+    #         - icc-profiles    # color profiles are needed to generate PDF/A
+    #         - miktex          # MikTeX is the chosen LaTeX distribution
+    #         - openjdk-8-jre-headless  # arara requires Java
+    #         # - inkscape        # Inkscape is used to handle SVG files
+    #         # - ghostscript     # Ghostscript is used to handle EPS files
+    #         # - python-pygments # Pygments is used to handle source code syntax highlight with minted
+    #       sources:
+    #         - sourceline: "deb [arch=amd64] http://miktex.org/download/ubuntu xenial universe"
+    #           key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
+    #         # - sourceline: "ppa:inkscape.dev/stable"
+    #   install:
+    #     - sudo miktexsetup --shared=yes finish
+    #     - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
+    #     - sudo mpm --admin --package-level=basic --find-upgrades --upgrade
+    #     - cd ./report
+    #     - arara --version     # fetch arara from MikTeX and print version
+    #     # - gs --version        # print Ghostscript version
+    #     # - dot -V              # print Graphviz version
+    #     # - pygmentize -V       # print Pygments version
+    #     # - inkscape --version  # print Inkscape version
+    #   script:
+    #     - arara --log --verbose report.tex
+    #     - chktex report.tex
+    #   after_failure:
+    #     - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/pdflatex.log
+    #     # - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/epstopdf.log
+    #     - cat arara.log
+    #     - cat report.log
+    #   deploy:
+    #     provider: releases
+    #     edge: true  # enable dpl v2 preview to fix token issue
+    #     token:
+    #       secure: u8V40HdVQh0UcWjjfjbMGbhlMr/6n1kUaoEliFs8BvUsDOLzZ49bSey5afNm2VvK4/T4DeRO1CfZ3u1xcZPP8V+CpjQgbcOsn9O1TMcdfY1gvC9b/NMbhST9bTO3HMo89SNBpdjAcDFHHkKpWbRiIweDYzoKkqzHPkdLaP83QrtlUjrdJgBIJMlwxF/QWltKGMKebP44LqucoWnpVv8HQ2OJ1XACfZXVtyk43kjcIgrRSee9cQIiD6fImSMsMd0Ya+BdSCtmAdCqU9UZx1d+jwxZ9ab33CDQji6mwK/0yvtPVgNTg4yEORvJRGXMo6KH7ZVKm3nOWEkwOmZJuszp4oa1bZ8gVEwnArg0CVCSV+T2ZR/YPzwvo4MYC7OUIiC1WFvK0YyWIqSwl5PCDN8DZPBJyA1a8E8urUA+GBR9yjlLophCq0gfNGOQJFCVwJoTXmXjnKAEhF7Ktn9IB2Bsok+2WzFN6xL2Xl0pY5wXvpb+qWYE4a9PtdgM+r8MOOiN/xXilgn75ZH9Ko8tom83IzgcOHvEfRZTCB23YJYCci3MNK3RCaAzBC02DkSgwd2p3Ijde5rsTFTbR/MTBcPY096ABW3I/7RwwuY9U6VCgzXEDMLv7vQXbi8tNvOo50GOSGIT3j/0NBclTqPM3g/CBKGKgBwuuvtJ40W7McoQBrA=
+    #     file: "report.pdf"
+    #     cleanup: false
+    #     draft: true
+    #     on:
+    #       repo: NiccoMlt/ISS-2018-Final-Task
+
+    # - name: summary - arara
+    #   language: shell
+    #   addons:
+    #     apt:
+    #       packages:
+    #         # - graphviz        # Graphviz is used to handle DOT and GV files
+    #         # - gnuplot         # Gnuplot is used to handle TikZ figures
+    #         - icc-profiles    # color profiles are needed to generate PDF/A
+    #         - miktex          # MikTeX is the chosen LaTeX distribution
+    #         - openjdk-8-jre-headless  # arara requires Java
+    #         # - inkscape        # Inkscape is used to handle SVG files
+    #         # - ghostscript     # Ghostscript is used to handle EPS files
+    #         # - python-pygments # Pygments is used to handle source code syntax highlight with minted
+    #       sources:
+    #         - sourceline: "deb [arch=amd64] http://miktex.org/download/ubuntu xenial universe"
+    #           key_url: "http://keyserver.ubuntu.com/pks/lookup?op=get&search=miktex"
+    #         # - sourceline: "ppa:inkscape.dev/stable"
+    #   install:
+    #     - sudo miktexsetup --shared=yes finish
+    #     - sudo initexmf --admin --set-config-value [MPM]AutoInstall=1
+    #     - sudo mpm --admin --package-level=basic --find-upgrades --upgrade
+    #     - cd ./summary
+    #     - arara --version     # fetch arara from MikTeX and print version
+    #     # - gs --version        # print Ghostscript version
+    #     # - dot -V              # print Graphviz version
+    #     # - pygmentize -V       # print Pygments version
+    #     # - inkscape --version  # print Inkscape version
+    #   script:
+    #     - arara --log --verbose summary.tex
+    #     - chktex summary.tex
+    #   after_failure:
+    #     - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/pdflatex.log
+    #     # - cat ${TRAVIS_HOME}/.miktex/texmfs/data/miktex/log/epstopdf.log
+    #     - cat arara.log
+    #     - cat summary.log
+    #   deploy:
+    #     provider: releases
+    #     edge: true  # enable dpl v2 preview to fix token issue
+    #     token:
+    #       secure: u8V40HdVQh0UcWjjfjbMGbhlMr/6n1kUaoEliFs8BvUsDOLzZ49bSey5afNm2VvK4/T4DeRO1CfZ3u1xcZPP8V+CpjQgbcOsn9O1TMcdfY1gvC9b/NMbhST9bTO3HMo89SNBpdjAcDFHHkKpWbRiIweDYzoKkqzHPkdLaP83QrtlUjrdJgBIJMlwxF/QWltKGMKebP44LqucoWnpVv8HQ2OJ1XACfZXVtyk43kjcIgrRSee9cQIiD6fImSMsMd0Ya+BdSCtmAdCqU9UZx1d+jwxZ9ab33CDQji6mwK/0yvtPVgNTg4yEORvJRGXMo6KH7ZVKm3nOWEkwOmZJuszp4oa1bZ8gVEwnArg0CVCSV+T2ZR/YPzwvo4MYC7OUIiC1WFvK0YyWIqSwl5PCDN8DZPBJyA1a8E8urUA+GBR9yjlLophCq0gfNGOQJFCVwJoTXmXjnKAEhF7Ktn9IB2Bsok+2WzFN6xL2Xl0pY5wXvpb+qWYE4a9PtdgM+r8MOOiN/xXilgn75ZH9Ko8tom83IzgcOHvEfRZTCB23YJYCci3MNK3RCaAzBC02DkSgwd2p3Ijde5rsTFTbR/MTBcPY096ABW3I/7RwwuY9U6VCgzXEDMLv7vQXbi8tNvOo50GOSGIT3j/0NBclTqPM3g/CBKGKgBwuuvtJ40W7McoQBrA=
+    #     file: "summary.pdf"
+    #     cleanup: false
+    #     draft: true
+    #     on:
+    #       repo: NiccoMlt/ISS-2018-Final-Task
+
     - name: JVM project build
       language: java
       jdk: openjdk8
@@ -62,6 +109,7 @@ jobs:
         - ./gradlew -b build_ctxRobot.gradle clean assemble
         # - ./gradlew -b build_ctxRobot.gradle test --tests "it.unibo.TestRBlinkLed"
         # - ./gradlew -b build_ctxRobot.gradle test --tests "it.unibo.TestROkTemperature"
+
     - name: PlatformIO Arduino
       language: python
       python: "2.7"
